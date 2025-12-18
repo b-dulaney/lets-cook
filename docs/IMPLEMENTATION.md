@@ -95,9 +95,9 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 - [x] Historical meal plan access
 
 ### Shopping Lists
-- [ ] Save shopping lists to database
-- [ ] Mark items as purchased
-- [ ] Shopping list history
+- [x] Save shopping lists to database
+- [x] Mark items as purchased
+- [x] Shopping list history
 
 ---
 
