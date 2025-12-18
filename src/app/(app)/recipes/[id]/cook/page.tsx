@@ -182,13 +182,15 @@ export default function CookingModePage({ params }: PageProps) {
       </div>
 
       {/* Main content */}
-      <main className="flex-1 overflow-y-auto flex items-center justify-center py-8 sm:py-12">
+      <main className="flex-1 overflow-y-auto py-8 sm:py-12">
+        <div className="min-h-full flex items-center justify-center">
         <CookingStep
           instruction={instruction}
           nextInstruction={nextInstruction}
           currentStep={currentStep + 1}
           totalSteps={totalSteps}
         />
+        </div>
       </main>
 
       {/* Navigation footer */}
