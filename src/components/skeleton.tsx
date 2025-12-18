@@ -216,6 +216,112 @@ export function SkeletonListPage({ cardCount = 3, type = "meal-plan" }: { cardCo
   );
 }
 
+// Recipe card skeleton
+export function SkeletonRecipeCard() {
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 p-5 animate-pulse">
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex-1">
+          <SkeletonHeading className="w-3/4 mb-2" />
+          <SkeletonText className="w-full mb-1" />
+          <SkeletonText className="w-2/3" />
+        </div>
+        <Skeleton className="h-6 w-16 rounded ml-3" />
+      </div>
+      <div className="flex gap-2 mb-3">
+        <Skeleton className="h-5 w-20 rounded" />
+        <Skeleton className="h-5 w-16 rounded" />
+      </div>
+      <div className="border-t border-gray-100 pt-3">
+        <SkeletonText className="w-24 mb-2" />
+        <div className="flex flex-wrap gap-1">
+          <Skeleton className="h-6 w-14 rounded-full" />
+          <Skeleton className="h-6 w-18 rounded-full" />
+          <Skeleton className="h-6 w-12 rounded-full" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Recipe discovery results skeleton
+export function SkeletonRecipeResults({ count = 4 }: { count?: number }) {
+  return (
+    <div className="grid gap-4 sm:grid-cols-2">
+      {[...Array(count)].map((_, i) => (
+        <SkeletonRecipeCard key={i} />
+      ))}
+    </div>
+  );
+}
+
+// Recipe detail page skeleton
+export function SkeletonRecipeDetail() {
+  return (
+    <div>
+      {/* Back link */}
+      <Skeleton className="h-4 w-24 mb-4" />
+
+      {/* Header */}
+      <div className="mb-6">
+        <SkeletonHeading className="w-3/4 h-8 mb-3" />
+        <div className="flex flex-wrap gap-3 mb-4">
+          <Skeleton className="h-6 w-20 rounded" />
+          <Skeleton className="h-6 w-24 rounded" />
+          <Skeleton className="h-6 w-28 rounded" />
+          <Skeleton className="h-6 w-20 rounded" />
+        </div>
+      </div>
+
+      {/* Main content grid */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Ingredients (sidebar on desktop) */}
+        <div className="lg:col-span-1">
+          <div className="bg-white rounded-lg border border-gray-200 p-5">
+            <SkeletonHeading className="w-28 mb-4" />
+            <div className="space-y-3">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="flex gap-2">
+                  <Skeleton className="h-4 w-16 shrink-0" />
+                  <SkeletonText className="flex-1" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Instructions */}
+        <div className="lg:col-span-2">
+          <div className="bg-white rounded-lg border border-gray-200 p-5">
+            <SkeletonHeading className="w-32 mb-4" />
+            <div className="space-y-4">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="flex gap-4">
+                  <Skeleton className="h-8 w-8 rounded-full shrink-0" />
+                  <div className="flex-1">
+                    <SkeletonText className="w-full mb-2" />
+                    <SkeletonText className="w-3/4" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Tips section */}
+          <div className="bg-white rounded-lg border border-gray-200 p-5 mt-6">
+            <SkeletonHeading className="w-24 mb-4" />
+            <div className="space-y-2">
+              {[...Array(3)].map((_, i) => (
+                <SkeletonText key={i} className="w-full" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Settings page skeleton
 export function SkeletonSettings() {
   return (

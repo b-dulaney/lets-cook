@@ -15,6 +15,7 @@ import {
   MealPlanDay,
   RerollMealContext,
   ShoppingCategories,
+  RecipeConstraints,
 } from "./prompts";
 
 const anthropic = new Anthropic({
@@ -406,9 +407,10 @@ export async function findRecipes(
 export async function getRecipeDetails(
   recipeName: string,
   ingredients: string[],
-  skillLevel?: string
+  skillLevel?: string,
+  constraints?: RecipeConstraints
 ): Promise<RecipeDetailsResponse> {
-  const prompt = getRecipeDetailsPrompt(recipeName, ingredients, skillLevel);
+  const prompt = getRecipeDetailsPrompt(recipeName, ingredients, skillLevel, constraints);
 
   const response = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",

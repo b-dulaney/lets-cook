@@ -165,17 +165,47 @@ Format as JSON:
 Only return valid JSON, no other text.`;
 }
 
+// Constraints passed from meal plan context
+export interface RecipeConstraints {
+  cookTime?: string; // e.g., "25 minutes"
+  difficulty?: string; // e.g., "Easy", "Medium", "Hard"
+  servings?: number; // e.g., 2
+}
+
 // 2. Get Full Recipe Details
 export function getRecipeDetailsPrompt(
   recipeName: string,
   ingredients: string[],
-  userSkillLevel?: string
+  userSkillLevel?: string,
+  constraints?: RecipeConstraints
 ): string {
+  // Build constraints section if we have any
+  let constraintsSection = "";
+  if (constraints) {
+    const parts: string[] = [];
+    if (constraints.servings) {
+      parts.push(`- Servings: MUST be exactly ${constraints.servings} servings (scale ingredients accordingly)`);
+    }
+    if (constraints.cookTime) {
+      parts.push(`- Total time: MUST be approximately ${constraints.cookTime} or less`);
+    }
+    if (constraints.difficulty) {
+      parts.push(`- Difficulty: ${constraints.difficulty}`);
+    }
+    if (parts.length > 0) {
+      constraintsSection = `
+IMPORTANT CONSTRAINTS (from meal plan - you MUST follow these):
+${parts.join("\n")}
+
+`;
+    }
+  }
+
   return `Generate a complete, detailed recipe for: ${recipeName}
 
 Primary ingredients to use: ${ingredients.join(", ")}
 User skill level: ${userSkillLevel || "intermediate"}
-
+${constraintsSection}
 Provide a comprehensive recipe with:
 
 1. Full ingredient list with precise measurements
