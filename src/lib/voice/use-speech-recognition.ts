@@ -1,0 +1,157 @@
+"use client";
+
+import { useState, useEffect, useCallback, useRef } from "react";
+
+export interface UseSpeechRecognitionOptions {
+  continuous?: boolean;
+  language?: string;
+  onResult?: (transcript: string) => void;
+  onError?: (error: string) => void;
+}
+
+export interface UseSpeechRecognitionReturn {
+  transcript: string;
+  isListening: boolean;
+  isSupported: boolean;
+  error: string | null;
+  start: () => void;
+  stop: () => void;
+  toggle: () => void;
+}
+
+export function useSpeechRecognition(
+  options: UseSpeechRecognitionOptions = {}
+): UseSpeechRecognitionReturn {
+  const {
+    continuous = false,
+    language = "en-US",
+    onResult,
+    onError,
+  } = options;
+
+  const [transcript, setTranscript] = useState("");
+  const [isListening, setIsListening] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isSupported, setIsSupported] = useState(false);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const recognitionRef = useRef<any>(null);
+  const isStoppingRef = useRef(false);
+
+  // Check for browser support
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const win = window as any;
+    const SpeechRecognitionAPI =
+      win.SpeechRecognition || win.webkitSpeechRecognition;
+
+    setIsSupported(!!SpeechRecognitionAPI);
+
+    if (SpeechRecognitionAPI) {
+      const recognition = new SpeechRecognitionAPI();
+      recognition.continuous = continuous;
+      recognition.interimResults = false;
+      recognition.lang = language;
+
+      recognition.onstart = () => {
+        setIsListening(true);
+        setError(null);
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      recognition.onresult = (event: any) => {
+        const last = event.results.length - 1;
+        const text = event.results[last][0].transcript;
+        setTranscript(text);
+        onResult?.(text);
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      recognition.onerror = (event: any) => {
+        // Don't treat "no-speech" as an error in continuous mode
+        if (event.error === "no-speech" && continuous) {
+          return;
+        }
+
+        let errorMessage = "Speech recognition error";
+        switch (event.error) {
+          case "not-allowed":
+            errorMessage = "Microphone access denied";
+            break;
+          case "no-speech":
+            errorMessage = "No speech detected";
+            break;
+          case "network":
+            errorMessage = "Network error";
+            break;
+          case "audio-capture":
+            errorMessage = "No microphone found";
+            break;
+        }
+        setError(errorMessage);
+        setIsListening(false);
+        onError?.(errorMessage);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+        // Auto-restart in continuous mode unless explicitly stopped
+        if (continuous && !isStoppingRef.current && recognitionRef.current) {
+          try {
+            recognition.start();
+          } catch (_e) {
+            // Ignore errors from rapid start/stop
+          }
+        }
+      };
+
+      recognitionRef.current = recognition;
+    }
+
+    return () => {
+      if (recognitionRef.current) {
+        isStoppingRef.current = true;
+        recognitionRef.current.abort();
+        recognitionRef.current = null;
+      }
+    };
+  }, [continuous, language, onResult, onError]);
+
+  const start = useCallback(() => {
+    if (recognitionRef.current && !isListening) {
+      isStoppingRef.current = false;
+      setTranscript("");
+      setError(null);
+      try {
+        recognitionRef.current.start();
+      } catch (_e) {
+        // Ignore if already started
+      }
+    }
+  }, [isListening]);
+
+  const stop = useCallback(() => {
+    if (recognitionRef.current && isListening) {
+      isStoppingRef.current = true;
+      recognitionRef.current.stop();
+    }
+  }, [isListening]);
+
+  const toggle = useCallback(() => {
+    if (isListening) {
+      stop();
+    } else {
+      start();
+    }
+  }, [isListening, start, stop]);
+
+  return {
+    transcript,
+    isListening,
+    isSupported,
+    error,
+    start,
+    stop,
+    toggle,
+  };
+}

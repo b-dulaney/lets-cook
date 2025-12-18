@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { FullRecipe } from "@/lib/claude/prompts";
 import { CookingStep } from "@/components/cooking-mode/cooking-step";
 import { IngredientsPanel } from "@/components/cooking-mode/ingredients-panel";
+import { useVoiceCommands } from "@/lib/voice/use-voice-commands";
+import { VoiceStatus } from "@/components/voice/voice-status";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -18,6 +20,7 @@ export default function CookingModePage({ params }: PageProps) {
   const [error, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [showIngredients, setShowIngredients] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
 
   useEffect(() => {
     fetchRecipe();
@@ -64,6 +67,25 @@ export default function CookingModePage({ params }: PageProps) {
       setCurrentStep((prev) => prev + 1);
     }
   }, [recipe, currentStep, handleExit]);
+
+  const handleToggleIngredients = useCallback(() => {
+    setShowIngredients((prev) => !prev);
+  }, []);
+
+  // Voice commands for hands-free control
+  const {
+    isListening,
+    isSupported: voiceSupported,
+    lastCommand,
+    error: voiceError,
+    toggle: toggleVoice,
+  } = useVoiceCommands({
+    onNext: handleNext,
+    onPrevious: handlePrevious,
+    onIngredients: handleToggleIngredients,
+    onExit: handleExit,
+    enabled: voiceEnabled && !loading && !error,
+  });
 
   // Loading state
   if (loading) {
@@ -133,12 +155,21 @@ export default function CookingModePage({ params }: PageProps) {
           <span className="hidden sm:inline font-medium">Exit</span>
         </button>
 
-        <h1 className="text-lg sm:text-xl font-semibold text-gray-900 text-center truncate max-w-[50%]">
+        <h1 className="text-lg sm:text-xl font-semibold text-gray-900 text-center truncate max-w-[40%]">
           {recipe.recipeName}
         </h1>
 
-        <div className="text-gray-500 font-medium">
-          {currentStep + 1} / {totalSteps}
+        <div className="flex items-center gap-3">
+          <VoiceStatus
+            isListening={isListening}
+            isSupported={voiceSupported}
+            lastCommand={lastCommand}
+            error={voiceError}
+            onToggle={toggleVoice}
+          />
+          <div className="text-gray-500 font-medium">
+            {currentStep + 1} / {totalSteps}
+          </div>
         </div>
       </header>
 

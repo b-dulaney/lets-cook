@@ -162,7 +162,7 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 - [x] **Stale banner** on shopping lists with regenerate option
 - [x] Full-page loaders for AI operations
 - [x] Skeleton loaders for page navigation
-- [ ] Voice input button (Web Speech API)
+- [x] Voice input button (Web Speech API)
 
 ### Chat Interface (Optional)
 - [ ] Chat UI for text-based interaction
@@ -173,19 +173,22 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 
 ## Phase 5: Cooking Mode
 
-### Hands-Free Experience
+### Hands-Free Experience (MVP Complete)
 - [x] Step-by-step navigation (next/previous)
 - [x] Timer integration (manual start, pause, reset)
-- [ ] Voice commands during cooking
 - [x] Large, readable text for kitchen viewing
 - [x] Ingredients panel overlay
 - [x] Progress bar showing current step
 - [x] "Start Cooking" button on recipe detail pages
+- [x] "Up Next" preview for upcoming steps
+- [x] Fullscreen mode (hides sidebar/nav)
 
-### Web Speech API
-- [ ] Speech recognition setup
-- [ ] Text-to-speech for reading instructions
-- [ ] Wake word or push-to-talk
+### Voice Features
+- [x] Voice commands during cooking ("next", "previous", "ingredients", "exit")
+- [x] Speech recognition setup (Web Speech API)
+- [x] Voice input for ingredient search on recipe discovery page
+- [ ] Text-to-speech for reading instructions (future)
+- [ ] Wake word or push-to-talk (future)
 
 ---
 
@@ -262,20 +265,47 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 | Recipe Pages | ✅ Discovery, detail, caching |
 | Google Assistant | ⏳ Intents designed only |
 | Web UI | ✅ Core pages complete |
-| Cooking Mode | ✅ Core features complete |
+| Cooking Mode | ✅ Complete with voice commands |
 | Testing | ⏳ Not started |
 | Deployment | ✅ Live at letscook.dev |
 
-**Current Phase:** Phase 5 (Cooking Mode) - core features complete
+**Current Phase:** Voice Commands Complete
 
-**Next Steps:**
-1. Optional: Voice commands for cooking mode (Web Speech API)
-2. Optional: Build chat interface for text-based interaction
-3. Optional: Voice input for hands-free recipe discovery
+**Next Steps (choose based on priority):**
+
+| Feature | Effort | Value | Description |
+|---------|--------|-------|-------------|
+| Recipe images | Medium | High | Fetch images from Spoonacular/Unsplash for visual appeal |
+| Chat interface | High | Medium | Natural language interaction for recipe discovery |
+| Google Assistant | High | Medium | Voice-first experience via smart speakers |
+| Testing suite | Medium | Medium | Unit/integration tests for reliability |
+| Error tracking | Low | Medium | Sentry integration for production monitoring |
+| Text-to-speech | Low | Medium | Read cooking instructions aloud |
 
 ---
 
 ## Changelog
+
+### 2025-12-18 (Session 4)
+
+**Voice Commands**
+- Added Web Speech API integration for hands-free control
+- Cooking mode: "next", "previous", "ingredients", "exit" voice commands
+- Recipe discovery: Voice input for adding ingredients (say "chicken and rice")
+- Visual feedback showing listening state and recognized commands
+- Auto-starts listening when entering cooking mode
+- Graceful degradation for browsers without Web Speech API support (Firefox)
+
+**New Components**
+- `src/lib/voice/use-speech-recognition.ts` - Core Web Speech API wrapper hook
+- `src/lib/voice/use-voice-commands.ts` - Cooking mode command parsing
+- `src/components/voice/voice-button.tsx` - Reusable microphone toggle button
+- `src/components/voice/voice-status.tsx` - Listening state indicator
+
+**Browser Support**
+- Chrome/Edge: Full support (webkit prefix)
+- Safari: Full support (webkit prefix)
+- Firefox: No support (buttons hidden automatically)
 
 ### 2025-12-18 (Session 3)
 
@@ -290,10 +320,12 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 - Slide-up ingredients panel for quick reference
 - "Start Cooking" button on recipe detail pages
 - Exit button to return to recipe view
+- "Up Next" preview showing next step (helps with parallel tasks like "Meanwhile...")
+- Fixed z-index so cooking mode properly overlays sidebar on desktop
 
 **New Components**
 - `src/components/cooking-mode/step-timer.tsx` - Countdown timer with time parsing
-- `src/components/cooking-mode/cooking-step.tsx` - Step display with large text
+- `src/components/cooking-mode/cooking-step.tsx` - Step display with large text and next step preview
 - `src/components/cooking-mode/ingredients-panel.tsx` - Slide-up ingredient list
 
 **Favorite Button on Recipe Detail Pages**
@@ -302,6 +334,12 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 - Uses existing API endpoints: `POST/DELETE /api/recipes/[id]/favorite`
 - Disabled state while toggling to prevent double-clicks
 - On view page, button only appears after recipe is saved (has recipeId)
+
+**Bug Fixes**
+- Fixed duplicate API calls on `/recipes/view` caused by React Strict Mode
+- Added `fetchingRef` guard to prevent double recipe generation
+- Removed `title_slug` unique constraint (migration `20251218155743`)
+- Slug column kept for potential search use, but no longer blocks duplicate titles
 
 ### 2025-12-18 (Session 2)
 

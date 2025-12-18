@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect, useRef, KeyboardEvent } from "react";
+import { useState, useEffect, useRef, useCallback, KeyboardEvent } from "react";
 import Link from "next/link";
 import { RecipeCard } from "@/components/recipe-card";
 import { SkeletonRecipeResults } from "@/components/skeleton";
 import { FullPageLoader } from "@/components/full-page-loader";
 import { RecipeSuggestion } from "@/lib/claude/prompts";
+import { useSpeechRecognition } from "@/lib/voice/use-speech-recognition";
+import { VoiceButton } from "@/components/voice/voice-button";
 
 interface Preferences {
   dietary: string[];
@@ -23,6 +25,36 @@ export default function RecipesPage() {
   const [error, setError] = useState<string | null>(null);
   const [preferences, setPreferences] = useState<Preferences | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Parse voice transcript into ingredients
+  const handleVoiceResult = useCallback(
+    (transcript: string) => {
+      // Handle phrases like "add chicken and rice" or "chicken, rice, broccoli"
+      const cleaned = transcript
+        .toLowerCase()
+        .replace(/^(add|i have|i've got|got)\s+/i, "")
+        .replace(/\s+and\s+/g, ", ");
+
+      const newIngredients = cleaned
+        .split(/[,]+/)
+        .map((s) => s.trim())
+        .filter((s) => s.length > 1 && !ingredients.includes(s));
+
+      if (newIngredients.length > 0) {
+        setIngredients((prev) => [...prev, ...newIngredients]);
+      }
+    },
+    [ingredients]
+  );
+
+  const {
+    isListening,
+    isSupported: voiceSupported,
+    error: voiceError,
+    toggle: toggleVoice,
+  } = useSpeechRecognition({
+    onResult: handleVoiceResult,
+  });
 
   useEffect(() => {
     fetchPreferences();
@@ -162,11 +194,12 @@ export default function RecipesPage() {
           What ingredients do you have?
         </label>
 
-        {/* Tag input */}
-        <div
-          className="flex flex-wrap gap-2 p-3 border border-gray-300 rounded-lg bg-gray-50 min-h-13 cursor-text"
-          onClick={() => inputRef.current?.focus()}
-        >
+        {/* Tag input with voice button */}
+        <div className="flex gap-2">
+          <div
+            className="flex-1 flex flex-wrap gap-2 p-3 border border-gray-300 rounded-lg bg-gray-50 min-h-13 cursor-text"
+            onClick={() => inputRef.current?.focus()}
+          >
           {ingredients.map((ingredient, idx) => (
             <span
               key={idx}
@@ -204,11 +237,22 @@ export default function RecipesPage() {
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={
-              ingredients.length === 0
+              isListening
+                ? "Listening... say ingredients"
+                : ingredients.length === 0
                 ? "Type an ingredient and press Enter..."
                 : "Add more..."
             }
             className="flex-1 min-w-[150px] outline-none bg-transparent text-gray-900 placeholder:text-gray-500"
+          />
+          </div>
+          <VoiceButton
+            isListening={isListening}
+            isSupported={voiceSupported}
+            onClick={toggleVoice}
+            error={voiceError}
+            size="lg"
+            className="self-center"
           />
         </div>
 
