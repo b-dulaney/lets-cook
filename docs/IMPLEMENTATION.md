@@ -266,14 +266,22 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 **Current Phase:** Phase 4 (Web Application UI) - complete
 
 **Next Steps:**
-1. Add favorite button to recipe detail pages
-2. Optional: Cooking mode with step-by-step navigation
-3. Optional: Build chat interface for text-based interaction
-4. Optional: Voice input for hands-free recipe discovery
+1. Optional: Cooking mode with step-by-step navigation
+2. Optional: Build chat interface for text-based interaction
+3. Optional: Voice input for hands-free recipe discovery
 
 ---
 
 ## Changelog
+
+### 2025-12-18 (Session 3)
+
+**Favorite Button on Recipe Detail Pages**
+- Added heart icon button in recipe header on both `/recipes/[id]` and `/recipes/view` pages
+- Toggle favorite with visual feedback (filled red heart when favorited, outline when not)
+- Uses existing API endpoints: `POST/DELETE /api/recipes/[id]/favorite`
+- Disabled state while toggling to prevent double-clicks
+- On view page, button only appears after recipe is saved (has recipeId)
 
 ### 2025-12-18 (Session 2)
 

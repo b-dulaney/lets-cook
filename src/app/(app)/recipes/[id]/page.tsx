@@ -27,6 +27,8 @@ export default function RecipeByIdPage({ params }: PageProps) {
   const [recipe, setRecipe] = useState<FullRecipe | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [togglingFavorite, setTogglingFavorite] = useState(false);
 
   const backTo = searchParams.get("back") || "/recipes";
 
@@ -44,6 +46,7 @@ export default function RecipeByIdPage({ params }: PageProps) {
       if (res.ok) {
         const data = await res.json();
         setRecipe(data.recipe);
+        setIsFavorite(data.isFavorite || false);
       } else if (res.status === 404) {
         setError("Recipe not found");
       } else {
@@ -55,6 +58,23 @@ export default function RecipeByIdPage({ params }: PageProps) {
       setError("Failed to load recipe. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const toggleFavorite = async () => {
+    setTogglingFavorite(true);
+    try {
+      const res = await fetch(`/api/recipes/${id}/favorite`, {
+        method: isFavorite ? "DELETE" : "POST",
+      });
+
+      if (res.ok) {
+        setIsFavorite(!isFavorite);
+      }
+    } catch (err) {
+      console.error("Error toggling favorite:", err);
+    } finally {
+      setTogglingFavorite(false);
     }
   };
 
@@ -114,9 +134,35 @@ export default function RecipeByIdPage({ params }: PageProps) {
 
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
-          {recipe.recipeName}
-        </h1>
+        <div className="flex items-start justify-between gap-4 mb-3">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            {recipe.recipeName}
+          </h1>
+          <button
+            onClick={toggleFavorite}
+            disabled={togglingFavorite}
+            className={`shrink-0 p-2 rounded-full transition-colors cursor-pointer ${
+              isFavorite
+                ? "bg-red-50 text-red-500 hover:bg-red-100"
+                : "bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600"
+            } ${togglingFavorite ? "opacity-50" : ""}`}
+            title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+          >
+            <svg
+              className="w-6 h-6"
+              fill={isFavorite ? "currentColor" : "none"}
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+              />
+            </svg>
+          </button>
+        </div>
         <div className="flex flex-wrap gap-3">
           <span
             className={`text-sm font-medium px-3 py-1 rounded ${
