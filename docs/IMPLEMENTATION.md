@@ -83,10 +83,10 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 - [x] Settings page UI
 
 ### Recipe Storage
-- [ ] Save generated recipes to database
-- [ ] Implement favorites functionality
-- [ ] Load user's saved recipes
-- [ ] Recipe search/filtering
+- [x] Save generated recipes to database
+- [x] Implement favorites functionality
+- [x] Load user's saved recipes
+- [x] Recipe search/filtering
 
 ### Meal Plan Persistence
 - [x] Save meal plans to database
