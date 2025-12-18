@@ -20,8 +20,8 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 - [x] Create initial migration (`supabase/migrations/`)
 - [x] Set up RLS policies
 - [x] Create Supabase client helpers (`src/lib/supabase/`)
-- [ ] Apply migrations to Supabase project
-- [ ] Test database operations
+- [x] Apply migrations to Supabase project
+- [x] Test database operations
 
 ### Claude AI Integration
 - [x] Set up Anthropic SDK client (`src/lib/claude/client.ts`)
@@ -89,10 +89,10 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 - [ ] Recipe search/filtering
 
 ### Meal Plan Persistence
-- [ ] Save meal plans to database
-- [ ] Load existing meal plans
-- [ ] Update/modify meal plans
-- [ ] Historical meal plan access
+- [x] Save meal plans to database
+- [x] Load existing meal plans
+- [x] Update/modify meal plans
+- [x] Historical meal plan access
 
 ### Shopping Lists
 - [ ] Save shopping lists to database
