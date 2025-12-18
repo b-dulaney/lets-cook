@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="256" fill="#059669"/>
+
+  <!-- Frog face -->
+  <ellipse cx="256" cy="290" rx="140" ry="120" fill="#86EFAC"/>
+
+  <!-- Lighter belly/face area -->
+  <ellipse cx="256" cy="310" rx="100" ry="80" fill="#BBF7D0"/>
+
+  <!-- Eyes - white part -->
+  <circle cx="190" cy="210" r="50" fill="white"/>
+  <circle cx="322" cy="210" r="50" fill="white"/>
+
+  <!-- Eyes - green outline -->
+  <circle cx="190" cy="210" r="50" fill="none" stroke="#059669" stroke-width="4"/>
+  <circle cx="322" cy="210" r="50" fill="none" stroke="#059669" stroke-width="4"/>
+
+  <!-- Pupils -->
+  <circle cx="195" cy="215" r="22" fill="#1F2937"/>
+  <circle cx="327" cy="215" r="22" fill="#1F2937"/>
+
+  <!-- Eye shine -->
+  <circle cx="202" cy="205" r="8" fill="white"/>
+  <circle cx="334" cy="205" r="8" fill="white"/>
+
+  <!-- Blush marks -->
+  <ellipse cx="150" cy="300" rx="25" ry="15" fill="#FBCFE8" opacity="0.7"/>
+  <ellipse cx="362" cy="300" rx="25" ry="15" fill="#FBCFE8" opacity="0.7"/>
+
+  <!-- Smile -->
+  <path d="M200 340 Q256 390 312 340" fill="none" stroke="#059669" stroke-width="8" stroke-linecap="round"/>
+
+  <!-- Chef hat shadow -->
+  <ellipse cx="256" cy="145" rx="85" ry="20" fill="#9CA3AF" opacity="0.3"/>
+
+  <!-- Chef hat body -->
+  <path d="M145 145 C145 145 140 60 256 60 C372 60 367 145 367 145" fill="#FFFBEB" stroke="#D1D5DB" stroke-width="3"/>
+
+  <!-- Chef hat top puffs -->
+  <circle cx="200" cy="75" r="35" fill="#FFFBEB"/>
+  <circle cx="256" cy="65" r="40" fill="#FFFBEB"/>
+  <circle cx="312" cy="75" r="35" fill="#FFFBEB"/>
+
+  <!-- Hat rim -->
+  <ellipse cx="256" cy="145" rx="85" ry="18" fill="#FFFBEB"/>
+
+  <!-- Pink ribbon on hat -->
+  <ellipse cx="256" cy="145" rx="85" ry="12" fill="#FBCFE8"/>
+  <ellipse cx="256" cy="142" rx="85" ry="8" fill="#F9A8D4" opacity="0.6"/>
+</svg>
