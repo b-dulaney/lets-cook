@@ -76,11 +76,11 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 - [x] Test full authentication flow
 
 ### User Preferences
-- [ ] Create preferences API route
-- [ ] Save preferences to database
-- [ ] Load preferences on session start
+- [x] Create preferences API route
+- [x] Save preferences to database
+- [x] Load preferences on session start
 - [ ] Update preferences from natural language
-- [ ] Settings page UI
+- [x] Settings page UI
 
 ### Recipe Storage
 - [ ] Save generated recipes to database

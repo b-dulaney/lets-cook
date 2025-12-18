@@ -194,6 +194,62 @@ export type Database = {
           },
         ]
       }
+      user_preferences: {
+        Row: {
+          additional_notes: string | null
+          allergies: string[] | null
+          budget: string | null
+          created_at: string
+          dietary: string[] | null
+          dislikes: string[] | null
+          favorite_cuisines: string[] | null
+          household_size: number | null
+          max_cook_time: string | null
+          pantry_items: string[] | null
+          skill_level: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          additional_notes?: string | null
+          allergies?: string[] | null
+          budget?: string | null
+          created_at?: string
+          dietary?: string[] | null
+          dislikes?: string[] | null
+          favorite_cuisines?: string[] | null
+          household_size?: number | null
+          max_cook_time?: string | null
+          pantry_items?: string[] | null
+          skill_level?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          additional_notes?: string | null
+          allergies?: string[] | null
+          budget?: string | null
+          created_at?: string
+          dietary?: string[] | null
+          dislikes?: string[] | null
+          favorite_cuisines?: string[] | null
+          household_size?: number | null
+          max_cook_time?: string | null
+          pantry_items?: string[] | null
+          skill_level?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       users: {
         Row: {
           created_at: string
