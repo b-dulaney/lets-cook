@@ -145,17 +145,17 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 - [x] Home/landing page
 - [x] Login page (`/login`)
 - [x] Dashboard page (`/dashboard`)
-- [ ] Recipe discovery page
-- [ ] Recipe detail page
+- [x] Recipe discovery page (`/recipes`)
+- [x] Recipe detail page (`/recipes/[id]` and `/recipes/view`)
 - [x] Meal planning page
 - [x] Shopping list page
 - [x] User preferences/settings page
-- [ ] Saved recipes page
+- [x] Saved recipes page (`/recipes/saved`)
 
 ### Components
-- [ ] Recipe card component
-- [ ] Ingredient list component
-- [ ] Step-by-step instructions component
+- [x] Recipe card component (with difficulty colors, auto-navigation)
+- [x] Ingredient list component (sticky sidebar)
+- [x] Step-by-step instructions component (numbered with tips)
 - [x] Meal plan calendar view
 - [x] Shopping list with checkboxes
 - [x] **Re-roll button** on meal cards with skeleton loading state
@@ -254,25 +254,64 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 | Intent Handling | ✅ Basic implementation |
 | Authentication | ✅ Complete |
 | Data Persistence | ✅ Complete |
-| Meal Plan Features | ✅ Re-roll, variety settings |
+| Meal Plan Features | ✅ Re-roll, variety, recipe linking |
 | Shopping Lists | ✅ Stale detection, regeneration |
+| Recipe Pages | ✅ Discovery, detail, caching |
 | Google Assistant | ⏳ Intents designed only |
-| Web UI | 🟡 Core pages done |
+| Web UI | ✅ Core pages complete |
 | Cooking Mode | ⏳ Not started |
 | Testing | ⏳ Not started |
 | Deployment | ✅ Live at letscook.dev |
 
-**Current Phase:** Phase 4 (Web Application UI) - polishing and feature enhancements
+**Current Phase:** Phase 4 (Web Application UI) - complete
 
 **Next Steps:**
-1. Build recipe discovery and detail pages
-2. Create saved recipes page
+1. Add favorite button to recipe detail pages
+2. Optional: Cooking mode with step-by-step navigation
 3. Optional: Build chat interface for text-based interaction
-4. Optional: Cooking mode with step-by-step navigation
+4. Optional: Voice input for hands-free recipe discovery
 
 ---
 
 ## Changelog
+
+### 2025-12-18 (Session 2)
+
+**Recipe Discovery Page (`/recipes`)**
+- Tag-based ingredient input with Enter to add, Backspace to remove
+- Quick-add buttons for common ingredients (chicken, rice, pasta, eggs, etc.)
+- Preference banner showing dietary/allergy restrictions applied
+- Grid of RecipeCards with difficulty color coding and skeleton loading
+
+**Recipe Detail Pages**
+- `/recipes/view` - Generates new recipe from name/ingredients via Claude
+- `/recipes/[id]` - Loads existing recipe from database by ID
+- 3-column layout: sticky ingredients sidebar, numbered instructions, tips section
+- Nutrition banner, substitutions list, difficulty badges
+
+**Meal Plan → Recipe Linking (Junction Table)**
+- New `meal_plan_recipes` table linking meal plan days to generated recipes
+- Schema: `meal_plan_id`, `day_index`, `recipe_id` with unique constraint
+- Flow: First view generates recipe → saves to DB → links to meal plan day
+- Subsequent views load directly from DB (no regeneration)
+- Re-rolling a meal clears the link, next view generates fresh recipe
+- Removed slug-based caching approach in favor of ID-based linking
+
+**API Endpoints**
+- `GET /api/meal-plans/[id]/recipes` - Fetch all recipe links for a meal plan
+- `POST /api/meal-plans/[id]/recipes` - Link a recipe to a meal plan day
+- `GET /api/recipes/[id]` - Fetch recipe by database ID
+- `POST /api/recipes/details` - Generate new recipe and return with ID
+
+**Database Migrations**
+- `20251218115928_meal_plan_recipes_junction.sql` - Junction table with RLS
+
+**Saved Recipes Page (`/recipes/saved`)**
+- Shows all recipes generated from meal plans + favorited recipes
+- Search bar with debounced filtering
+- Filter tabs: All Recipes / Favorites
+- Recipe cards link to `/recipes/[id]` for instant loading
+- Empty states with helpful CTAs
 
 ### 2025-12-18
 

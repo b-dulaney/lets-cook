@@ -10,7 +10,6 @@ import {
   RecipeBookIcon,
   MealPlanIcon,
   ShoppingIcon,
-  SavedRecipesIcon,
   SettingsIcon,
 } from "./icons";
 
@@ -18,6 +17,7 @@ interface NavItem {
   name: string;
   href: string;
   icon: React.ReactNode;
+  children?: { name: string; href: string }[];
 }
 
 const navigation: NavItem[] = [
@@ -30,6 +30,10 @@ const navigation: NavItem[] = [
     name: "Recipes",
     href: "/recipes",
     icon: <RecipeBookIcon size={20} />,
+    children: [
+      { name: "Find Recipes", href: "/recipes" },
+      { name: "My Recipes", href: "/recipes/saved" },
+    ],
   },
   {
     name: "Meal Plans",
@@ -40,11 +44,6 @@ const navigation: NavItem[] = [
     name: "Shopping List",
     href: "/shopping",
     icon: <ShoppingIcon size={20} />,
-  },
-  {
-    name: "Saved Recipes",
-    href: "/recipes/saved",
-    icon: <SavedRecipesIcon size={20} />,
   },
   {
     name: "Settings",
@@ -61,9 +60,78 @@ interface AppShellProps {
   };
 }
 
+// Check if a nav item or any of its children is active
+function isNavItemActive(item: NavItem, pathname: string): boolean {
+  if (item.children) {
+    return item.children.some(
+      (child) => pathname === child.href || pathname.startsWith(child.href + "/")
+    );
+  }
+  return pathname === item.href || pathname.startsWith(item.href + "/");
+}
+
+// Check if a specific child is active
+function isChildActive(href: string, pathname: string): boolean {
+  // For exact matches like /recipes vs /recipes/saved
+  if (href === "/recipes") {
+    return pathname === "/recipes" || pathname.startsWith("/recipes/view") || pathname.match(/^\/recipes\/[^/]+$/) !== null && !pathname.includes("/saved");
+  }
+  return pathname === href || pathname.startsWith(href + "/");
+}
+
 export function AppShell({ children, user }: AppShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
+
+  const renderNavItem = (item: NavItem, mobile: boolean = false) => {
+    const isActive = isNavItemActive(item, pathname);
+    const hasChildren = item.children && item.children.length > 0;
+
+    return (
+      <div key={item.name}>
+        <Link
+          href={item.href}
+          onClick={mobile ? () => setSidebarOpen(false) : undefined}
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+            isActive
+              ? "bg-emerald-50 text-emerald-700"
+              : "text-gray-700 hover:bg-gray-100"
+          }`}
+        >
+          {item.icon}
+          {item.name}
+          {hasChildren && (
+            <svg
+              className={`w-4 h-4 ml-auto transition-transform ${isActive ? "rotate-180" : ""}`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          )}
+        </Link>
+        {hasChildren && isActive && (
+          <div className="ml-8 mt-1 space-y-1">
+            {item.children!.map((child) => (
+              <Link
+                key={child.href}
+                href={child.href}
+                onClick={mobile ? () => setSidebarOpen(false) : undefined}
+                className={`block px-3 py-1.5 rounded-md text-sm transition-colors ${
+                  isChildActive(child.href, pathname)
+                    ? "text-emerald-700 font-medium bg-emerald-50/50"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                }`}
+              >
+                {child.name}
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -96,21 +164,7 @@ export function AppShell({ children, user }: AppShellProps) {
           </button>
         </div>
         <nav className="px-2 py-4 space-y-1">
-          {navigation.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                pathname === item.href || pathname.startsWith(item.href + "/")
-                  ? "bg-emerald-50 text-emerald-700"
-                  : "text-gray-700 hover:bg-gray-100"
-              }`}
-            >
-              {item.icon}
-              {item.name}
-            </Link>
-          ))}
+          {navigation.map((item) => renderNavItem(item, true))}
         </nav>
       </div>
 
@@ -122,20 +176,7 @@ export function AppShell({ children, user }: AppShellProps) {
             <span className="text-xl font-semibold text-emerald-800 font-display">Let&apos;s Cook</span>
           </div>
           <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  pathname === item.href || pathname.startsWith(item.href + "/")
-                    ? "bg-emerald-50 text-emerald-700"
-                    : "text-gray-700 hover:bg-gray-100"
-                }`}
-              >
-                {item.icon}
-                {item.name}
-              </Link>
-            ))}
+            {navigation.map((item) => renderNavItem(item, false))}
           </nav>
         </div>
       </div>
