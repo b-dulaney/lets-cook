@@ -79,7 +79,7 @@ export default function LoginPage() {
             <div className="flex justify-center mb-4">
               <FrogChef size={80} animated />
             </div>
-            <h1 className="text-2xl font-bold text-emerald-800">
+            <h1 className="text-2xl font-bold text-emerald-800 font-display">
               Let&apos;s Cook
             </h1>
             <h2 className="mt-1 text-gray-600">

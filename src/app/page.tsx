@@ -10,7 +10,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <FrogChef size={40} />
-            <span className="text-xl font-bold text-emerald-800">Let&apos;s Cook</span>
+            <span className="text-xl font-bold text-emerald-800 font-display">Let&apos;s Cook</span>
           </div>
           <Link
             href="/login"
@@ -99,7 +99,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="flex items-center justify-center gap-2 mb-2">
             <FrogChef size={24} />
-            <span className="text-sm font-medium text-gray-600">Let&apos;s Cook</span>
+            <span className="text-sm font-medium text-gray-600 font-display">Let&apos;s Cook</span>
           </div>
           <p className="text-xs text-gray-500">
             Made with love for home cooks everywhere
