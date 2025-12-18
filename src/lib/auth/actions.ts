@@ -2,20 +2,20 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { headers } from "next/headers";
 import type { Database } from "@/types/database";
 
 type UserProfile = Database["public"]["Tables"]["users"]["Row"];
 
 export async function signInWithGoogle(redirectTo?: string) {
   const supabase = await createClient();
-  const headersList = await headers();
-  const origin = headersList.get("origin") || "http://localhost:3000";
+
+  // Use explicit app URL from env, falling back to localhost for development
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${origin}/auth/callback?next=${redirectTo || "/dashboard"}`,
+      redirectTo: `${appUrl}/auth/callback?next=${redirectTo || "/dashboard"}`,
       queryParams: {
         access_type: "offline",
         prompt: "consent",
@@ -54,14 +54,15 @@ export async function signUpWithEmail(
   name?: string
 ) {
   const supabase = await createClient();
-  const headersList = await headers();
-  const origin = headersList.get("origin") || "http://localhost:3000";
+
+  // Use explicit app URL from env, falling back to localhost for development
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
   const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: `${origin}/auth/callback`,
+      emailRedirectTo: `${appUrl}/auth/callback`,
       data: {
         name: name || email.split("@")[0],
       },
