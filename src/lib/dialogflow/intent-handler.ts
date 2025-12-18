@@ -2,7 +2,16 @@ import type {
   DialogflowParameter,
   DialogflowResponse,
 } from "@/types/dialogflow";
-import { askClaude } from "@/lib/claude/client";
+import {
+  askClaude,
+  findRecipes,
+  getRecipeDetails,
+  createMealPlan,
+  generateShoppingList,
+  type UserPreferences,
+  type FullRecipe,
+  type WeeklyMealPlan,
+} from "@/lib/claude/client";
 
 interface IntentHandlerParams {
   intentName: string;
@@ -21,39 +30,43 @@ export async function handleIntent({
 }: IntentHandlerParams): Promise<DialogflowResponse> {
   switch (intentName) {
     case "find.recipe.by.ingredients":
-      return handleFindRecipeByIngredients(parameters, sessionId);
+      return handleFindRecipeByIngredients(
+        parameters,
+        sessionId,
+        sessionParameters
+      );
 
     case "get.recipe.details":
-      return handleGetRecipeDetails(parameters, sessionId);
+      return handleGetRecipeDetails(parameters, sessionId, sessionParameters);
 
     case "create.meal.plan":
-      return handleCreateMealPlan(parameters, sessionId);
+      return handleCreateMealPlan(parameters, sessionId, sessionParameters);
 
     case "get.shopping.list":
-      return handleGetShoppingList(sessionId);
+      return handleGetShoppingList(sessionId, sessionParameters);
 
     case "save.favorite.recipe":
       return handleSaveFavorite(parameters, sessionId);
 
     case "start.cooking.mode":
-      return handleStartCookingMode(parameters, sessionId);
+      return handleStartCookingMode(parameters, sessionId, sessionParameters);
 
     default:
-      return handleDefaultFallback(userQuery, sessionId);
+      return handleDefaultFallback(userQuery, sessionId, sessionParameters);
   }
 }
 
 async function handleFindRecipeByIngredients(
   parameters: Record<string, DialogflowParameter>,
-  sessionId: string
+  sessionId: string,
+  sessionParameters?: Record<string, unknown>
 ): Promise<DialogflowResponse> {
-  const ingredients = parameters.ingredients?.resolvedValue as string[] || [];
+  const ingredients =
+    (parameters.ingredients?.resolvedValue as string[]) || [];
+  const userPreferences =
+    (sessionParameters?.userPreferences as UserPreferences) || {};
 
-  const response = await askClaude({
-    task: "find_recipes",
-    context: { ingredients },
-    sessionId,
-  });
+  const response = await findRecipes(ingredients, userPreferences, sessionId);
 
   return {
     fulfillmentResponse: {
@@ -62,6 +75,7 @@ async function handleFindRecipeByIngredients(
     sessionInfo: {
       parameters: {
         lastRecipes: response.data?.recipes || [],
+        lastIngredients: ingredients,
       },
     },
   };
@@ -69,15 +83,24 @@ async function handleFindRecipeByIngredients(
 
 async function handleGetRecipeDetails(
   parameters: Record<string, DialogflowParameter>,
-  sessionId: string
+  sessionId: string,
+  sessionParameters?: Record<string, unknown>
 ): Promise<DialogflowResponse> {
-  const recipeName = parameters.recipe_name?.resolvedValue as string || "";
+  const recipeName = (parameters.recipe_name?.resolvedValue as string) || "";
+  const ingredients =
+    (sessionParameters?.lastIngredients as string[]) ||
+    (parameters.ingredients?.resolvedValue as string[]) ||
+    [];
+  const userPreferences =
+    (sessionParameters?.userPreferences as UserPreferences) || {};
+  const skillLevel = userPreferences.skillLevel || "intermediate";
 
-  const response = await askClaude({
-    task: "get_recipe_details",
-    context: { recipeName },
-    sessionId,
-  });
+  const response = await getRecipeDetails(
+    recipeName,
+    ingredients,
+    skillLevel,
+    sessionId
+  );
 
   return {
     fulfillmentResponse: {
@@ -85,7 +108,7 @@ async function handleGetRecipeDetails(
     },
     sessionInfo: {
       parameters: {
-        currentRecipe: response.data?.recipe || null,
+        currentRecipe: response.data || null,
       },
     },
   };
@@ -93,16 +116,26 @@ async function handleGetRecipeDetails(
 
 async function handleCreateMealPlan(
   parameters: Record<string, DialogflowParameter>,
-  sessionId: string
+  sessionId: string,
+  sessionParameters?: Record<string, unknown>
 ): Promise<DialogflowResponse> {
-  const days = (parameters.days?.resolvedValue as number) || 7;
-  const preferences = parameters.preferences?.resolvedValue as string[] || [];
+  const numberOfDays = (parameters.days?.resolvedValue as number) || 7;
+  const userPreferences =
+    (sessionParameters?.userPreferences as UserPreferences) || {};
 
-  const response = await askClaude({
-    task: "create_meal_plan",
-    context: { days, preferences },
-    sessionId,
-  });
+  // Merge any preferences from parameters
+  const dietaryFromParams = parameters.preferences?.resolvedValue as
+    | string[]
+    | undefined;
+  if (dietaryFromParams && dietaryFromParams.length > 0) {
+    userPreferences.dietary = dietaryFromParams;
+  }
+
+  const response = await createMealPlan(
+    userPreferences,
+    numberOfDays,
+    sessionId
+  );
 
   return {
     fulfillmentResponse: {
@@ -110,24 +143,47 @@ async function handleCreateMealPlan(
     },
     sessionInfo: {
       parameters: {
-        currentMealPlan: response.data?.mealPlan || null,
+        currentMealPlan: response.data || null,
       },
     },
   };
 }
 
 async function handleGetShoppingList(
-  sessionId: string
+  sessionId: string,
+  sessionParameters?: Record<string, unknown>
 ): Promise<DialogflowResponse> {
-  const response = await askClaude({
-    task: "generate_shopping_list",
-    context: {},
-    sessionId,
-  });
+  const mealPlan = sessionParameters?.currentMealPlan as
+    | WeeklyMealPlan
+    | undefined;
+  const pantryItems = (sessionParameters?.pantryItems as string[]) || [];
+
+  if (!mealPlan) {
+    return {
+      fulfillmentResponse: {
+        messages: [
+          {
+            text: {
+              text: [
+                "I don't have a meal plan to create a shopping list from. Would you like me to create a meal plan first?",
+              ],
+            },
+          },
+        ],
+      },
+    };
+  }
+
+  const response = await generateShoppingList(mealPlan, pantryItems, sessionId);
 
   return {
     fulfillmentResponse: {
       messages: [{ text: { text: [response.message] } }],
+    },
+    sessionInfo: {
+      parameters: {
+        currentShoppingList: response.data || null,
+      },
     },
   };
 }
@@ -136,7 +192,7 @@ async function handleSaveFavorite(
   parameters: Record<string, DialogflowParameter>,
   sessionId: string
 ): Promise<DialogflowResponse> {
-  const recipeName = parameters.recipe_name?.resolvedValue as string || "";
+  const recipeName = (parameters.recipe_name?.resolvedValue as string) || "";
 
   // TODO: Save to Supabase
 
@@ -155,13 +211,30 @@ async function handleSaveFavorite(
 
 async function handleStartCookingMode(
   parameters: Record<string, DialogflowParameter>,
-  sessionId: string
+  sessionId: string,
+  sessionParameters?: Record<string, unknown>
 ): Promise<DialogflowResponse> {
-  const recipeName = parameters.recipe_name?.resolvedValue as string || "";
+  const recipe = sessionParameters?.currentRecipe as FullRecipe | undefined;
+
+  if (!recipe) {
+    return {
+      fulfillmentResponse: {
+        messages: [
+          {
+            text: {
+              text: [
+                "I don't have a recipe loaded. Please select a recipe first by asking me for recipe details.",
+              ],
+            },
+          },
+        ],
+      },
+    };
+  }
 
   const response = await askClaude({
     task: "start_cooking_mode",
-    context: { recipeName },
+    context: { recipe, currentStep: 1 },
     sessionId,
   });
 
@@ -173,7 +246,7 @@ async function handleStartCookingMode(
       parameters: {
         cookingMode: true,
         currentStep: 1,
-        currentRecipe: response.data?.recipe || null,
+        currentRecipe: recipe,
       },
     },
   };
@@ -181,11 +254,15 @@ async function handleStartCookingMode(
 
 async function handleDefaultFallback(
   userQuery: string,
-  sessionId: string
+  sessionId: string,
+  sessionParameters?: Record<string, unknown>
 ): Promise<DialogflowResponse> {
+  const userPreferences =
+    (sessionParameters?.userPreferences as UserPreferences) || {};
+
   const response = await askClaude({
     task: "general_query",
-    context: { query: userQuery },
+    context: { query: userQuery, userPreferences },
     sessionId,
   });
 
