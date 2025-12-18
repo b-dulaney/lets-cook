@@ -11,11 +11,14 @@ export async function signInWithGoogle(redirectTo?: string) {
 
   // Use explicit app URL from env, falling back to localhost for development
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const callbackUrl = `${appUrl}/auth/callback`;
+
+  console.log("[Auth] Initiating Google OAuth with redirectTo:", callbackUrl);
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${appUrl}/auth/callback?next=${redirectTo || "/dashboard"}`,
+      redirectTo: callbackUrl,
       queryParams: {
         access_type: "offline",
         prompt: "consent",
