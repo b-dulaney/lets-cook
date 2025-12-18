@@ -64,17 +64,23 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 ## Phase 2: Data Persistence & User Management
 
 ### User Authentication
-- [ ] Set up Supabase Auth
-- [ ] Create auth context/provider
-- [ ] Implement sign-in flow
-- [ ] Implement sign-out flow
-- [ ] Protected API routes
+- [x] Set up Supabase Auth middleware (`src/middleware.ts`)
+- [x] Create auth callback route (`/auth/callback`)
+- [x] Create auth context/provider (`src/lib/auth/context.tsx`)
+- [x] Implement sign-in flow (Google OAuth + email/password)
+- [x] Implement sign-out flow
+- [x] Create login page (`/login`)
+- [x] Create dashboard page (`/dashboard`)
+- [x] Protected route handling in middleware
+- [x] Configure Google OAuth in Supabase dashboard
+- [x] Test full authentication flow
 
 ### User Preferences
 - [ ] Create preferences API route
 - [ ] Save preferences to database
 - [ ] Load preferences on session start
 - [ ] Update preferences from natural language
+- [ ] Settings page UI
 
 ### Recipe Storage
 - [ ] Save generated recipes to database
@@ -128,6 +134,8 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 
 ### Pages
 - [ ] Home/landing page
+- [x] Login page (`/login`)
+- [x] Dashboard page (`/dashboard`)
 - [ ] Recipe discovery page
 - [ ] Recipe detail page
 - [ ] Meal planning page
@@ -231,17 +239,18 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 | Claude Integration | ✅ Complete |
 | API Routes | ✅ Core routes working |
 | Intent Handling | ✅ Basic implementation |
-| Authentication | ⏳ Not started |
+| Authentication | 🟡 Code complete, needs config |
 | Data Persistence | ⏳ Not started |
 | Google Assistant | ⏳ Intents designed only |
-| Web UI | ⏳ Not started |
+| Web UI | 🟡 Login/dashboard done |
 | Cooking Mode | ⏳ Not started |
 | Testing | ⏳ Not started |
 | Deployment | ⏳ Not started |
 
-**Current Phase:** Phase 1 (Foundation) ~80% complete
+**Current Phase:** Phase 2 (Data Persistence & User Management) in progress
 
 **Next Steps:**
-1. Apply database migrations to Supabase
-2. Implement user authentication
-3. Connect intent handlers to database for persistence
+1. Configure Google OAuth provider in Supabase dashboard
+2. Apply database migrations to Supabase project
+3. Test authentication flow end-to-end
+4. Implement user preferences storage
