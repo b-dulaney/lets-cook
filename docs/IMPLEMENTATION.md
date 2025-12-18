@@ -133,7 +133,7 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 - [x] Loading states and skeletons
 
 ### Pages
-- [ ] Home/landing page
+- [x] Home/landing page
 - [x] Login page (`/login`)
 - [x] Dashboard page (`/dashboard`)
 - [ ] Recipe discovery page
