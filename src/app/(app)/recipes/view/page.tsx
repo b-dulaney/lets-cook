@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { SkeletonRecipeDetail } from "@/components/skeleton";
@@ -26,6 +26,7 @@ function RecipeDetailContent() {
   const [error, setError] = useState<string | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [togglingFavorite, setTogglingFavorite] = useState(false);
+  const fetchingRef = useRef(false);
 
   const recipeName = searchParams.get("name");
   const ingredientsParam = searchParams.get("ingredients");
@@ -39,9 +40,9 @@ function RecipeDetailContent() {
   const dayIndexParam = searchParams.get("dayIndex");
 
   useEffect(() => {
-    if (recipeName) {
+    if (recipeName && !fetchingRef.current) {
       fetchRecipeDetails();
-    } else {
+    } else if (!recipeName) {
       setError("No recipe specified");
       setLoading(false);
     }
@@ -49,6 +50,8 @@ function RecipeDetailContent() {
   }, [recipeName, ingredientsParam, cookTimeParam, difficultyParam, servingsParam, mealPlanId, dayIndexParam]);
 
   const fetchRecipeDetails = async () => {
+    if (fetchingRef.current) return;
+    fetchingRef.current = true;
     setLoading(true);
     setError(null);
 
