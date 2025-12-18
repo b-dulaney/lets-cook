@@ -3,6 +3,8 @@
 import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { FullPageLoader } from "@/components/full-page-loader";
+import { SkeletonMealPlanDetail } from "@/components/skeleton";
 
 interface MealDay {
   day: string;
@@ -120,11 +122,7 @@ export default function MealPlanDetailPage({
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <p className="text-gray-600">Loading meal plan...</p>
-      </div>
-    );
+    return <SkeletonMealPlanDetail />;
   }
 
   if (error || !mealPlan) {
@@ -313,6 +311,13 @@ export default function MealPlanDetailPage({
             Generate full shopping list →
           </button>
         </div>
+      )}
+
+      {generatingList && (
+        <FullPageLoader
+          message="Building your shopping list..."
+          submessage="Organizing ingredients by category for easy shopping"
+        />
       )}
     </div>
   );

@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { FullPageLoader } from "@/components/full-page-loader";
+import { SkeletonListPage } from "@/components/skeleton";
 
 interface ShoppingListItem {
   item: string;
@@ -29,6 +31,7 @@ export default function ShoppingListsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -79,11 +82,7 @@ export default function ShoppingListsPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <p className="text-gray-600">Loading shopping lists...</p>
-      </div>
-    );
+    return <SkeletonListPage type="shopping" cardCount={3} />;
   }
 
   return (
@@ -201,6 +200,14 @@ export default function ShoppingListsPage() {
           mealPlans={mealPlans}
           onClose={() => setShowModal(false)}
           onListCreated={handleListCreated}
+          onGeneratingChange={setGenerating}
+        />
+      )}
+
+      {generating && (
+        <FullPageLoader
+          message="Building your shopping list..."
+          submessage="Organizing ingredients by category for easy shopping"
         />
       )}
     </div>
@@ -211,10 +218,12 @@ function CreateListModal({
   mealPlans,
   onClose,
   onListCreated,
+  onGeneratingChange,
 }: {
   mealPlans: MealPlan[];
   onClose: () => void;
   onListCreated: (list: ShoppingList) => void;
+  onGeneratingChange: (generating: boolean) => void;
 }) {
   const [selectedPlan, setSelectedPlan] = useState<string>("");
   const [generating, setGenerating] = useState(false);
@@ -233,6 +242,8 @@ function CreateListModal({
     if (!selectedPlan) return;
 
     setGenerating(true);
+    onGeneratingChange(true);
+    onClose(); // Close modal to show full-page loader
     setError(null);
 
     try {
@@ -257,6 +268,7 @@ function CreateListModal({
       setError("Failed to generate shopping list");
     } finally {
       setGenerating(false);
+      onGeneratingChange(false);
     }
   };
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { SkeletonSettings } from "@/components/skeleton";
 
 interface Preferences {
   user_id: string;
@@ -154,11 +155,7 @@ export default function SettingsPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <p className="text-gray-600">Loading preferences...</p>
-      </div>
-    );
+    return <SkeletonSettings />;
   }
 
   return (

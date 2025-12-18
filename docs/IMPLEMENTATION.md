@@ -130,7 +130,7 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 ### Layout & Navigation
 - [x] Create app layout with navigation
 - [x] Responsive design for mobile/desktop
-- [ ] Loading states and skeletons
+- [x] Loading states and skeletons
 
 ### Pages
 - [ ] Home/landing page

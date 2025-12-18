@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { FullPageLoader } from "@/components/full-page-loader";
+import { SkeletonListPage } from "@/components/skeleton";
 
 interface MealPlan {
   id: string;
@@ -34,6 +36,7 @@ export default function MealPlansPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
     fetchMealPlans();
@@ -78,11 +81,7 @@ export default function MealPlansPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <p className="text-gray-600">Loading meal plans...</p>
-      </div>
-    );
+    return <SkeletonListPage type="meal-plan" cardCount={3} />;
   }
 
   return (
@@ -183,6 +182,14 @@ export default function MealPlansPage() {
         <GeneratePlanModal
           onClose={() => setShowModal(false)}
           onPlanCreated={handlePlanCreated}
+          onGeneratingChange={setGenerating}
+        />
+      )}
+
+      {generating && (
+        <FullPageLoader
+          message="Creating your meal plan..."
+          submessage="Our AI chef is crafting personalized meals just for you"
         />
       )}
     </div>
@@ -192,9 +199,11 @@ export default function MealPlansPage() {
 function GeneratePlanModal({
   onClose,
   onPlanCreated,
+  onGeneratingChange,
 }: {
   onClose: () => void;
   onPlanCreated: (plan: MealPlan) => void;
+  onGeneratingChange: (generating: boolean) => void;
 }) {
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
@@ -238,6 +247,8 @@ function GeneratePlanModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setGenerating(true);
+    onGeneratingChange(true);
+    onClose(); // Close modal to show full-page loader
     setError(null);
 
     try {
@@ -272,6 +283,7 @@ function GeneratePlanModal({
       setError("Failed to generate meal plan");
     } finally {
       setGenerating(false);
+      onGeneratingChange(false);
     }
   };
 

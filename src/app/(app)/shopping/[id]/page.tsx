@@ -3,6 +3,7 @@
 import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { SkeletonShoppingListDetail } from "@/components/skeleton";
 
 interface ShoppingListItem {
   item: string;
@@ -136,11 +137,7 @@ export default function ShoppingListDetailPage({
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <p className="text-gray-600">Loading shopping list...</p>
-      </div>
-    );
+    return <SkeletonShoppingListDetail />;
   }
 
   if (error || !shoppingList) {
