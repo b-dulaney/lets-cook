@@ -52,7 +52,11 @@ export default function RecipesPage() {
     if (e.key === "Enter") {
       e.preventDefault();
       handleAddIngredient();
-    } else if (e.key === "Backspace" && inputValue === "" && ingredients.length > 0) {
+    } else if (
+      e.key === "Backspace" &&
+      inputValue === "" &&
+      ingredients.length > 0
+    ) {
       setIngredients(ingredients.slice(0, -1));
     }
   };
@@ -100,7 +104,6 @@ export default function RecipesPage() {
     }
   };
 
-
   const COMMON_INGREDIENTS = [
     "chicken",
     "rice",
@@ -124,16 +127,24 @@ export default function RecipesPage() {
     <div>
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Find Recipes</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Find Recipes
+          </h1>
           <p className="text-gray-600">
-            Tell us what ingredients you have, and we&apos;ll find delicious recipes for you.
+            Tell us what ingredients you have, and we&apos;ll find delicious
+            recipes for you.
           </p>
         </div>
         <Link
           href="/recipes/saved"
           className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -153,7 +164,7 @@ export default function RecipesPage() {
 
         {/* Tag input */}
         <div
-          className="flex flex-wrap gap-2 p-3 border border-gray-300 rounded-lg bg-gray-50 min-h-[52px] cursor-text"
+          className="flex flex-wrap gap-2 p-3 border border-gray-300 rounded-lg bg-gray-50 min-h-13 cursor-text"
           onClick={() => inputRef.current?.focus()}
         >
           {ingredients.map((ingredient, idx) => (
@@ -170,7 +181,12 @@ export default function RecipesPage() {
                 }}
                 className="ml-1 text-emerald-600 hover:text-emerald-800 cursor-pointer"
               >
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg
+                  className="w-3.5 h-3.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -187,7 +203,11 @@ export default function RecipesPage() {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={ingredients.length === 0 ? "Type an ingredient and press Enter..." : "Add more..."}
+            placeholder={
+              ingredients.length === 0
+                ? "Type an ingredient and press Enter..."
+                : "Add more..."
+            }
             className="flex-1 min-w-[150px] outline-none bg-transparent text-gray-900 placeholder:text-gray-500"
           />
         </div>
@@ -217,7 +237,12 @@ export default function RecipesPage() {
           disabled={ingredients.length === 0 || loading}
           className="mt-4 w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors"
         >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -230,12 +255,19 @@ export default function RecipesPage() {
       </div>
 
       {/* Preference info */}
-      {preferences && (preferences.dietary?.length > 0 || preferences.allergies?.length > 0) && (
-        <div className="mb-6 p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-sm text-emerald-800">
-          <span className="font-medium">Your preferences will be applied:</span>{" "}
-          {[...(preferences.dietary || []), ...(preferences.allergies || [])].join(", ")}
-        </div>
-      )}
+      {preferences &&
+        (preferences.dietary?.length > 0 ||
+          preferences.allergies?.length > 0) && (
+          <div className="mb-6 p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-sm text-emerald-800">
+            <span className="font-medium">
+              Your preferences will be applied:
+            </span>{" "}
+            {[
+              ...(preferences.dietary || []),
+              ...(preferences.allergies || []),
+            ].join(", ")}
+          </div>
+        )}
 
       {/* Error message */}
       {error && (
@@ -250,7 +282,8 @@ export default function RecipesPage() {
       ) : recipes.length > 0 ? (
         <div>
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Found {recipes.length} recipe{recipes.length !== 1 ? "s" : ""} for you
+            Found {recipes.length} recipe{recipes.length !== 1 ? "s" : ""} for
+            you
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
             {recipes.map((recipe, idx) => (
@@ -273,7 +306,9 @@ export default function RecipesPage() {
               d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <h3 className="mt-4 text-lg font-medium text-gray-900">No recipes found</h3>
+          <h3 className="mt-4 text-lg font-medium text-gray-900">
+            No recipes found
+          </h3>
           <p className="mt-2 text-gray-600">
             Try adding different ingredients or removing some restrictions.
           </p>
@@ -293,9 +328,12 @@ export default function RecipesPage() {
               d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
             />
           </svg>
-          <h3 className="mt-4 text-lg font-medium text-gray-900">Ready to discover recipes</h3>
+          <h3 className="mt-4 text-lg font-medium text-gray-900">
+            Ready to discover recipes
+          </h3>
           <p className="mt-2 text-gray-600">
-            Add your ingredients above and click &quot;Find Recipes&quot; to get started.
+            Add your ingredients above and click &quot;Find Recipes&quot; to get
+            started.
           </p>
         </div>
       )}

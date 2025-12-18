@@ -174,10 +174,13 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 ## Phase 5: Cooking Mode
 
 ### Hands-Free Experience
-- [ ] Step-by-step navigation (next/previous/repeat)
-- [ ] Timer integration
+- [x] Step-by-step navigation (next/previous)
+- [x] Timer integration (manual start, pause, reset)
 - [ ] Voice commands during cooking
-- [ ] Large, readable text for kitchen viewing
+- [x] Large, readable text for kitchen viewing
+- [x] Ingredients panel overlay
+- [x] Progress bar showing current step
+- [x] "Start Cooking" button on recipe detail pages
 
 ### Web Speech API
 - [ ] Speech recognition setup
@@ -259,14 +262,14 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 | Recipe Pages | ✅ Discovery, detail, caching |
 | Google Assistant | ⏳ Intents designed only |
 | Web UI | ✅ Core pages complete |
-| Cooking Mode | ⏳ Not started |
+| Cooking Mode | ✅ Core features complete |
 | Testing | ⏳ Not started |
 | Deployment | ✅ Live at letscook.dev |
 
-**Current Phase:** Phase 4 (Web Application UI) - complete
+**Current Phase:** Phase 5 (Cooking Mode) - core features complete
 
 **Next Steps:**
-1. Optional: Cooking mode with step-by-step navigation
+1. Optional: Voice commands for cooking mode (Web Speech API)
 2. Optional: Build chat interface for text-based interaction
 3. Optional: Voice input for hands-free recipe discovery
 
@@ -275,6 +278,23 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 ## Changelog
 
 ### 2025-12-18 (Session 3)
+
+**Cooking Mode**
+- New fullscreen cooking experience at `/recipes/[id]/cook`
+- Step-by-step navigation with Previous/Next buttons
+- Large, readable text optimized for kitchen viewing
+- Progress bar showing current step position
+- Integrated timer component with manual start/pause/reset
+- Timer parses time strings like "5 minutes", "2-3 minutes", "30 seconds"
+- Visual/text alert when timer completes
+- Slide-up ingredients panel for quick reference
+- "Start Cooking" button on recipe detail pages
+- Exit button to return to recipe view
+
+**New Components**
+- `src/components/cooking-mode/step-timer.tsx` - Countdown timer with time parsing
+- `src/components/cooking-mode/cooking-step.tsx` - Step display with large text
+- `src/components/cooking-mode/ingredients-panel.tsx` - Slide-up ingredient list
 
 **Favorite Button on Recipe Detail Pages**
 - Added heart icon button in recipe header on both `/recipes/[id]` and `/recipes/view` pages

@@ -48,7 +48,8 @@ function SavedRecipeCard({ recipe }: { recipe: SavedRecipe }) {
           {recipe.difficulty && (
             <span
               className={`text-xs font-medium px-2 py-1 rounded whitespace-nowrap ${
-                difficultyColors[recipe.difficulty] || "bg-gray-100 text-gray-700"
+                difficultyColors[recipe.difficulty] ||
+                "bg-gray-100 text-gray-700"
               }`}
             >
               {recipe.difficulty}
@@ -152,8 +153,18 @@ export default function SavedRecipesPage() {
           <Link href="/recipes" className="hover:text-gray-900">
             Recipes
           </Link>
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5l7 7-7 7"
+            />
           </svg>
           <span className="text-gray-900">Saved</span>
         </div>
@@ -186,7 +197,7 @@ export default function SavedRecipesPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search recipes..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
             />
           </div>
         </div>
@@ -242,7 +253,9 @@ export default function SavedRecipesPage() {
             />
           </svg>
           <h3 className="mt-4 text-lg font-medium text-gray-900">
-            {filter === "favorites" ? "No favorite recipes yet" : "No saved recipes yet"}
+            {filter === "favorites"
+              ? "No favorite recipes yet"
+              : "No saved recipes yet"}
           </h3>
           <p className="mt-2 text-gray-600">
             {filter === "favorites"

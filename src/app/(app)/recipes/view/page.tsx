@@ -194,30 +194,56 @@ function RecipeDetailContent() {
             {recipe.recipeName}
           </h1>
           {recipeId && (
-            <button
-              onClick={toggleFavorite}
-              disabled={togglingFavorite}
-              className={`shrink-0 p-2 rounded-full transition-colors cursor-pointer ${
-                isFavorite
-                  ? "bg-red-50 text-red-500 hover:bg-red-100"
-                  : "bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600"
-              } ${togglingFavorite ? "opacity-50" : ""}`}
-              title={isFavorite ? "Remove from favorites" : "Add to favorites"}
-            >
-              <svg
-                className="w-6 h-6"
-                fill={isFavorite ? "currentColor" : "none"}
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
+            <div className="flex items-center gap-2 shrink-0">
+              <Link
+                href={`/recipes/${recipeId}/cook`}
+                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition-colors"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                />
-              </svg>
-            </button>
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span className="hidden sm:inline">Start Cooking</span>
+              </Link>
+              <button
+                onClick={toggleFavorite}
+                disabled={togglingFavorite}
+                className={`p-2 rounded-full transition-colors cursor-pointer ${
+                  isFavorite
+                    ? "bg-red-50 text-red-500 hover:bg-red-100"
+                    : "bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600"
+                } ${togglingFavorite ? "opacity-50" : ""}`}
+                title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill={isFavorite ? "currentColor" : "none"}
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                  />
+                </svg>
+              </button>
+            </div>
           )}
         </div>
         <div className="flex flex-wrap gap-3">
