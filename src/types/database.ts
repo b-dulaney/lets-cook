@@ -158,6 +158,7 @@ export type Database = {
           id: string
           items: Json
           meal_plan_id: string | null
+          stale: boolean
           updated_at: string
           user_id: string
         }
@@ -166,6 +167,7 @@ export type Database = {
           id?: string
           items?: Json
           meal_plan_id?: string | null
+          stale?: boolean
           updated_at?: string
           user_id: string
         }
@@ -174,6 +176,7 @@ export type Database = {
           id?: string
           items?: Json
           meal_plan_id?: string | null
+          stale?: boolean
           updated_at?: string
           user_id?: string
         }

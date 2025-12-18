@@ -48,6 +48,32 @@ export async function GET(request: NextRequest) {
   }
 
   const searchParams = request.nextUrl.searchParams;
+  const mealPlanId = searchParams.get("mealPlanId");
+
+  // If mealPlanId provided, return single shopping list for that meal plan
+  if (mealPlanId) {
+    const { data: shoppingList, error } = await supabase
+      .from("shopping_lists")
+      .select("id, stale")
+      .eq("user_id", user.id)
+      .eq("meal_plan_id", mealPlanId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error && error.code !== "PGRST116") {
+      // PGRST116 = no rows returned
+      console.error("Error fetching shopping list:", error);
+      return NextResponse.json(
+        { error: "Failed to fetch shopping list" },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ shoppingList: shoppingList || null });
+  }
+
+  // Otherwise, return paginated list
   const limit = parseInt(searchParams.get("limit") || "10");
   const offset = parseInt(searchParams.get("offset") || "0");
 

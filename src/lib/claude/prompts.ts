@@ -259,18 +259,24 @@ User preferences:
 CRITICAL REQUIREMENTS:
 1. NEVER suggest recipes containing foods from the "FOODS TO AVOID" list - not as main ingredients, side ingredients, garnishes, or in sauces. If the user dislikes mushrooms, do not include ANY mushroom variety in ANY meal.
 2. Respect all dietary restrictions and allergies strictly.
+3. MAXIMIZE VARIETY: Each meal MUST be distinctly different. Even with dietary restrictions, explore the full range of global cuisines and cooking techniques available. Never repeat similar dishes (e.g., don't have multiple stir-fries, multiple pasta dishes, or multiple curries in the same week).
+
+VARIETY GUIDELINES (especially important for restrictive diets):
+- Use at least 4-5 different cuisines across the week (e.g., Italian, Mexican, Indian, Thai, Mediterranean, Japanese, Middle Eastern, American, Ethiopian, Greek)
+- Vary cooking methods: baking, sautéing, grilling, roasting, simmering, raw/salads
+- Vary protein sources: legumes, tofu, tempeh, eggs, dairy, nuts, seitan (if not wheat-allergic), different beans
+- Vary carb bases: rice, potatoes, quinoa, corn tortillas, rice noodles, polenta (adjust for allergies)
+- Each meal should have a unique flavor profile - don't repeat similar spice combinations
 
 Additional requirements:
-1. Variety - different proteins, cuisines, and cooking methods
-2. Balance - include vegetables, proteins, and carbs
-3. Practical - use common ingredients, minimize waste
-4. Progressive complexity - mix of quick/easy and more involved meals
-5. Ingredient overlap - some ingredients used across multiple meals to reduce waste
+1. Balance - include vegetables, proteins, and carbs in each meal
+2. Practical - use common ingredients, minimize waste
+3. Progressive complexity - mix of quick/easy and more involved meals
+4. Some ingredient overlap for efficiency, but NOT at the cost of variety
 
 Generate a weekly meal plan with:
-- Balanced nutrition across the week
-- Strategic ingredient reuse (e.g., if buying chicken, use it 2-3 times in different ways)
-- Mix of cuisines and flavors
+- Distinctly different meals each day - no two meals should feel similar
+- Global cuisine exploration within dietary constraints
 - One "leftover-friendly" meal that can provide lunch
 - One quick meal (under 30 min) for busy nights
 - Weekend meal can be more involved/special
@@ -449,6 +455,93 @@ Format as JSON with the same structure as original recipe, plus:
   ],
   "modificationNotes": "This vegetarian version maintains the same flavor profile using..."
 }
+
+Only return valid JSON, no other text.`;
+}
+
+// 7. Re-roll a Single Meal in a Meal Plan
+export interface ShoppingCategories {
+  proteins: string[];
+  produce: string[];
+  pantry: string[];
+  dairy: string[];
+}
+
+export interface RerollMealContext {
+  dayIndex: number;
+  currentMeal: MealPlanDay;
+  otherMeals: MealPlanDay[];
+  userPreferences: UserPreferences;
+}
+
+export function rerollMealPrompt(context: RerollMealContext): string {
+  const { currentMeal, otherMeals, userPreferences } = context;
+
+  const dietary = Array.isArray(userPreferences.dietary)
+    ? userPreferences.dietary.join(", ")
+    : userPreferences.dietary || "none";
+
+  const dislikedFoods = userPreferences.dislikes?.join(", ") || "none";
+  const otherMealNames = otherMeals.map((m) => m.meal).join(", ");
+  const otherCuisines = [...new Set(otherMeals.map((m) => m.cuisineType).filter(Boolean))].join(", ");
+
+  // Collect all ingredients from other meals for shopping categories
+  const otherMealsIngredients = otherMeals
+    .flatMap((m) => m.mainIngredients || [])
+    .filter(Boolean);
+
+  return `Generate a SINGLE replacement meal to substitute for "${currentMeal.meal}" in a weekly meal plan.
+
+Current meal being replaced:
+- Name: ${currentMeal.meal}
+- Cuisine: ${currentMeal.cuisineType || "unspecified"}
+- Day: ${currentMeal.day}
+
+Other meals already in this week's plan (DO NOT duplicate these or suggest similar dishes):
+${otherMealNames}
+
+Cuisines already used this week: ${otherCuisines}
+
+Ingredients from other meals in this plan (for shopping categories):
+${otherMealsIngredients.join(", ")}
+
+User preferences:
+- Dietary restrictions: ${dietary}
+- Allergies: ${userPreferences.allergies?.join(", ") || "none"}
+- FOODS TO AVOID (NEVER include): ${dislikedFoods}
+- Favorite cuisines: ${userPreferences.favoriteCuisines?.join(", ") || userPreferences.cuisines?.join(", ") || "varied"}
+- Skill level: ${userPreferences.skillLevel || "intermediate"}
+- Cooking time preference: ${userPreferences.maxCookTime || "45 minutes max"}
+
+REQUIREMENTS:
+1. Generate a COMPLETELY DIFFERENT meal - different cuisine, different cooking style, different primary ingredients
+2. NEVER suggest something similar to the meal being replaced or any other meal in the plan
+3. Respect all dietary restrictions, allergies, and dislikes strictly
+4. Try a cuisine NOT already heavily represented in the plan
+5. The replacement should fit the same day/position in the weekly plan
+6. Update the shopping categories to include all ingredients from all meals (the new one plus the existing ones)
+
+Format as JSON with the new meal AND updated shopping categories:
+{
+  "meal": {
+    "day": "${currentMeal.day}",
+    "meal": "New Recipe Name",
+    "cookTime": "30 minutes",
+    "difficulty": "Easy",
+    "description": "Brief appetizing description",
+    "mainIngredients": ["ingredient1", "ingredient2", "ingredient3"],
+    "cuisineType": "Cuisine Type",
+    "tags": ["tag1", "tag2"]
+  },
+  "shoppingCategories": {
+    "proteins": ["chicken breast", "eggs"],
+    "produce": ["broccoli", "onions", "garlic"],
+    "pantry": ["rice", "olive oil", "soy sauce"],
+    "dairy": ["cheese", "butter"]
+  }
+}
+
+The shoppingCategories should include ALL ingredients from ALL meals (the new meal + the existing meals listed above).
 
 Only return valid JSON, no other text.`;
 }

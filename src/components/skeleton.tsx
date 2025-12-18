@@ -22,6 +22,41 @@ export function SkeletonButton({ className = "" }: SkeletonProps) {
   return <Skeleton className={`h-10 w-32 ${className}`} />;
 }
 
+// Single meal day card skeleton (for re-roll loading state)
+export function SkeletonMealDayCard() {
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 animate-pulse">
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <div className="flex items-center gap-3 mb-2">
+            <Skeleton className="h-6 w-20 rounded" />
+            <Skeleton className="h-5 w-14 rounded" />
+            <Skeleton className="h-4 w-20" />
+          </div>
+          <Skeleton className="h-6 w-48 mb-2" />
+          <Skeleton className="h-4 w-64 mb-3" />
+          <div>
+            <Skeleton className="h-3 w-24 mb-2" />
+            <div className="flex flex-wrap gap-1">
+              <Skeleton className="h-6 w-16 rounded" />
+              <Skeleton className="h-6 w-20 rounded" />
+              <Skeleton className="h-6 w-14 rounded" />
+            </div>
+          </div>
+        </div>
+        <div className="flex items-start gap-2">
+          <Skeleton className="h-4 w-16 hidden sm:block" />
+          <Skeleton className="h-8 w-8 rounded-lg" />
+        </div>
+      </div>
+      <div className="mt-3 flex flex-wrap gap-1">
+        <Skeleton className="h-5 w-12 rounded-full" />
+        <Skeleton className="h-5 w-16 rounded-full" />
+      </div>
+    </div>
+  );
+}
+
 // Card skeleton for meal plans and shopping lists
 export function SkeletonCard() {
   return (

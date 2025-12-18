@@ -6,12 +6,15 @@ import {
   generateShoppingListPrompt,
   updateUserPreferencesPrompt,
   modifyRecipePrompt,
+  rerollMealPrompt,
   UserPreferences,
   RecipeSuggestion,
   FullRecipe,
   WeeklyMealPlan,
   ShoppingList,
   MealPlanDay,
+  RerollMealContext,
+  ShoppingCategories,
 } from "./prompts";
 
 const anthropic = new Anthropic({
@@ -26,6 +29,7 @@ export type TaskType =
   | "generate_shopping_list"
   | "update_preferences"
   | "modify_recipe"
+  | "reroll_meal"
   | "start_cooking_mode"
   | "general_query";
 
@@ -78,6 +82,7 @@ type TaskContext =
   | GenerateShoppingListContext
   | UpdatePreferencesContext
   | ModifyRecipeContext
+  | RerollMealContext
   | CookingModeContext
   | GeneralQueryContext;
 
@@ -129,6 +134,12 @@ interface ModifiedRecipeResponse {
   };
 }
 
+interface RerolledMealResponse {
+  message: string;
+  data: MealPlanDay;
+  shoppingCategories: ShoppingCategories;
+}
+
 interface GeneralResponse {
   message: string;
   data?: Record<string, unknown>;
@@ -141,6 +152,7 @@ export type ClaudeResponse =
   | ShoppingListResponse
   | PreferencesResponse
   | ModifiedRecipeResponse
+  | RerolledMealResponse
   | GeneralResponse;
 
 const SYSTEM_PROMPT = `You are a helpful meal planning assistant. You help users find recipes, plan meals, and create shopping lists.
@@ -232,6 +244,11 @@ function buildPrompt(task: TaskType, context: TaskContext): string {
       return modifyRecipePrompt(ctx.recipe, ctx.modification);
     }
 
+    case "reroll_meal": {
+      const ctx = context as RerollMealContext;
+      return rerollMealPrompt(ctx);
+    }
+
     case "start_cooking_mode": {
       const ctx = context as CookingModeContext;
       return COOKING_MODE_PROMPT.replace(
@@ -258,6 +275,7 @@ function getModelForTask(task: TaskType): string {
   switch (task) {
     case "create_meal_plan":
     case "modify_recipe":
+    case "reroll_meal":
     case "general_query":
       return "claude-sonnet-4-20250514";
     default:
@@ -278,6 +296,28 @@ function getMaxTokensForTask(task: TaskType): number {
   }
 }
 
+function getTemperatureForTask(task: TaskType): number {
+  switch (task) {
+    // Higher temperature for creative tasks that benefit from variety
+    case "create_meal_plan":
+    case "reroll_meal":
+      return 1.0; // Maximum creativity for meal variety
+    case "find_recipes":
+      return 0.9; // High creativity for recipe suggestions
+    case "general_query":
+      return 0.8; // Moderately creative for general responses
+    // Lower temperature for tasks requiring precision
+    case "get_recipe_details":
+    case "modify_recipe":
+    case "generate_shopping_list":
+      return 0.6; // More consistent for structured outputs
+    case "update_preferences":
+      return 0.3; // Very consistent for preference extraction
+    default:
+      return 0.7;
+  }
+}
+
 export async function askClaude({
   task,
   context,
@@ -286,11 +326,13 @@ export async function askClaude({
   const prompt = buildPrompt(task, context);
   const model = getModelForTask(task);
   const maxTokens = getMaxTokensForTask(task);
+  const temperature = getTemperatureForTask(task);
 
   try {
     const response = await anthropic.messages.create({
       model,
       max_tokens: maxTokens,
+      temperature,
       system: SYSTEM_PROMPT,
       messages: [
         {
@@ -326,54 +368,133 @@ export async function askClaude({
   }
 }
 
-// Convenience functions for common tasks
+// ============================================
+// Convenience Functions (using Tool Use)
+// ============================================
+
 export async function findRecipes(
   ingredients: string[],
-  userPreferences?: UserPreferences,
-  sessionId: string = "default"
+  userPreferences?: UserPreferences
 ): Promise<RecipeSuggestionsResponse> {
-  return askClaude({
-    task: "find_recipes",
-    context: { ingredients, userPreferences },
-    sessionId,
-  }) as Promise<RecipeSuggestionsResponse>;
+  const prompt = generateRecipePrompt(ingredients, userPreferences || {});
+
+  const response = await anthropic.messages.create({
+    model: "claude-sonnet-4-20250514",
+    max_tokens: 2000,
+    temperature: 0.9,
+    tools: [findRecipesTool],
+    tool_choice: { type: "tool", name: "submit_recipe_suggestions" },
+    messages: [{ role: "user", content: prompt }],
+  });
+
+  const toolUse = response.content.find(
+    (block): block is Anthropic.ToolUseBlock => block.type === "tool_use"
+  );
+
+  if (!toolUse) {
+    throw new Error("Failed to get structured response from Claude");
+  }
+
+  const result = toolUse.input as { recipes: RecipeSuggestion[] };
+
+  return {
+    message: `Found ${result.recipes.length} recipe suggestions`,
+    data: { recipes: result.recipes },
+  };
 }
 
 export async function getRecipeDetails(
   recipeName: string,
   ingredients: string[],
-  skillLevel?: string,
-  sessionId: string = "default"
+  skillLevel?: string
 ): Promise<RecipeDetailsResponse> {
-  return askClaude({
-    task: "get_recipe_details",
-    context: { recipeName, ingredients, skillLevel },
-    sessionId,
-  }) as Promise<RecipeDetailsResponse>;
+  const prompt = getRecipeDetailsPrompt(recipeName, ingredients, skillLevel);
+
+  const response = await anthropic.messages.create({
+    model: "claude-sonnet-4-20250514",
+    max_tokens: 4000,
+    temperature: 0.6,
+    tools: [recipeDetailsTool],
+    tool_choice: { type: "tool", name: "submit_recipe_details" },
+    messages: [{ role: "user", content: prompt }],
+  });
+
+  const toolUse = response.content.find(
+    (block): block is Anthropic.ToolUseBlock => block.type === "tool_use"
+  );
+
+  if (!toolUse) {
+    throw new Error("Failed to get structured response from Claude");
+  }
+
+  const result = toolUse.input as FullRecipe;
+
+  return {
+    message: `Here's the complete recipe for ${result.recipeName}`,
+    data: result,
+  };
 }
 
 export async function createMealPlan(
   userPreferences?: UserPreferences,
-  numberOfDays: number = 7,
-  sessionId: string = "default"
+  numberOfDays: number = 7
 ): Promise<MealPlanResponse> {
-  return askClaude({
-    task: "create_meal_plan",
-    context: { userPreferences, numberOfDays },
-    sessionId,
-  }) as Promise<MealPlanResponse>;
+  const prompt = generateWeeklyMealPlanPrompt(userPreferences || {}, numberOfDays);
+
+  const response = await anthropic.messages.create({
+    model: "claude-sonnet-4-20250514",
+    max_tokens: 4000,
+    temperature: 1.0, // Max creativity for meal variety
+    tools: [mealPlanTool],
+    tool_choice: { type: "tool", name: "submit_meal_plan" },
+    messages: [{ role: "user", content: prompt }],
+  });
+
+  const toolUse = response.content.find(
+    (block): block is Anthropic.ToolUseBlock => block.type === "tool_use"
+  );
+
+  if (!toolUse) {
+    throw new Error("Failed to get structured response from Claude");
+  }
+
+  const result = toolUse.input as WeeklyMealPlan;
+
+  return {
+    message: `Created a ${numberOfDays}-day meal plan`,
+    data: result,
+  };
 }
 
 export async function generateShoppingList(
   mealPlan: WeeklyMealPlan | MealPlanDay[],
-  pantryItems?: string[],
-  sessionId: string = "default"
+  pantryItems?: string[]
 ): Promise<ShoppingListResponse> {
-  return askClaude({
-    task: "generate_shopping_list",
-    context: { mealPlan, pantryItems },
-    sessionId,
-  }) as Promise<ShoppingListResponse>;
+  const prompt = generateShoppingListPrompt(mealPlan, pantryItems);
+
+  const response = await anthropic.messages.create({
+    model: "claude-sonnet-4-20250514",
+    max_tokens: 4000,
+    temperature: 0.6,
+    tools: [shoppingListTool],
+    tool_choice: { type: "tool", name: "submit_shopping_list" },
+    messages: [{ role: "user", content: prompt }],
+  });
+
+  const toolUse = response.content.find(
+    (block): block is Anthropic.ToolUseBlock => block.type === "tool_use"
+  );
+
+  if (!toolUse) {
+    throw new Error("Failed to get structured response from Claude");
+  }
+
+  const result = toolUse.input as ShoppingList;
+
+  return {
+    message: "Generated your shopping list",
+    data: result,
+  };
 }
 
 export async function updatePreferences(
@@ -390,14 +511,401 @@ export async function updatePreferences(
 
 export async function modifyRecipe(
   recipe: FullRecipe,
-  modification: string,
-  sessionId: string = "default"
+  modification: string
 ): Promise<ModifiedRecipeResponse> {
-  return askClaude({
-    task: "modify_recipe",
-    context: { recipe, modification },
-    sessionId,
-  }) as Promise<ModifiedRecipeResponse>;
+  const prompt = modifyRecipePrompt(recipe, modification);
+
+  const response = await anthropic.messages.create({
+    model: "claude-sonnet-4-20250514",
+    max_tokens: 4000,
+    temperature: 0.6,
+    tools: [modifyRecipeTool],
+    tool_choice: { type: "tool", name: "submit_modified_recipe" },
+    messages: [{ role: "user", content: prompt }],
+  });
+
+  const toolUse = response.content.find(
+    (block): block is Anthropic.ToolUseBlock => block.type === "tool_use"
+  );
+
+  if (!toolUse) {
+    throw new Error("Failed to get structured response from Claude");
+  }
+
+  const result = toolUse.input as ModifiedRecipeResponse["data"];
+
+  return {
+    message: `Modified recipe: ${result.recipeName}`,
+    data: result,
+  };
+}
+
+// ============================================
+// Tool Definitions for Structured Outputs
+// ============================================
+
+// Tool for recipe suggestions
+const findRecipesTool: Anthropic.Tool = {
+  name: "submit_recipe_suggestions",
+  description: "Submit recipe suggestions based on available ingredients",
+  input_schema: {
+    type: "object" as const,
+    properties: {
+      recipes: {
+        type: "array",
+        description: "List of recipe suggestions",
+        items: {
+          type: "object",
+          properties: {
+            name: { type: "string", description: "Name of the recipe" },
+            description: { type: "string", description: "Brief description of the dish" },
+            cookTime: { type: "string", description: "Total cooking time" },
+            difficulty: { type: "string", enum: ["Easy", "Medium", "Hard"] },
+            usesIngredients: {
+              type: "array",
+              items: { type: "string" },
+              description: "Ingredients from user's list that are used",
+            },
+            additionalIngredients: {
+              type: "array",
+              items: { type: "string" },
+              description: "Additional ingredients needed",
+            },
+            cuisineType: { type: "string", description: "Type of cuisine" },
+          },
+          required: ["name", "description", "cookTime", "difficulty", "usesIngredients", "additionalIngredients", "cuisineType"],
+        },
+      },
+    },
+    required: ["recipes"],
+  },
+};
+
+// Tool for full recipe details
+const recipeDetailsTool: Anthropic.Tool = {
+  name: "submit_recipe_details",
+  description: "Submit complete recipe details with ingredients, instructions, and tips",
+  input_schema: {
+    type: "object" as const,
+    properties: {
+      recipeName: { type: "string" },
+      servings: { type: "number" },
+      prepTime: { type: "string" },
+      cookTime: { type: "string" },
+      totalTime: { type: "string" },
+      difficulty: { type: "string", enum: ["Easy", "Medium", "Hard"] },
+      ingredients: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            item: { type: "string" },
+            amount: { type: "string" },
+            notes: { type: "string" },
+          },
+          required: ["item", "amount"],
+        },
+      },
+      instructions: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            step: { type: "number" },
+            instruction: { type: "string" },
+            time: { type: "string" },
+            tip: { type: "string" },
+          },
+          required: ["step", "instruction"],
+        },
+      },
+      tips: { type: "array", items: { type: "string" } },
+      substitutions: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            original: { type: "string" },
+            alternative: { type: "string" },
+            reason: { type: "string" },
+          },
+          required: ["original", "alternative", "reason"],
+        },
+      },
+      nutrition: {
+        type: "object",
+        properties: {
+          calories: { type: "string" },
+          protein: { type: "string" },
+          notes: { type: "string" },
+        },
+        required: ["calories", "protein", "notes"],
+      },
+    },
+    required: ["recipeName", "servings", "prepTime", "cookTime", "totalTime", "difficulty", "ingredients", "instructions", "tips", "substitutions", "nutrition"],
+  },
+};
+
+// Tool for weekly meal plan
+const mealPlanTool: Anthropic.Tool = {
+  name: "submit_meal_plan",
+  description: "Submit a weekly meal plan with shopping categories and prep tips",
+  input_schema: {
+    type: "object" as const,
+    properties: {
+      weekPlan: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            day: { type: "string" },
+            meal: { type: "string" },
+            cookTime: { type: "string" },
+            difficulty: { type: "string", enum: ["Easy", "Medium", "Hard"] },
+            description: { type: "string" },
+            mainIngredients: { type: "array", items: { type: "string" } },
+            cuisineType: { type: "string" },
+            tags: { type: "array", items: { type: "string" } },
+          },
+          required: ["day", "meal", "cookTime", "difficulty", "description", "mainIngredients", "cuisineType"],
+        },
+      },
+      shoppingCategories: {
+        type: "object",
+        properties: {
+          proteins: { type: "array", items: { type: "string" } },
+          produce: { type: "array", items: { type: "string" } },
+          pantry: { type: "array", items: { type: "string" } },
+          dairy: { type: "array", items: { type: "string" } },
+        },
+        required: ["proteins", "produce", "pantry", "dairy"],
+      },
+      prepTips: { type: "array", items: { type: "string" } },
+      budgetEstimate: { type: "string" },
+    },
+    required: ["weekPlan", "shoppingCategories", "prepTips", "budgetEstimate"],
+  },
+};
+
+// Shopping list item schema (reusable)
+const shoppingListItemSchema = {
+  type: "object",
+  properties: {
+    item: { type: "string" },
+    quantity: { type: "string" },
+    usedIn: { type: "array", items: { type: "string" } },
+    priority: { type: "string", enum: ["essential", "optional"] },
+    notes: { type: "string" },
+  },
+  required: ["item", "quantity", "usedIn", "priority"],
+};
+
+// Tool for shopping list
+const shoppingListTool: Anthropic.Tool = {
+  name: "submit_shopping_list",
+  description: "Submit a categorized shopping list with estimated totals",
+  input_schema: {
+    type: "object" as const,
+    properties: {
+      shoppingList: {
+        type: "object",
+        properties: {
+          Produce: { type: "array", items: shoppingListItemSchema },
+          Meat: { type: "array", items: shoppingListItemSchema },
+          Dairy: { type: "array", items: shoppingListItemSchema },
+          "Pantry/Dry Goods": { type: "array", items: shoppingListItemSchema },
+          Frozen: { type: "array", items: shoppingListItemSchema },
+          Bakery: { type: "array", items: shoppingListItemSchema },
+          "Condiments/Sauces": { type: "array", items: shoppingListItemSchema },
+        },
+        required: ["Produce", "Meat", "Dairy", "Pantry/Dry Goods", "Frozen", "Bakery", "Condiments/Sauces"],
+      },
+      estimatedTotal: { type: "string" },
+      optionalItems: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            item: { type: "string" },
+            reason: { type: "string" },
+          },
+          required: ["item", "reason"],
+        },
+      },
+      moneySavingTips: { type: "array", items: { type: "string" } },
+    },
+    required: ["shoppingList", "estimatedTotal", "optionalItems", "moneySavingTips"],
+  },
+};
+
+// Tool for modified recipe
+const modifyRecipeTool: Anthropic.Tool = {
+  name: "submit_modified_recipe",
+  description: "Submit a modified recipe with all changes documented",
+  input_schema: {
+    type: "object" as const,
+    properties: {
+      recipeName: { type: "string" },
+      servings: { type: "number" },
+      prepTime: { type: "string" },
+      cookTime: { type: "string" },
+      totalTime: { type: "string" },
+      difficulty: { type: "string", enum: ["Easy", "Medium", "Hard"] },
+      ingredients: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            item: { type: "string" },
+            amount: { type: "string" },
+            notes: { type: "string" },
+          },
+          required: ["item", "amount"],
+        },
+      },
+      instructions: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            step: { type: "number" },
+            instruction: { type: "string" },
+            time: { type: "string" },
+            tip: { type: "string" },
+          },
+          required: ["step", "instruction"],
+        },
+      },
+      tips: { type: "array", items: { type: "string" } },
+      substitutions: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            original: { type: "string" },
+            alternative: { type: "string" },
+            reason: { type: "string" },
+          },
+          required: ["original", "alternative", "reason"],
+        },
+      },
+      nutrition: {
+        type: "object",
+        properties: {
+          calories: { type: "string" },
+          protein: { type: "string" },
+          notes: { type: "string" },
+        },
+        required: ["calories", "protein", "notes"],
+      },
+      modifications: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            type: { type: "string" },
+            original: { type: "string" },
+            replacement: { type: "string" },
+            reason: { type: "string" },
+            impactOnRecipe: { type: "string" },
+          },
+          required: ["type", "original", "replacement", "reason", "impactOnRecipe"],
+        },
+      },
+      modificationNotes: { type: "string" },
+    },
+    required: ["recipeName", "servings", "prepTime", "cookTime", "totalTime", "difficulty", "ingredients", "instructions", "tips", "substitutions", "nutrition", "modifications", "modificationNotes"],
+  },
+};
+
+// Tool for reroll meal
+const rerollMealTool: Anthropic.Tool = {
+  name: "submit_rerolled_meal",
+  description: "Submit the new replacement meal and updated shopping categories",
+  input_schema: {
+    type: "object" as const,
+    properties: {
+      meal: {
+        type: "object",
+        description: "The new replacement meal",
+        properties: {
+          day: { type: "string", description: "Day of the week (e.g., Monday)" },
+          meal: { type: "string", description: "Name of the meal" },
+          cookTime: { type: "string", description: "Cooking time (e.g., 30 minutes)" },
+          difficulty: { type: "string", enum: ["Easy", "Medium", "Hard"] },
+          description: { type: "string", description: "Brief appetizing description" },
+          mainIngredients: {
+            type: "array",
+            items: { type: "string" },
+            description: "List of main ingredients",
+          },
+          cuisineType: { type: "string", description: "Type of cuisine (e.g., Italian, Mexican)" },
+          tags: {
+            type: "array",
+            items: { type: "string" },
+            description: "Tags like quick, healthy, comfort food",
+          },
+        },
+        required: ["day", "meal", "cookTime", "difficulty", "description", "mainIngredients", "cuisineType"],
+      },
+      shoppingCategories: {
+        type: "object",
+        description: "All ingredients from all meals categorized for shopping",
+        properties: {
+          proteins: { type: "array", items: { type: "string" } },
+          produce: { type: "array", items: { type: "string" } },
+          pantry: { type: "array", items: { type: "string" } },
+          dairy: { type: "array", items: { type: "string" } },
+        },
+        required: ["proteins", "produce", "pantry", "dairy"],
+      },
+    },
+    required: ["meal", "shoppingCategories"],
+  },
+};
+
+export async function rerollMeal(
+  context: RerollMealContext,
+  sessionId: string = "default"
+): Promise<RerolledMealResponse> {
+  // Build the prompt (reuse existing prompt logic)
+  const prompt = rerollMealPrompt(context);
+
+  // Use tool_choice to force Claude to use our structured output tool
+  const response = await anthropic.messages.create({
+    model: "claude-sonnet-4-20250514",
+    max_tokens: 2000,
+    temperature: 1.0,
+    tools: [rerollMealTool],
+    tool_choice: { type: "tool", name: "submit_rerolled_meal" },
+    messages: [
+      {
+        role: "user",
+        content: prompt,
+      },
+    ],
+  });
+
+  // Extract the tool use response
+  const toolUse = response.content.find(
+    (block): block is Anthropic.ToolUseBlock => block.type === "tool_use"
+  );
+
+  if (!toolUse || toolUse.name !== "submit_rerolled_meal") {
+    console.error("No tool use in response:", JSON.stringify(response.content, null, 2));
+    throw new Error("Failed to get structured response from Claude");
+  }
+
+  const result = toolUse.input as {
+    meal: MealPlanDay;
+    shoppingCategories: ShoppingCategories;
+  };
+
+  return {
+    message: `Generated new meal: ${result.meal.meal}`,
+    data: result.meal,
+    shoppingCategories: result.shoppingCategories,
+  };
 }
 
 // Re-export types for convenience
@@ -408,4 +916,6 @@ export type {
   WeeklyMealPlan,
   ShoppingList,
   MealPlanDay,
+  RerollMealContext,
+  ShoppingCategories,
 };

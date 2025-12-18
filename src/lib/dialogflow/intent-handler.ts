@@ -66,7 +66,7 @@ async function handleFindRecipeByIngredients(
   const userPreferences =
     (sessionParameters?.userPreferences as UserPreferences) || {};
 
-  const response = await findRecipes(ingredients, userPreferences, sessionId);
+  const response = await findRecipes(ingredients, userPreferences);
 
   return {
     fulfillmentResponse: {
@@ -98,8 +98,7 @@ async function handleGetRecipeDetails(
   const response = await getRecipeDetails(
     recipeName,
     ingredients,
-    skillLevel,
-    sessionId
+    skillLevel
   );
 
   return {
@@ -133,8 +132,7 @@ async function handleCreateMealPlan(
 
   const response = await createMealPlan(
     userPreferences,
-    numberOfDays,
-    sessionId
+    numberOfDays
   );
 
   return {
@@ -174,7 +172,7 @@ async function handleGetShoppingList(
     };
   }
 
-  const response = await generateShoppingList(mealPlan, pantryItems, sessionId);
+  const response = await generateShoppingList(mealPlan, pantryItems);
 
   return {
     fulfillmentResponse: {

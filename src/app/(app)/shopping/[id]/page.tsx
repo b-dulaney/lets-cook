@@ -16,6 +16,7 @@ interface ShoppingList {
   id: string;
   meal_plan_id: string | null;
   items: ShoppingListItem[];
+  stale: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -32,6 +33,7 @@ export default function ShoppingListDetailPage({
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [regenerating, setRegenerating] = useState(false);
 
   useEffect(() => {
     fetchShoppingList();
@@ -101,6 +103,35 @@ export default function ShoppingListDetailPage({
       setError("Failed to delete shopping list");
     } finally {
       setDeleting(false);
+    }
+  };
+
+  const regenerateShoppingList = async () => {
+    if (!shoppingList?.meal_plan_id) return;
+
+    setRegenerating(true);
+    setError(null);
+    try {
+      // Delete old and create new
+      await fetch(`/api/shopping-lists/${id}`, { method: "DELETE" });
+
+      const res = await fetch("/api/shopping-lists", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ generate: true, mealPlanId: shoppingList.meal_plan_id }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        router.push(`/shopping/${data.shoppingList.id}`);
+      } else {
+        setError("Failed to regenerate shopping list");
+      }
+    } catch (err) {
+      console.error("Error regenerating shopping list:", err);
+      setError("Failed to regenerate shopping list");
+    } finally {
+      setRegenerating(false);
     }
   };
 
@@ -214,6 +245,47 @@ export default function ShoppingListDetailPage({
           </p>
         )}
       </div>
+
+      {/* Stale banner */}
+      {shoppingList.stale && shoppingList.meal_plan_id && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0">
+              <svg className="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-sm font-medium text-amber-800">Meal plan has changed</h3>
+              <p className="text-sm text-amber-700 mt-1">
+                Some meals have been updated since this shopping list was created. You may want to regenerate it.
+              </p>
+              <button
+                onClick={regenerateShoppingList}
+                disabled={regenerating}
+                className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 text-sm bg-amber-600 text-white font-medium rounded-lg hover:bg-amber-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {regenerating ? (
+                  <>
+                    <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Regenerating...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Regenerate Shopping List
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Saving indicator */}
       {saving && (

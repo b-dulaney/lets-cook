@@ -15,6 +15,17 @@ Quick start for Claude Code:
 
 - `npm run dev` - Start Next.js dev server
 - `npx tsc --noEmit` - TypeScript checking
+- `npx supabase db push` - Apply database migrations
+
+## Database Changes
+
+**Always use migrations for database changes.** Never run SQL directly in Supabase.
+
+1. Create migration file: `supabase/migrations/YYYYMMDDHHMMSS_description.sql`
+2. Apply with: `npx supabase db push --linked`
+3. Update types: Regenerate `src/types/database.ts` if needed
+
+See `docs/specs/database-schema.md` for details.
 
 ## Key Files
 
