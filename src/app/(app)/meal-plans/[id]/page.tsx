@@ -128,7 +128,12 @@ export default function MealPlanDetailPage({
     fetchExistingShoppingList();
     fetchPreferences();
     fetchRecipeLinks();
-  }, [fetchMealPlan, fetchExistingShoppingList, fetchPreferences, fetchRecipeLinks]);
+  }, [
+    fetchMealPlan,
+    fetchExistingShoppingList,
+    fetchPreferences,
+    fetchRecipeLinks,
+  ]);
 
   const deleteMealPlan = async () => {
     if (!confirm("Are you sure you want to delete this meal plan?")) return;
