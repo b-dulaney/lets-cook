@@ -249,6 +249,7 @@ function GeneratePlanModal({
   const [householdSize, setHouseholdSize] = useState<string>("");
   const [dietary, setDietary] = useState<string[]>([]);
   const [allergies, setAllergies] = useState<string[]>([]);
+  const [dislikes, setDislikes] = useState<string[]>([]);
   const [favoriteCuisines, setFavoriteCuisines] = useState<string[]>([]);
   const [budget, setBudget] = useState<string>("");
   const [maxCookTime, setMaxCookTime] = useState<string>("");
@@ -268,6 +269,7 @@ function GeneratePlanModal({
         setHouseholdSize(prefs.household_size?.toString() || "");
         setDietary(prefs.dietary || []);
         setAllergies(prefs.allergies || []);
+        setDislikes(prefs.dislikes || []);
         setFavoriteCuisines(prefs.favorite_cuisines || []);
         setBudget(prefs.budget || "");
         setMaxCookTime(prefs.max_cook_time || "");
@@ -291,6 +293,7 @@ function GeneratePlanModal({
         householdSize: householdSize ? parseInt(householdSize) : undefined,
         dietary,
         allergies,
+        dislikes,
         favoriteCuisines,
         budget: budget || undefined,
         maxCookTime: maxCookTime || undefined,

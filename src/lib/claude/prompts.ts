@@ -242,17 +242,25 @@ export function generateWeeklyMealPlanPrompt(
     ? userPreferences.dietary.join(", ")
     : userPreferences.dietary || "none";
 
+  const dislikedFoods = userPreferences.dislikes?.join(", ") || "none";
+
   return `Create a ${numberOfMeals}-day meal plan for dinner.
 
 User preferences:
 - Dietary restrictions: ${dietary}
-- Dislikes: ${userPreferences.dislikes?.join(", ") || "none"}
+- Allergies: ${userPreferences.allergies?.join(", ") || "none"}
+- FOODS TO AVOID (user dislikes these - NEVER include): ${dislikedFoods}
 - Favorite cuisines: ${userPreferences.favoriteCuisines?.join(", ") || userPreferences.cuisines?.join(", ") || "varied"}
 - Skill level: ${userPreferences.skillLevel || "intermediate"}
 - Cooking time preference: ${userPreferences.maxCookTime || "45 minutes max"}
 - Budget: ${userPreferences.budget || "moderate"}
+- Household size: ${userPreferences.householdSize || "2-4 people"}
 
-Requirements:
+CRITICAL REQUIREMENTS:
+1. NEVER suggest recipes containing foods from the "FOODS TO AVOID" list - not as main ingredients, side ingredients, garnishes, or in sauces. If the user dislikes mushrooms, do not include ANY mushroom variety in ANY meal.
+2. Respect all dietary restrictions and allergies strictly.
+
+Additional requirements:
 1. Variety - different proteins, cuisines, and cooking methods
 2. Balance - include vegetables, proteins, and carbs
 3. Practical - use common ingredients, minimize waste
