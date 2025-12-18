@@ -128,8 +128,8 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 ## Phase 4: Web Application UI
 
 ### Layout & Navigation
-- [ ] Create app layout with navigation
-- [ ] Responsive design for mobile/desktop
+- [x] Create app layout with navigation
+- [x] Responsive design for mobile/desktop
 - [ ] Loading states and skeletons
 
 ### Pages
