@@ -80,7 +80,7 @@ function DashboardCard({
       href={href}
       className="block p-6 bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md hover:border-gray-300 transition-all group"
     >
-      <div className="text-gray-400 group-hover:text-blue-600 transition-colors mb-3">
+      <div className="text-gray-400 group-hover:text-emerald-600 transition-colors mb-3">
         {icon}
       </div>
       <h3 className="text-lg font-semibold text-gray-900 mb-1">{title}</h3>

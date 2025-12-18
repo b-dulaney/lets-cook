@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "@/lib/auth";
+import { FrogChefIcon } from "./frog-chef";
 
 interface NavItem {
   name: string;
@@ -97,8 +98,11 @@ export function AppShell({ children, user }: AppShellProps) {
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
-          <span className="text-xl font-semibold text-gray-900">Let&apos;s Cook</span>
+        <div className="flex items-center justify-between h-16 px-4 border-b border-emerald-100 bg-gradient-to-r from-emerald-50 to-green-50">
+          <div className="flex items-center gap-2">
+            <FrogChefIcon size={36} />
+            <span className="text-xl font-semibold text-emerald-800">Let&apos;s Cook</span>
+          </div>
           <button
             onClick={() => setSidebarOpen(false)}
             className="p-2 text-gray-500 hover:text-gray-700"
@@ -116,7 +120,7 @@ export function AppShell({ children, user }: AppShellProps) {
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 pathname === item.href || pathname.startsWith(item.href + "/")
-                  ? "bg-blue-50 text-blue-700"
+                  ? "bg-emerald-50 text-emerald-700"
                   : "text-gray-700 hover:bg-gray-100"
               }`}
             >
@@ -130,8 +134,9 @@ export function AppShell({ children, user }: AppShellProps) {
       {/* Desktop sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
         <div className="flex flex-col flex-1 min-h-0 bg-white border-r border-gray-200">
-          <div className="flex items-center h-16 px-4 border-b border-gray-200">
-            <span className="text-xl font-semibold text-gray-900">Let&apos;s Cook</span>
+          <div className="flex items-center gap-2 h-16 px-4 border-b border-emerald-100 bg-gradient-to-r from-emerald-50 to-green-50">
+            <FrogChefIcon size={36} />
+            <span className="text-xl font-semibold text-emerald-800">Let&apos;s Cook</span>
           </div>
           <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
             {navigation.map((item) => (
@@ -140,7 +145,7 @@ export function AppShell({ children, user }: AppShellProps) {
                 href={item.href}
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   pathname === item.href || pathname.startsWith(item.href + "/")
-                    ? "bg-blue-50 text-blue-700"
+                    ? "bg-emerald-50 text-emerald-700"
                     : "text-gray-700 hover:bg-gray-100"
                 }`}
               >

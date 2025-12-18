@@ -92,7 +92,7 @@ export default function ShoppingListsPage() {
         <button
           onClick={() => setShowModal(true)}
           disabled={mealPlans.length === 0}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -122,14 +122,14 @@ export default function ShoppingListsPage() {
           {mealPlans.length === 0 ? (
             <Link
               href="/meal-plans"
-              className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700"
+              className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700"
             >
               Create Meal Plan
             </Link>
           ) : (
             <button
               onClick={() => setShowModal(true)}
-              className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700"
+              className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700"
             >
               New Shopping List
             </button>
@@ -169,7 +169,7 @@ export default function ShoppingListsPage() {
                   <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                     <div
                       className={`h-full transition-all ${
-                        stats.percentage === 100 ? "bg-green-500" : "bg-blue-500"
+                        stats.percentage === 100 ? "bg-green-500" : "bg-emerald-500"
                       }`}
                       style={{ width: `${stats.percentage}%` }}
                     />
@@ -314,7 +314,7 @@ function CreateListModal({
                       key={plan.id}
                       className={`flex items-center p-3 rounded-lg border cursor-pointer transition-colors ${
                         selectedPlan === plan.id
-                          ? "border-blue-500 bg-blue-50"
+                          ? "border-emerald-500 bg-emerald-50"
                           : "border-gray-200 hover:bg-gray-50"
                       }`}
                     >
@@ -332,7 +332,7 @@ function CreateListModal({
                         </p>
                       </div>
                       {selectedPlan === plan.id && (
-                        <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-5 h-5 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                         </svg>
                       )}
@@ -346,7 +346,7 @@ function CreateListModal({
               <button
                 type="submit"
                 disabled={generating || !selectedPlan}
-                className="inline-flex w-full justify-center items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed sm:w-auto"
+                className="inline-flex w-full justify-center items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed sm:w-auto"
               >
                 {generating ? (
                   <>

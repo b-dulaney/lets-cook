@@ -187,7 +187,7 @@ export default function SettingsPage() {
               <select
                 value={skillLevel}
                 onChange={(e) => setSkillLevel(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 focus:ring-emerald-500 focus:border-emerald-500"
               >
                 <option value="">Select skill level</option>
                 {SKILL_LEVELS.map((level) => (
@@ -205,7 +205,7 @@ export default function SettingsPage() {
               <select
                 value={maxCookTime}
                 onChange={(e) => setMaxCookTime(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 focus:ring-emerald-500 focus:border-emerald-500"
               >
                 <option value="">No preference</option>
                 <option value="15 minutes">15 minutes</option>
@@ -223,7 +223,7 @@ export default function SettingsPage() {
               <select
                 value={budget}
                 onChange={(e) => setBudget(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 focus:ring-emerald-500 focus:border-emerald-500"
               >
                 <option value="">No preference</option>
                 <option value="budget-friendly">Budget-friendly</option>
@@ -243,7 +243,7 @@ export default function SettingsPage() {
                 value={householdSize}
                 onChange={(e) => setHouseholdSize(e.target.value)}
                 placeholder="Number of people"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500 focus:ring-emerald-500 focus:border-emerald-500"
               />
             </div>
           </div>
@@ -261,7 +261,7 @@ export default function SettingsPage() {
                 onClick={() => toggleArrayItem(dietary, setDietary, item)}
                 className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                   dietary.includes(item)
-                    ? "bg-blue-600 text-white"
+                    ? "bg-emerald-600 text-white"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
               >
@@ -329,7 +329,7 @@ export default function SettingsPage() {
                 value={dislikes}
                 onChange={(e) => setDislikes(e.target.value)}
                 placeholder="e.g., cilantro, olives, mushrooms"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500 focus:ring-emerald-500 focus:border-emerald-500"
               />
               <p className="mt-1 text-xs text-gray-500">Separate items with commas</p>
             </div>
@@ -343,7 +343,7 @@ export default function SettingsPage() {
                 onChange={(e) => setAdditionalNotes(e.target.value)}
                 placeholder="Any other preferences or notes for meal planning..."
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500 focus:ring-emerald-500 focus:border-emerald-500"
               />
             </div>
           </div>
@@ -354,7 +354,7 @@ export default function SettingsPage() {
           <button
             type="submit"
             disabled={saving}
-            className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2.5 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {saving ? "Saving..." : "Save Preferences"}
           </button>

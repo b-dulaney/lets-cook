@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { FrogChefCooking } from "./frog-chef";
 
 interface FullPageLoaderProps {
   message?: string;
@@ -34,74 +35,14 @@ export function FullPageLoader({
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white">
-      {/* Animated cooking pot */}
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-b from-white to-emerald-50">
+      {/* Animated frog chef */}
       <div className="relative mb-8">
-        <div className="w-24 h-24 relative">
-          {/* Pot body */}
-          <svg
-            viewBox="0 0 100 100"
-            className="w-full h-full"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            {/* Steam lines - animated */}
-            <g className="animate-steam">
-              <path
-                d="M30 35 Q35 25 30 15"
-                stroke="#9CA3AF"
-                strokeWidth="2"
-                strokeLinecap="round"
-                fill="none"
-                className="animate-steam-1"
-              />
-              <path
-                d="M50 30 Q55 20 50 10"
-                stroke="#9CA3AF"
-                strokeWidth="2"
-                strokeLinecap="round"
-                fill="none"
-                className="animate-steam-2"
-              />
-              <path
-                d="M70 35 Q65 25 70 15"
-                stroke="#9CA3AF"
-                strokeWidth="2"
-                strokeLinecap="round"
-                fill="none"
-                className="animate-steam-3"
-              />
-            </g>
-
-            {/* Pot lid */}
-            <ellipse
-              cx="50"
-              cy="42"
-              rx="35"
-              ry="8"
-              fill="#3B82F6"
-              className="animate-lid"
-            />
-            <circle cx="50" cy="38" r="5" fill="#2563EB" />
-
-            {/* Pot body */}
-            <path
-              d="M15 50 L20 85 Q20 95 50 95 Q80 95 80 85 L85 50 Z"
-              fill="#3B82F6"
-            />
-
-            {/* Pot rim */}
-            <ellipse cx="50" cy="50" rx="38" ry="10" fill="#2563EB" />
-
-            {/* Handles */}
-            <rect x="5" y="55" width="12" height="8" rx="2" fill="#1D4ED8" />
-            <rect x="83" y="55" width="12" height="8" rx="2" fill="#1D4ED8" />
-          </svg>
-        </div>
+        <FrogChefCooking size={140} />
 
         {/* Pulsing ring */}
-        <div className="absolute inset-0 -m-4">
-          <div className="w-32 h-32 rounded-full border-4 border-blue-200 animate-ping opacity-20" />
+        <div className="absolute inset-0 -m-4 flex items-center justify-center">
+          <div className="w-40 h-40 rounded-full border-4 border-emerald-200 animate-ping opacity-20" />
         </div>
       </div>
 
@@ -115,60 +56,21 @@ export function FullPageLoader({
         <p className="text-gray-600 mb-6 text-center px-4">{submessage}</p>
       ) : (
         <div className="flex gap-1 mb-6">
-          <span className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-          <span className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-          <span className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+          <span className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+          <span className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+          <span className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
         </div>
       )}
 
       {/* Cooking tip */}
-      <div className="mt-4 px-6 py-3 bg-amber-50 border border-amber-200 rounded-lg max-w-sm mx-4">
-        <p className="text-sm text-amber-800 text-center">
+      <div className="mt-4 px-6 py-3 bg-emerald-50 border border-emerald-200 rounded-lg max-w-sm mx-4">
+        <p className="text-sm text-emerald-800 text-center">
           <span className="font-medium">Tip:</span>{" "}
           <span className="transition-opacity duration-300">
             {COOKING_TIPS[tipIndex]}
           </span>
         </p>
       </div>
-
-      {/* Custom styles for steam animation */}
-      <style jsx>{`
-        @keyframes steam {
-          0%, 100% {
-            opacity: 0;
-            transform: translateY(0);
-          }
-          50% {
-            opacity: 1;
-            transform: translateY(-5px);
-          }
-        }
-
-        @keyframes lid-bounce {
-          0%, 100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-3px);
-          }
-        }
-
-        .animate-steam-1 {
-          animation: steam 2s ease-in-out infinite;
-        }
-
-        .animate-steam-2 {
-          animation: steam 2s ease-in-out infinite 0.3s;
-        }
-
-        .animate-steam-3 {
-          animation: steam 2s ease-in-out infinite 0.6s;
-        }
-
-        .animate-lid {
-          animation: lid-bounce 1s ease-in-out infinite;
-        }
-      `}</style>
     </div>
   );
 }

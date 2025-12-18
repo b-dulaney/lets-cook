@@ -129,7 +129,7 @@ export default function MealPlanDetailPage({
     return (
       <div className="text-center py-12">
         <p className="text-red-600 mb-4">{error || "Meal plan not found"}</p>
-        <Link href="/meal-plans" className="text-blue-600 hover:text-blue-500">
+        <Link href="/meal-plans" className="text-emerald-600 hover:text-emerald-500">
           Back to Meal Plans
         </Link>
       </div>
@@ -199,7 +199,7 @@ export default function MealPlanDetailPage({
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                    <span className="text-sm font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">
                       {day.day}
                     </span>
                     {day.difficulty && (
@@ -246,7 +246,7 @@ export default function MealPlanDetailPage({
                   {day.tags.map((tag, i) => (
                     <span
                       key={i}
-                      className="text-xs text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full"
+                      className="text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full"
                     >
                       {tag}
                     </span>
@@ -306,7 +306,7 @@ export default function MealPlanDetailPage({
           <button
             onClick={generateShoppingList}
             disabled={generatingList}
-            className="mt-4 text-sm text-blue-600 hover:text-blue-700 font-medium"
+            className="mt-4 text-sm text-emerald-600 hover:text-emerald-700 font-medium"
           >
             Generate full shopping list →
           </button>
