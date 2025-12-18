@@ -1,37 +1,24 @@
-# CLAUDE.md
+# Meal Planning Assistant
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Quick start for Claude Code:
 
-## Project Overview
+1. Read `docs/project-context.md` for overview
+2. Check `docs/specs/` for detailed specifications
+3. Environment variables needed:
+   - ANTHROPIC_API_KEY
+   - SUPABASE_URL
+   - SUPABASE_ANON_KEY
+   - SPOONACULAR_API_KEY (optional)
 
-This is a new Next.js project (lets-cook). The repository is currently in its initial state with no source code yet.
+## Development Commands
 
-## Expected Stack
+- `npm run dev` - Start Next.js dev server
+- `npm run test` - Run tests
+- `npm run type-check` - TypeScript checking
 
-Based on the `.gitignore` configuration, this project will use:
-- Next.js (React framework)
-- TypeScript
-- Node.js with npm/yarn/pnpm
+## Key Files
 
-## Commands
-
-Once the project is set up, typical commands will include:
-
-```bash
-# Install dependencies
-npm install
-
-# Run development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Run linting
-npm run lint
-
-# Run tests
-npm test
-```
-
-*Note: Update this section once package.json is created with actual scripts.*
+- `pages/api/dialogflow-webhook.ts` - Main webhook
+- `lib/claude-client.ts` - Claude API wrapper
+- `lib/prompts.ts` - All AI prompts
+- `lib/supabase.ts` - Database client
