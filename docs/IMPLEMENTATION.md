@@ -138,16 +138,16 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 - [x] Dashboard page (`/dashboard`)
 - [ ] Recipe discovery page
 - [ ] Recipe detail page
-- [ ] Meal planning page
+- [x] Meal planning page
 - [ ] Shopping list page
-- [ ] User preferences/settings page
+- [x] User preferences/settings page
 - [ ] Saved recipes page
 
 ### Components
 - [ ] Recipe card component
 - [ ] Ingredient list component
 - [ ] Step-by-step instructions component
-- [ ] Meal plan calendar view
+- [x] Meal plan calendar view
 - [ ] Shopping list with checkboxes
 - [ ] Voice input button (Web Speech API)
 
