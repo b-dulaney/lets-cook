@@ -14,6 +14,49 @@ interface ShoppingListItem {
   purchased: boolean;
 }
 
+// Simple ingredient categorization for recipe-based shopping lists
+function categorizeIngredient(item: string): string {
+  const lower = item.toLowerCase();
+
+  // Proteins
+  if (/chicken|beef|pork|fish|salmon|tuna|shrimp|tofu|tempeh|eggs?|turkey|lamb|bacon|sausage/.test(lower)) {
+    return "Meat";
+  }
+
+  // Dairy
+  if (/milk|cheese|butter|cream|yogurt|sour cream|parmesan|mozzarella|cheddar/.test(lower)) {
+    return "Dairy";
+  }
+
+  // Produce - vegetables
+  if (/onion|garlic|tomato|pepper|carrot|celery|broccoli|spinach|lettuce|cucumber|zucchini|mushroom|potato|sweet potato|cabbage|kale|greens|squash|eggplant|corn|peas|beans|asparagus|cauliflower/.test(lower)) {
+    return "Produce";
+  }
+
+  // Produce - fruits
+  if (/apple|banana|orange|lemon|lime|berry|berries|strawberry|blueberry|avocado|mango|peach|pear|grape|melon/.test(lower)) {
+    return "Produce";
+  }
+
+  // Bakery
+  if (/bread|roll|bun|tortilla|pita|naan|baguette|croissant/.test(lower)) {
+    return "Bakery";
+  }
+
+  // Frozen
+  if (/frozen|ice cream/.test(lower)) {
+    return "Frozen";
+  }
+
+  // Condiments/Sauces
+  if (/sauce|ketchup|mustard|mayo|mayonnaise|vinegar|dressing|salsa|hot sauce|soy sauce|worcestershire|sriracha/.test(lower)) {
+    return "Condiments/Sauces";
+  }
+
+  // Default to pantry
+  return "Pantry/Dry Goods";
+}
+
 // Flatten Claude's categorized shopping list into a flat array
 function flattenShoppingList(data: ClaudeShoppingList): ShoppingListItem[] {
   const items: ShoppingListItem[] = [];
@@ -108,7 +151,60 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { mealPlanId, items, generate, pantryItems } = body;
+  const { mealPlanId, recipeId, items, generate, pantryItems } = body;
+
+  // If generate flag is set and recipeId provided, create from recipe ingredients
+  if (generate && recipeId) {
+    // Fetch the recipe - cast to any since generated types may not be up to date
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: recipe, error: recipeError } = await (supabase as any)
+      .from("recipes")
+      .select("title, ingredients")
+      .eq("id", recipeId)
+      .single() as { data: { title: string; ingredients: Array<{ item: string; amount: string; notes?: string }> } | null; error: Error | null };
+
+    if (recipeError || !recipe) {
+      return NextResponse.json(
+        { error: "Recipe not found" },
+        { status: 404 }
+      );
+    }
+
+    // Extract ingredients from recipe
+    const ingredients = recipe.ingredients || [];
+
+    // Convert recipe ingredients to shopping list items
+    const itemsWithStatus: ShoppingListItem[] = ingredients.map((ing) => ({
+      item: ing.item,
+      quantity: ing.amount,
+      category: categorizeIngredient(ing.item),
+      purchased: false,
+    }));
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: shoppingList, error } = await (supabase as any)
+      .from("shopping_lists")
+      .insert({
+        user_id: user.id,
+        recipe_id: recipeId,
+        items: itemsWithStatus as unknown as Json,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error saving shopping list:", error);
+      return NextResponse.json(
+        { error: "Failed to save shopping list" },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({
+      shoppingList,
+      message: `Created shopping list for ${recipe.title}`,
+    });
+  }
 
   // If generate flag is set and mealPlanId provided, generate from meal plan
   if (generate && mealPlanId) {
