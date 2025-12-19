@@ -428,9 +428,18 @@ TRADER JOE'S SIGNATURE ITEMS TO INCORPORATE:
 - Frozen: Mandarin Orange Chicken, Cauliflower Gnocchi, Chicken Tikka Masala, Korean Beef Short Ribs, Hashbrowns, Riced Cauliflower, Gyoza/Potstickers, Butter Chicken, Palak Paneer, Kung Pao Chicken, Beef Bulgogi, Tempura Shrimp, Chicken Shawarma
 - Sauces & Seasonings: Everything But The Bagel Seasoning, Green Dragon Hot Sauce, Chili Onion Crunch, Ajika Georgian Seasoning, Bomba Sauce, Sriracha Ranch, Cowboy Caviar Salsa, Chimichurri, Romesco Sauce, Thai Yellow Curry Sauce, Tikka Masala Sauce, Soyaki Sauce
 - Pasta & Grains: Lemon Pepper Pappardelle, Cacio e Pepe Pasta, Truffle Pasta, Gnocchi alla Sorrentina, Harvest Grains Blend
-- Proteins: Unexpected Cheddar, Toscano Cheese, Halloumi, Shawarma Chicken Thighs, Chile Lime Chicken Burgers, Italian Chicken Sausages, Smoked Salmon
+- Proteins: Unexpected Cheddar, Toscano Cheese, Shawarma Chicken Thighs, Chile Lime Chicken Burgers, Italian Chicken Sausages, Smoked Salmon
 - Produce & Prepared: Cruciferous Crunch, Power Greens, Shredded Cabbage, Fresh Bruschetta, Cowboy Caviar, Elote Corn Chip Dip
 - Snacks that work in meals: Elote Seasoned Tortilla Chips (crushed as topping), Everything But The Bagel Seasoned Crackers
+
+SEASONAL ITEMS - BE CAREFUL:
+These items are only available during specific seasons and should NOT be recommended year-round:
+- Halloumi cheese (summer only, typically May-August)
+- Pumpkin products (fall only, September-November)
+- Peppermint items (winter/holiday only)
+- Watermelon products (summer only)
+- Hatch chile items (late summer, August-September)
+Only recommend seasonal items if the current season matches their availability. When in doubt, use year-round staples instead.
 
 RECIPE STYLE FOR TRADER JOE'S:
 - Feature 1-2 TJ's signature items per meal
@@ -446,7 +455,14 @@ RECIPE STYLE FOR TRADER JOE'S:
     ? storeInstructions[userPreferences.store] || ""
     : "";
 
+  const currentDate = new Date();
+  const monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
+  const currentMonth = monthNames[currentDate.getMonth()];
+  const currentYear = currentDate.getFullYear();
+
   return `Create a ${numberOfMeals}-day meal plan for dinner.
+Today's date: ${currentMonth} ${currentYear}
 ${storeSection}${applianceSection}
 User preferences:
 - Dietary restrictions: ${dietary}
