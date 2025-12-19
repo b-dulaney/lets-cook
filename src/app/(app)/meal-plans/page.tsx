@@ -65,20 +65,15 @@ export default function MealPlansPage() {
     setShowModal(false);
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
     });
-  };
-
-  const getWeekRange = (weekStart: string) => {
-    const start = new Date(weekStart);
-    const end = new Date(start);
-    end.setDate(end.getDate() + 6);
-    return `${formatDate(weekStart)} - ${formatDate(end.toISOString())}`;
   };
 
   if (loading) {
@@ -148,69 +143,63 @@ export default function MealPlansPage() {
         </div>
       ) : (
         <div className="grid gap-4">
-          {mealPlans.map((plan) => (
-            <Link
-              key={plan.id}
-              href={`/meal-plans/${plan.id}`}
-              className="block bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md hover:border-gray-300 transition-all"
-            >
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Week of {formatDate(plan.week_start)}
-                  </h3>
-                  <p className="text-sm text-gray-600 mt-1">
-                    {getWeekRange(plan.week_start)}
-                  </p>
+          {mealPlans.map((plan, index) => {
+            // Calculate plan number (most recent has highest number)
+            const planNumber = mealPlans.length - index;
+            return (
+              <Link
+                key={plan.id}
+                href={`/meal-plans/${plan.id}`}
+                className="block bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md hover:border-gray-300 transition-all"
+              >
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      Meal Plan {planNumber}
+                    </h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Created {formatDateTime(plan.created_at)}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {plan.meals.weekPlan && (
+                      <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                        {plan.meals.weekPlan.length} days
+                      </span>
+                    )}
+                    {plan.meals.budgetEstimate && (
+                      <span className="text-sm font-medium text-green-700 bg-green-50 px-2 py-1 rounded">
+                        {plan.meals.budgetEstimate}
+                      </span>
+                    )}
+                  </div>
                 </div>
-                {plan.meals.budgetEstimate && (
-                  <span className="text-sm font-medium text-green-700 bg-green-50 px-2 py-1 rounded">
-                    {plan.meals.budgetEstimate}
-                  </span>
+
+                {plan.meals.weekPlan && (
+                  <div
+                    className={`mt-4 grid gap-2 ${
+                      plan.meals.weekPlan.length <= 3
+                        ? "grid-cols-3"
+                        : plan.meals.weekPlan.length <= 5
+                        ? "grid-cols-2 sm:grid-cols-5"
+                        : "grid-cols-2 sm:grid-cols-4 lg:grid-cols-7"
+                    }`}
+                  >
+                    {plan.meals.weekPlan.map((day, idx) => (
+                      <div key={idx} className="text-center">
+                        <p className="text-xs font-medium text-gray-500 uppercase">
+                          Day {idx + 1}
+                        </p>
+                        <p className="text-xs text-gray-700 mt-1 line-clamp-2">
+                          {day.meal}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                 )}
-              </div>
-
-              {plan.meals.weekPlan && (
-                <div
-                  className={`mt-4 grid gap-2 ${
-                    plan.meals.weekPlan.length <= 3
-                      ? "grid-cols-3"
-                      : plan.meals.weekPlan.length <= 5
-                      ? "grid-cols-2 sm:grid-cols-5"
-                      : "grid-cols-2 sm:grid-cols-4 lg:grid-cols-7"
-                  }`}
-                >
-                  {plan.meals.weekPlan.map((day, idx) => (
-                    <div key={idx} className="text-center">
-                      <p className="text-xs font-medium text-gray-500 uppercase">
-                        Day {idx + 1}
-                      </p>
-                      <p className="text-xs text-gray-700 mt-1 line-clamp-2">
-                        {day.meal}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <div className="mt-4 flex items-center text-sm text-gray-500">
-                <svg
-                  className="w-4 h-4 mr-1"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                Created {formatDate(plan.created_at)}
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       )}
 

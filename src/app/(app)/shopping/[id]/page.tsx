@@ -15,10 +15,21 @@ interface ShoppingListItem {
 interface ShoppingList {
   id: string;
   meal_plan_id: string | null;
+  recipe_id: string | null;
   items: ShoppingListItem[];
   stale: boolean;
   created_at: string;
   updated_at: string;
+}
+
+interface MealPlan {
+  id: string;
+  created_at: string;
+}
+
+interface Recipe {
+  id: string;
+  title: string;
 }
 
 export default function ShoppingListDetailPage({
@@ -29,6 +40,8 @@ export default function ShoppingListDetailPage({
   const { id } = use(params);
   const router = useRouter();
   const [shoppingList, setShoppingList] = useState<ShoppingList | null>(null);
+  const [mealPlans, setMealPlans] = useState<MealPlan[]>([]);
+  const [recipeName, setRecipeName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -36,20 +49,41 @@ export default function ShoppingListDetailPage({
   const [regenerating, setRegenerating] = useState(false);
 
   useEffect(() => {
-    fetchShoppingList();
+    fetchData();
   }, [id]);
 
-  const fetchShoppingList = async () => {
+  const fetchData = async () => {
     try {
-      const res = await fetch(`/api/shopping-lists/${id}`);
-      if (res.ok) {
-        const data = await res.json();
+      // Fetch shopping list, meal plans, and potentially recipe
+      const [listRes, plansRes] = await Promise.all([
+        fetch(`/api/shopping-lists/${id}`),
+        fetch("/api/meal-plans?limit=100"),
+      ]);
+
+      if (listRes.ok) {
+        const data = await listRes.json();
         setShoppingList(data.shoppingList);
+
+        // If this is a recipe-based list, fetch the recipe name
+        if (data.shoppingList?.recipe_id) {
+          const recipeRes = await fetch(`/api/recipes?ids=${data.shoppingList.recipe_id}`);
+          if (recipeRes.ok) {
+            const recipeData = await recipeRes.json();
+            if (recipeData.recipes?.length > 0) {
+              setRecipeName(recipeData.recipes[0].title);
+            }
+          }
+        }
       } else {
         setError("Shopping list not found");
       }
+
+      if (plansRes.ok) {
+        const data = await plansRes.json();
+        setMealPlans(data.mealPlans);
+      }
     } catch (err) {
-      console.error("Error fetching shopping list:", err);
+      console.error("Error fetching data:", err);
       setError("Failed to load shopping list");
     } finally {
       setLoading(false);
@@ -135,14 +169,37 @@ export default function ShoppingListDetailPage({
     }
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
       weekday: "long",
       month: "long",
       day: "numeric",
       year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
     });
+  };
+
+  // Get meal plan number (oldest = 1, newest = highest)
+  const getMealPlanNumber = (mealPlanId: string): number | null => {
+    // mealPlans is sorted by created_at descending, so reverse to get chronological order
+    const sortedPlans = [...mealPlans].reverse();
+    const index = sortedPlans.findIndex((plan) => plan.id === mealPlanId);
+    return index >= 0 ? index + 1 : null;
+  };
+
+  // Get shopping list title based on source
+  const getListTitle = (): string => {
+    if (!shoppingList) return "Shopping List";
+    if (recipeName) {
+      return `Shopping List for ${recipeName}`;
+    }
+    if (shoppingList.meal_plan_id) {
+      const planNumber = getMealPlanNumber(shoppingList.meal_plan_id);
+      return planNumber ? `Shopping List for Meal Plan ${planNumber}` : "Shopping List";
+    }
+    return "Shopping List";
   };
 
   const getStats = () => {
@@ -202,10 +259,10 @@ export default function ShoppingListDetailPage({
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mt-2">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-              Shopping List
+              {getListTitle()}
             </h1>
             <p className="text-sm text-gray-600 mt-1">
-              Created {formatDate(shoppingList.created_at)}
+              Created {formatDateTime(shoppingList.created_at)}
             </p>
           </div>
 

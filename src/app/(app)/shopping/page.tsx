@@ -15,6 +15,7 @@ interface ShoppingListItem {
 interface ShoppingList {
   id: string;
   meal_plan_id: string | null;
+  recipe_id: string | null;
   items: ShoppingListItem[];
   created_at: string;
   updated_at: string;
@@ -22,12 +23,18 @@ interface ShoppingList {
 
 interface MealPlan {
   id: string;
-  week_start: string;
+  created_at: string;
+}
+
+interface Recipe {
+  id: string;
+  title: string;
 }
 
 export default function ShoppingListsPage() {
   const [shoppingLists, setShoppingLists] = useState<ShoppingList[]>([]);
   const [mealPlans, setMealPlans] = useState<MealPlan[]>([]);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
@@ -41,12 +48,25 @@ export default function ShoppingListsPage() {
     try {
       const [listsRes, plansRes] = await Promise.all([
         fetch("/api/shopping-lists"),
-        fetch("/api/meal-plans"),
+        fetch("/api/meal-plans?limit=100"), // Get all meal plans for numbering
       ]);
 
       if (listsRes.ok) {
         const data = await listsRes.json();
         setShoppingLists(data.shoppingLists);
+
+        // Fetch recipes for recipe-based shopping lists
+        const recipeIds = data.shoppingLists
+          .filter((list: ShoppingList) => list.recipe_id)
+          .map((list: ShoppingList) => list.recipe_id);
+
+        if (recipeIds.length > 0) {
+          const recipesRes = await fetch(`/api/recipes?ids=${recipeIds.join(",")}`);
+          if (recipesRes.ok) {
+            const recipesData = await recipesRes.json();
+            setRecipes(recipesData.recipes || []);
+          }
+        }
       }
 
       if (plansRes.ok) {
@@ -66,13 +86,36 @@ export default function ShoppingListsPage() {
     setShowModal(false);
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
     });
+  };
+
+  // Get meal plan number (oldest = 1, newest = highest)
+  const getMealPlanNumber = (mealPlanId: string): number | null => {
+    // mealPlans is sorted by created_at descending, so reverse to get chronological order
+    const sortedPlans = [...mealPlans].reverse();
+    const index = sortedPlans.findIndex((plan) => plan.id === mealPlanId);
+    return index >= 0 ? index + 1 : null;
+  };
+
+  // Get shopping list display name based on source
+  const getListName = (list: ShoppingList): string => {
+    if (list.recipe_id) {
+      const recipe = recipes.find((r) => r.id === list.recipe_id);
+      return recipe ? `Shopping List for ${recipe.title}` : "Shopping List";
+    }
+    if (list.meal_plan_id) {
+      const planNumber = getMealPlanNumber(list.meal_plan_id);
+      return planNumber ? `Shopping List for Meal Plan ${planNumber}` : "Shopping List";
+    }
+    return "Shopping List";
   };
 
   const getCompletionStats = (items: ShoppingListItem[]) => {
@@ -148,10 +191,10 @@ export default function ShoppingListsPage() {
                 <div className="flex items-start justify-between">
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">
-                      Shopping List
+                      {getListName(list)}
                     </h3>
                     <p className="text-sm text-gray-600 mt-1">
-                      {list.items.length} items • Created {formatDate(list.created_at)}
+                      {list.items.length} items • Created {formatDateTime(list.created_at)}
                     </p>
                   </div>
                   <div className="text-right">
@@ -229,12 +272,21 @@ function CreateListModal({
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const formatDate = (dateString: string) => {
+  const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
     });
+  };
+
+  // Get meal plan number (oldest = 1, newest = highest)
+  const getMealPlanNumber = (index: number): number => {
+    // mealPlans is sorted by created_at descending, so reverse index
+    return mealPlans.length - index;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -309,7 +361,7 @@ function CreateListModal({
                   Select a Meal Plan
                 </label>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {mealPlans.map((plan) => (
+                  {mealPlans.map((plan, index) => (
                     <label
                       key={plan.id}
                       className={`flex items-center p-3 rounded-lg border cursor-pointer transition-colors ${
@@ -328,7 +380,10 @@ function CreateListModal({
                       />
                       <div className="flex-1">
                         <p className="font-medium text-gray-900">
-                          Week of {formatDate(plan.week_start)}
+                          Meal Plan {getMealPlanNumber(index)}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          Created {formatDateTime(plan.created_at)}
                         </p>
                       </div>
                       {selectedPlan === plan.id && (

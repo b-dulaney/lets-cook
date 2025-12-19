@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     .from("meal_plans")
     .select("*")
     .eq("user_id", user.id)
-    .order("week_start", { ascending: false })
+    .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
 
   if (error) {
