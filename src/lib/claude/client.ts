@@ -439,9 +439,10 @@ export async function getRecipeDetails(
 
 export async function createMealPlan(
   userPreferences?: UserPreferences,
-  numberOfDays: number = 7
+  numberOfDays: number = 7,
+  recentRecipes: string[] = []
 ): Promise<MealPlanResponse> {
-  const prompt = generateWeeklyMealPlanPrompt(userPreferences || {}, numberOfDays);
+  const prompt = generateWeeklyMealPlanPrompt(userPreferences || {}, numberOfDays, recentRecipes);
 
   const response = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",

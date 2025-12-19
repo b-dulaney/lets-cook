@@ -184,10 +184,14 @@ export function getRecipeDetailsPrompt(
   if (constraints) {
     const parts: string[] = [];
     if (constraints.servings) {
-      parts.push(`- Servings: MUST be exactly ${constraints.servings} servings (scale ingredients accordingly)`);
+      parts.push(
+        `- Servings: MUST be exactly ${constraints.servings} servings (scale ingredients accordingly)`
+      );
     }
     if (constraints.cookTime) {
-      parts.push(`- Total time: MUST be approximately ${constraints.cookTime} or less`);
+      parts.push(
+        `- Total time: MUST be approximately ${constraints.cookTime} or less`
+      );
     }
     if (constraints.difficulty) {
       parts.push(`- Difficulty: ${constraints.difficulty}`);
@@ -266,7 +270,8 @@ Only return valid JSON, no other text.`;
 // 3. Generate Weekly Meal Plan
 export function generateWeeklyMealPlanPrompt(
   userPreferences: UserPreferences,
-  numberOfMeals: number = 7
+  numberOfMeals: number = 7,
+  recentRecipes: string[] = []
 ): string {
   const dietary = Array.isArray(userPreferences.dietary)
     ? userPreferences.dietary.join(", ")
@@ -274,29 +279,44 @@ export function generateWeeklyMealPlanPrompt(
 
   const dislikedFoods = userPreferences.dislikes?.join(", ") || "none";
 
+  // Combine recent recipes with overused patterns for exclusion
+  const recipesToAvoid = [...new Set([...recentRecipes])];
+  const exclusionSection =
+    recipesToAvoid.length > 0
+      ? `\nRECIPES TO AVOID (already made recently or overused - suggest something different):
+${recipesToAvoid.map((r) => `- ${r}`).join("\n")}
+`
+      : "";
+
   return `Create a ${numberOfMeals}-day meal plan for dinner.
 
 User preferences:
 - Dietary restrictions: ${dietary}
 - Allergies: ${userPreferences.allergies?.join(", ") || "none"}
 - FOODS TO AVOID (user dislikes these - NEVER include): ${dislikedFoods}
-- Favorite cuisines: ${userPreferences.favoriteCuisines?.join(", ") || userPreferences.cuisines?.join(", ") || "varied"}
+- Favorite cuisines: ${
+    userPreferences.favoriteCuisines?.join(", ") ||
+    userPreferences.cuisines?.join(", ") ||
+    "varied"
+  }
 - Skill level: ${userPreferences.skillLevel || "intermediate"}
 - Cooking time preference: ${userPreferences.maxCookTime || "45 minutes max"}
 - Budget: ${userPreferences.budget || "moderate"}
 - Household size: ${userPreferences.householdSize || "2-4 people"}
-
+${exclusionSection}
 CRITICAL REQUIREMENTS:
 1. NEVER suggest recipes containing foods from the "FOODS TO AVOID" list - not as main ingredients, side ingredients, garnishes, or in sauces. If the user dislikes mushrooms, do not include ANY mushroom variety in ANY meal.
 2. Respect all dietary restrictions and allergies strictly.
 3. MAXIMIZE VARIETY: Each meal MUST be distinctly different. Even with dietary restrictions, explore the full range of global cuisines and cooking techniques available. Never repeat similar dishes (e.g., don't have multiple stir-fries, multiple pasta dishes, or multiple curries in the same week).
+4. DO NOT suggest any recipes from the "RECIPES TO AVOID" list or close variations of them. Be creative and explore less common dishes.
 
 VARIETY GUIDELINES (especially important for restrictive diets):
-- Use at least 4-5 different cuisines across the week (e.g., Italian, Mexican, Indian, Thai, Mediterranean, Japanese, Middle Eastern, American, Ethiopian, Greek)
-- Vary cooking methods: baking, sautéing, grilling, roasting, simmering, raw/salads
-- Vary protein sources: legumes, tofu, tempeh, eggs, dairy, nuts, seitan (if not wheat-allergic), different beans
-- Vary carb bases: rice, potatoes, quinoa, corn tortillas, rice noodles, polenta (adjust for allergies)
+- Use at least 4-5 different cuisines across the week (e.g., Italian, Mexican, Indian, Thai, Mediterranean, Japanese, Middle Eastern, American, Ethiopian, Greek, Korean, Vietnamese, Moroccan, Caribbean, Peruvian)
+- Vary cooking methods: baking, sautéing, grilling, roasting, simmering, raw/salads, braising, steaming
+- Vary protein sources: legumes, tofu, tempeh, eggs, dairy, nuts, seitan (if not wheat-allergic), different beans, edamame, paneer
+- Vary carb bases: rice, potatoes, quinoa, corn tortillas, rice noodles, polenta, couscous, farro, bread (adjust for allergies)
 - Each meal should have a unique flavor profile - don't repeat similar spice combinations
+- Explore lesser-known dishes: Korean bibimbap, Moroccan tagine, Ethiopian injera dishes, Japanese okonomiyaki, Vietnamese banh mi, Peruvian causa, Greek spanakopita, Lebanese mujadara, etc.
 
 Additional requirements:
 1. Balance - include vegetables, proteins, and carbs in each meal
@@ -350,7 +370,9 @@ export function generateShoppingListPrompt(
 
 ${JSON.stringify(mealPlan, null, 2)}
 
-Items already in pantry: ${pantryItems.length > 0 ? pantryItems.join(", ") : "none specified"}
+Items already in pantry: ${
+    pantryItems.length > 0 ? pantryItems.join(", ") : "none specified"
+  }
 
 Create a shopping list that:
 1. Consolidates duplicate ingredients across meals
@@ -513,14 +535,18 @@ export function rerollMealPrompt(context: RerollMealContext): string {
 
   const dislikedFoods = userPreferences.dislikes?.join(", ") || "none";
   const otherMealNames = otherMeals.map((m) => m.meal).join(", ");
-  const otherCuisines = [...new Set(otherMeals.map((m) => m.cuisineType).filter(Boolean))].join(", ");
+  const otherCuisines = [
+    ...new Set(otherMeals.map((m) => m.cuisineType).filter(Boolean)),
+  ].join(", ");
 
   // Collect all ingredients from other meals for shopping categories
   const otherMealsIngredients = otherMeals
     .flatMap((m) => m.mainIngredients || [])
     .filter(Boolean);
 
-  return `Generate a SINGLE replacement meal to substitute for "${currentMeal.meal}" in a weekly meal plan.
+  return `Generate a SINGLE replacement meal to substitute for "${
+    currentMeal.meal
+  }" in a weekly meal plan.
 
 Current meal being replaced:
 - Name: ${currentMeal.meal}
@@ -539,7 +565,11 @@ User preferences:
 - Dietary restrictions: ${dietary}
 - Allergies: ${userPreferences.allergies?.join(", ") || "none"}
 - FOODS TO AVOID (NEVER include): ${dislikedFoods}
-- Favorite cuisines: ${userPreferences.favoriteCuisines?.join(", ") || userPreferences.cuisines?.join(", ") || "varied"}
+- Favorite cuisines: ${
+    userPreferences.favoriteCuisines?.join(", ") ||
+    userPreferences.cuisines?.join(", ") ||
+    "varied"
+  }
 - Skill level: ${userPreferences.skillLevel || "intermediate"}
 - Cooking time preference: ${userPreferences.maxCookTime || "45 minutes max"}
 

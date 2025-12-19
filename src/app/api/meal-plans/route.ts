@@ -55,7 +55,30 @@ export async function POST(request: NextRequest) {
   // If generate flag is set, use Claude to create the meal plan
   if (generate) {
     try {
-      const response = await createMealPlan(preferences, numberOfDays || 7);
+      // Fetch recent meal plans to avoid repeating recipes
+      const { data: recentPlans } = await supabase
+        .from("meal_plans")
+        .select("meals")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(3); // Last 3 weeks of plans
+
+      // Extract recipe names from recent plans
+      const recentRecipes: string[] = [];
+      if (recentPlans) {
+        for (const plan of recentPlans) {
+          const meals = plan.meals as { weekPlan?: Array<{ meal?: string }> };
+          if (meals?.weekPlan) {
+            for (const day of meals.weekPlan) {
+              if (day.meal) {
+                recentRecipes.push(day.meal.toLowerCase());
+              }
+            }
+          }
+        }
+      }
+
+      const response = await createMealPlan(preferences, numberOfDays || 7, recentRecipes);
 
       // Calculate week start date (next Monday if not provided)
       const startDate = weekStart || getNextMonday();
