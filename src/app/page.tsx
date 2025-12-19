@@ -4,9 +4,12 @@ import { MealPlanIcon, ShoppingIcon, SavedRecipesIcon } from "@/components/icons
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-emerald-50">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-100 via-white to-emerald-50 relative">
+      {/* Gradient overlay for depth */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-emerald-200/40 via-transparent to-transparent pointer-events-none" />
+
       {/* Header */}
-      <header className="py-4 px-6">
+      <header className="py-4 px-6 relative">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <FrogChef size={40} />
@@ -22,7 +25,7 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <main className="px-6 py-12">
+      <main className="px-6 py-12 relative">
         <div className="max-w-4xl mx-auto">
           {/* Hero */}
           <div className="text-center mb-12">
@@ -95,7 +98,7 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="py-8 px-6 mt-12">
+      <footer className="py-8 px-6 mt-12 relative">
         <div className="max-w-4xl mx-auto text-center">
           <div className="flex items-center justify-center gap-2 mb-2">
             <FrogChef size={24} />

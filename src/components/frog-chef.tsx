@@ -14,27 +14,30 @@ export function FrogChef({ size = 48, className = "", animated = false }: FrogCh
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      {/* Chef Hat shadow */}
-      <ellipse cx="52" cy="34" rx="22" ry="8" fill="#D1D5DB" opacity="0.4" />
+      {/* Chef Hat - grouped for animation */}
+      <g className={animated ? "animate-frog-bounce" : ""}>
+        {/* Chef Hat shadow */}
+        <ellipse cx="52" cy="34" rx="22" ry="8" fill="#D1D5DB" opacity="0.4" />
 
-      {/* Chef Hat */}
-      <path
-        d="M28 32 C28 32 26 8 50 8 C74 8 72 32 72 32"
-        fill="#FFFBEB"
-        stroke="#D1D5DB"
-        strokeWidth="1"
-      />
-      {/* Hat puff top */}
-      <circle cx="38" cy="12" r="8" fill="#FFFBEB" stroke="#D1D5DB" strokeWidth="1" />
-      <circle cx="50" cy="8" r="9" fill="#FFFBEB" stroke="#D1D5DB" strokeWidth="1" />
-      <circle cx="62" cy="12" r="8" fill="#FFFBEB" stroke="#D1D5DB" strokeWidth="1" />
+        {/* Chef Hat */}
+        <path
+          d="M28 32 C28 32 26 8 50 8 C74 8 72 32 72 32"
+          fill="#FFFBEB"
+          stroke="#D1D5DB"
+          strokeWidth="1"
+        />
+        {/* Hat puff top */}
+        <circle cx="38" cy="12" r="8" fill="#FFFBEB" stroke="#D1D5DB" strokeWidth="1" />
+        <circle cx="50" cy="8" r="9" fill="#FFFBEB" stroke="#D1D5DB" strokeWidth="1" />
+        <circle cx="62" cy="12" r="8" fill="#FFFBEB" stroke="#D1D5DB" strokeWidth="1" />
 
-      {/* Hat base */}
-      <ellipse cx="50" cy="32" rx="22" ry="8" fill="#FFFBEB" stroke="#D1D5DB" strokeWidth="1" />
+        {/* Hat base */}
+        <ellipse cx="50" cy="32" rx="22" ry="8" fill="#FFFBEB" stroke="#D1D5DB" strokeWidth="1" />
 
-      {/* Pink ribbon band */}
-      <ellipse cx="50" cy="32" rx="22" ry="5" fill="#FBCFE8" />
-      <ellipse cx="50" cy="31" rx="22" ry="3.5" fill="#F9A8D4" opacity="0.6" />
+        {/* Pink ribbon band */}
+        <ellipse cx="50" cy="32" rx="22" ry="5" fill="#FBCFE8" />
+        <ellipse cx="50" cy="31" rx="22" ry="3.5" fill="#F9A8D4" opacity="0.6" />
+      </g>
 
       {/* Frog Head */}
       <ellipse
@@ -206,21 +209,31 @@ export function FrogChefCooking({ size = 120, className = "" }: FrogChefProps) {
         </path>
       </g>
 
-      {/* Chef Hat shadow */}
-      <ellipse cx="32" cy="34" rx="18" ry="6" fill="#D1D5DB" opacity="0.4" />
+      {/* Chef Hat - grouped for bounce animation */}
+      <g>
+        <animateTransform
+          attributeName="transform"
+          type="translate"
+          values="0,0;0,-2;0,0"
+          dur="1s"
+          repeatCount="indefinite"
+        />
+        {/* Chef Hat shadow */}
+        <ellipse cx="32" cy="34" rx="18" ry="6" fill="#D1D5DB" opacity="0.4" />
 
-      {/* Chef Hat */}
-      <path d="M12 32 C12 32 10 12 30 12 C50 12 48 32 48 32" fill="#FFFBEB" stroke="#D1D5DB" strokeWidth="1" />
-      <circle cx="21" cy="16" r="6" fill="#FFFBEB" stroke="#D1D5DB" strokeWidth="1" />
-      <circle cx="30" cy="13" r="7" fill="#FFFBEB" stroke="#D1D5DB" strokeWidth="1" />
-      <circle cx="39" cy="16" r="6" fill="#FFFBEB" stroke="#D1D5DB" strokeWidth="1" />
+        {/* Chef Hat */}
+        <path d="M12 32 C12 32 10 12 30 12 C50 12 48 32 48 32" fill="#FFFBEB" stroke="#D1D5DB" strokeWidth="1" />
+        <circle cx="21" cy="16" r="6" fill="#FFFBEB" stroke="#D1D5DB" strokeWidth="1" />
+        <circle cx="30" cy="13" r="7" fill="#FFFBEB" stroke="#D1D5DB" strokeWidth="1" />
+        <circle cx="39" cy="16" r="6" fill="#FFFBEB" stroke="#D1D5DB" strokeWidth="1" />
 
-      {/* Hat base */}
-      <ellipse cx="30" cy="32" rx="18" ry="6" fill="#FFFBEB" stroke="#D1D5DB" strokeWidth="1" />
+        {/* Hat base */}
+        <ellipse cx="30" cy="32" rx="18" ry="6" fill="#FFFBEB" stroke="#D1D5DB" strokeWidth="1" />
 
-      {/* Pink ribbon band */}
-      <ellipse cx="30" cy="32" rx="18" ry="4" fill="#FBCFE8" />
-      <ellipse cx="30" cy="31" rx="18" ry="3" fill="#F9A8D4" opacity="0.6" />
+        {/* Pink ribbon band */}
+        <ellipse cx="30" cy="32" rx="18" ry="4" fill="#FBCFE8" />
+        <ellipse cx="30" cy="31" rx="18" ry="3" fill="#F9A8D4" opacity="0.6" />
+      </g>
 
       {/* Frog body */}
       <ellipse cx="30" cy="78" rx="20" ry="16" fill="#86EFAC" />
