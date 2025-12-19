@@ -36,6 +36,7 @@ export default function RecipeByIdPage({ params }: PageProps) {
 
   useEffect(() => {
     fetchRecipe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const fetchRecipe = async () => {
@@ -144,7 +145,12 @@ export default function RecipeByIdPage({ params }: PageProps) {
         href={backTo}
         className="inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 mb-4"
       >
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -158,6 +164,7 @@ export default function RecipeByIdPage({ params }: PageProps) {
       {/* Recipe Image */}
       {imageUrl && (
         <div className="mb-6 max-w-sm rounded-xl overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={imageUrl}
             alt={recipe.recipeName}
@@ -232,7 +239,12 @@ export default function RecipeByIdPage({ params }: PageProps) {
             {recipe.difficulty}
           </span>
           <span className="flex items-center gap-1.5 text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -243,7 +255,12 @@ export default function RecipeByIdPage({ params }: PageProps) {
             {recipe.totalTime}
           </span>
           <span className="flex items-center gap-1.5 text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -265,11 +282,15 @@ export default function RecipeByIdPage({ params }: PageProps) {
           <div className="flex flex-wrap gap-6 text-sm">
             <div>
               <span className="font-medium text-emerald-800">Calories:</span>{" "}
-              <span className="text-emerald-700">{recipe.nutrition.calories}</span>
+              <span className="text-emerald-700">
+                {recipe.nutrition.calories}
+              </span>
             </div>
             <div>
               <span className="font-medium text-emerald-800">Protein:</span>{" "}
-              <span className="text-emerald-700">{recipe.nutrition.protein}</span>
+              <span className="text-emerald-700">
+                {recipe.nutrition.protein}
+              </span>
             </div>
             {recipe.nutrition.notes && (
               <div className="text-emerald-700">{recipe.nutrition.notes}</div>
@@ -326,7 +347,9 @@ export default function RecipeByIdPage({ params }: PageProps) {
                     <li key={idx} className="text-gray-600">
                       <span className="font-medium">{sub.original}</span>
                       {" → "}
-                      <span className="text-emerald-700">{sub.alternative}</span>
+                      <span className="text-emerald-700">
+                        {sub.alternative}
+                      </span>
                       {sub.reason && (
                         <span className="block text-xs text-gray-500 mt-0.5">
                           {sub.reason}
@@ -346,16 +369,41 @@ export default function RecipeByIdPage({ params }: PageProps) {
             >
               {creatingList ? (
                 <>
-                  <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  <svg
+                    className="w-5 h-5 animate-spin"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                    />
                   </svg>
                   Creating...
                 </>
               ) : (
                 <>
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
                   </svg>
                   Create Shopping List
                 </>
@@ -384,39 +432,41 @@ export default function RecipeByIdPage({ params }: PageProps) {
               Instructions
             </h2>
             <ol className="space-y-6">
-              {recipe.instructions.map((step: RecipeInstruction, idx: number) => (
-                <li key={idx} className="flex gap-4">
-                  <span className="flex-shrink-0 w-8 h-8 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center font-semibold text-sm">
-                    {step.step}
-                  </span>
-                  <div className="flex-1 pt-1">
-                    <p className="text-gray-700">{step.instruction}</p>
-                    {step.time && (
-                      <p className="text-sm text-gray-500 mt-1 flex items-center gap-1">
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                        {step.time}
-                      </p>
-                    )}
-                    {step.tip && (
-                      <p className="text-sm text-emerald-700 mt-2 bg-emerald-50 px-3 py-2 rounded">
-                        <span className="font-medium">Tip:</span> {step.tip}
-                      </p>
-                    )}
-                  </div>
-                </li>
-              ))}
+              {recipe.instructions.map(
+                (step: RecipeInstruction, idx: number) => (
+                  <li key={idx} className="flex gap-4">
+                    <span className="flex-shrink-0 w-8 h-8 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center font-semibold text-sm">
+                      {step.step}
+                    </span>
+                    <div className="flex-1 pt-1">
+                      <p className="text-gray-700">{step.instruction}</p>
+                      {step.time && (
+                        <p className="text-sm text-gray-500 mt-1 flex items-center gap-1">
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                          {step.time}
+                        </p>
+                      )}
+                      {step.tip && (
+                        <p className="text-sm text-emerald-700 mt-2 bg-emerald-50 px-3 py-2 rounded">
+                          <span className="font-medium">Tip:</span> {step.tip}
+                        </p>
+                      )}
+                    </div>
+                  </li>
+                )
+              )}
             </ol>
           </div>
 
@@ -441,10 +491,7 @@ export default function RecipeByIdPage({ params }: PageProps) {
               </h2>
               <ul className="space-y-2">
                 {recipe.tips.map((tip, idx) => (
-                  <li
-                    key={idx}
-                    className="flex gap-2 text-sm text-gray-700"
-                  >
+                  <li key={idx} className="flex gap-2 text-sm text-gray-700">
                     <svg
                       className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0"
                       fill="none"

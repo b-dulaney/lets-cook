@@ -10,7 +10,12 @@ interface CookingStepProps {
   totalSteps: number;
 }
 
-export function CookingStep({ instruction, nextInstruction, currentStep, totalSteps }: CookingStepProps) {
+export function CookingStep({
+  instruction,
+  nextInstruction,
+  currentStep,
+  totalSteps,
+}: CookingStepProps) {
   return (
     <div className="flex flex-col items-center text-center px-4 sm:px-8">
       {/* Step indicator */}

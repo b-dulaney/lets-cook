@@ -8,9 +8,9 @@ import {
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-100 via-white to-emerald-50 relative">
+    <div className="min-h-screen bg-linear-to-br from-emerald-100 via-white to-emerald-50 relative">
       {/* Gradient overlay for depth */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-emerald-200/40 via-transparent to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,var(--tw-gradient-stops))] from-emerald-200/40 via-transparent to-transparent pointer-events-none" />
 
       {/* Header */}
       <header className="py-4 px-6 relative">

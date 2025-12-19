@@ -20,10 +20,13 @@ export default function CookingModePage({ params }: PageProps) {
   const [error, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [showIngredients, setShowIngredients] = useState(false);
-  const [voiceEnabled, setVoiceEnabled] = useState(true);
+
+  // Voice is always enabled in cooking mode - can add toggle UI later if needed
+  const voiceEnabled = true;
 
   useEffect(() => {
     fetchRecipe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const fetchRecipe = async () => {
@@ -129,9 +132,10 @@ export default function CookingModePage({ params }: PageProps) {
 
   const totalSteps = recipe.instructions.length;
   const instruction = recipe.instructions[currentStep];
-  const nextInstruction = currentStep < totalSteps - 1
-    ? recipe.instructions[currentStep + 1]
-    : undefined;
+  const nextInstruction =
+    currentStep < totalSteps - 1
+      ? recipe.instructions[currentStep + 1]
+      : undefined;
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === totalSteps - 1;
 
@@ -150,7 +154,11 @@ export default function CookingModePage({ params }: PageProps) {
             stroke="currentColor"
             strokeWidth={2}
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
           <span className="hidden sm:inline font-medium">Exit</span>
         </button>
@@ -184,12 +192,12 @@ export default function CookingModePage({ params }: PageProps) {
       {/* Main content */}
       <main className="flex-1 overflow-y-auto py-8 sm:py-12">
         <div className="min-h-full flex items-center justify-center">
-        <CookingStep
-          instruction={instruction}
-          nextInstruction={nextInstruction}
-          currentStep={currentStep + 1}
-          totalSteps={totalSteps}
-        />
+          <CookingStep
+            instruction={instruction}
+            nextInstruction={nextInstruction}
+            currentStep={currentStep + 1}
+            totalSteps={totalSteps}
+          />
         </div>
       </main>
 
@@ -206,8 +214,18 @@ export default function CookingModePage({ params }: PageProps) {
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
             }`}
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
             <span className="hidden sm:inline">Previous</span>
           </button>
@@ -217,7 +235,13 @@ export default function CookingModePage({ params }: PageProps) {
             onClick={() => setShowIngredients(true)}
             className="flex items-center gap-2 px-4 sm:px-6 py-3 bg-white border border-gray-300 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -232,14 +256,36 @@ export default function CookingModePage({ params }: PageProps) {
             onClick={handleNext}
             className="flex items-center gap-2 px-4 sm:px-6 py-3 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 transition-colors cursor-pointer"
           >
-            <span className="hidden sm:inline">{isLastStep ? "Finish" : "Next"}</span>
+            <span className="hidden sm:inline">
+              {isLastStep ? "Finish" : "Next"}
+            </span>
             {isLastStep ? (
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
             ) : (
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
             )}
           </button>

@@ -518,7 +518,7 @@ export default function MealPlanDetailPage({
                   </div>
                 )}
               </div>
-            )
+            ),
           )}
         </div>
       )}
@@ -593,7 +593,7 @@ export default function MealPlanDetailPage({
                       )}
                     </ul>
                   </div>
-                )
+                ),
             )}
           </div>
           <button

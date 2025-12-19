@@ -36,9 +36,7 @@ function LoginContent() {
         <h1 className="text-2xl font-bold text-emerald-800 font-display">
           Let&apos;s Cook
         </h1>
-        <h2 className="mt-1 text-gray-600">
-          Welcome back, Chef!
-        </h2>
+        <h2 className="mt-1 text-gray-600">Welcome back, Chef!</h2>
       </div>
 
       {/* Login card */}
@@ -89,9 +87,7 @@ function LoginFallback() {
         <h1 className="text-2xl font-bold text-emerald-800 font-display">
           Let&apos;s Cook
         </h1>
-        <h2 className="mt-1 text-gray-600">
-          Welcome back, Chef!
-        </h2>
+        <h2 className="mt-1 text-gray-600">Welcome back, Chef!</h2>
       </div>
       <div className="bg-white rounded-2xl shadow-lg border border-emerald-100 p-6 sm:p-8">
         <div className="w-full h-12 bg-gray-100 rounded-xl animate-pulse" />
@@ -112,8 +108,18 @@ export default function LoginPage() {
           href="/"
           className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-emerald-700 transition-colors"
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
           Back to home
         </Link>

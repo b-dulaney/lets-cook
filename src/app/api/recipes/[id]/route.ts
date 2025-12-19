@@ -41,10 +41,15 @@ function dbToFullRecipe(dbRecipe: DbRecipe): FullRecipe {
     totalTime: dbRecipe.total_time || "N/A",
     difficulty: (dbRecipe.difficulty as "Easy" | "Medium" | "Hard") || "Medium",
     ingredients: dbRecipe.ingredients as unknown as FullRecipe["ingredients"],
-    instructions: dbRecipe.instructions as unknown as FullRecipe["instructions"],
+    instructions:
+      dbRecipe.instructions as unknown as FullRecipe["instructions"],
     tips: metadata.tips || [],
     substitutions: metadata.substitutions || [],
-    nutrition: metadata.nutrition || { calories: "N/A", protein: "N/A", notes: "" },
+    nutrition: metadata.nutrition || {
+      calories: "N/A",
+      protein: "N/A",
+      notes: "",
+    },
   };
 }
 

@@ -81,7 +81,9 @@ function SavedRecipeCard({ recipe }: { recipe: SavedRecipe }) {
       className="block bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md hover:border-gray-300 transition-all"
     >
       {/* Colored gradient header */}
-      <div className={`h-40 bg-gradient-to-br ${gradientClass} flex items-center justify-center`}>
+      <div
+        className={`h-40 bg-gradient-to-br ${gradientClass} flex items-center justify-center`}
+      >
         <svg
           className={`w-12 h-12 ${iconColorClass}`}
           fill="none"
@@ -190,6 +192,7 @@ export default function SavedRecipesPage() {
 
   useEffect(() => {
     fetchRecipes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter, debouncedSearch]);
 
   const fetchRecipes = async () => {

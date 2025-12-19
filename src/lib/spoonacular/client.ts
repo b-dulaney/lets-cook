@@ -27,7 +27,9 @@ interface SearchResponse {
  *
  * @param searchTerms - Simple 1-2 word food term (e.g., "salmon", "pasta", "tacos")
  */
-export async function searchRecipeImage(searchTerms: string): Promise<string | null> {
+export async function searchRecipeImage(
+  searchTerms: string,
+): Promise<string | null> {
   if (!SPOONACULAR_API_KEY) {
     console.warn("SPOONACULAR_API_KEY not configured - skipping image fetch");
     return null;
@@ -44,7 +46,9 @@ export async function searchRecipeImage(searchTerms: string): Promise<string | n
     const response = await fetch(`${BASE_URL}/recipes/complexSearch?${params}`);
 
     if (!response.ok) {
-      console.error(`Spoonacular API error: ${response.status} ${response.statusText}`);
+      console.error(
+        `Spoonacular API error: ${response.status} ${response.statusText}`,
+      );
       return null;
     }
 

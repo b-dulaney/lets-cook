@@ -16,7 +16,8 @@ export default async function AppLayout({
   const profile = await getUserProfile();
 
   // Get avatar from Google OAuth metadata
-  const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || null;
+  const avatarUrl =
+    user.user_metadata?.avatar_url || user.user_metadata?.picture || null;
 
   return (
     <AppShell

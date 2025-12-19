@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { getRecipeDetails } from "@/lib/claude/client";
-import { searchRecipeImage } from "@/lib/spoonacular/client";
 import type { Json } from "@/types/database";
 
 // Parse time string like "30 minutes" to number
@@ -24,17 +23,28 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { recipeName, ingredients, skillLevel, cookTime, difficulty, servings } = body;
+  const {
+    recipeName,
+    ingredients,
+    skillLevel,
+    cookTime,
+    difficulty,
+    servings,
+  } = body;
 
   if (!recipeName) {
     return NextResponse.json(
       { error: "Recipe name is required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   // Build constraints from meal plan context
-  const constraints: { cookTime?: string; difficulty?: string; servings?: number } = {};
+  const constraints: {
+    cookTime?: string;
+    difficulty?: string;
+    servings?: number;
+  } = {};
   if (cookTime) constraints.cookTime = cookTime;
   if (difficulty) constraints.difficulty = difficulty;
   if (servings) constraints.servings = servings;
@@ -65,7 +75,7 @@ export async function POST(request: NextRequest) {
       recipeName,
       ingredients || [],
       userSkillLevel,
-      hasConstraints || constraints.servings ? constraints : undefined
+      hasConstraints || constraints.servings ? constraints : undefined,
     );
 
     const generatedRecipe = result.data;
@@ -124,7 +134,7 @@ export async function POST(request: NextRequest) {
     console.error("Error generating recipe details:", error);
     return NextResponse.json(
       { error: "Failed to generate recipe details" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

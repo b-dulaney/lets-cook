@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
   if (!ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
     return NextResponse.json(
       { error: "At least one ingredient is required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -38,7 +38,10 @@ export async function POST(request: NextRequest) {
 
       if (prefsData) {
         // Map skill level to valid type
-        const skillLevelMap: Record<string, "beginner" | "intermediate" | "advanced"> = {
+        const skillLevelMap: Record<
+          string,
+          "beginner" | "intermediate" | "advanced"
+        > = {
           beginner: "beginner",
           intermediate: "intermediate",
           advanced: "advanced",
@@ -48,7 +51,8 @@ export async function POST(request: NextRequest) {
           dietary: prefsData.dietary || [],
           allergies: prefsData.allergies || [],
           dislikes: prefsData.dislikes || [],
-          skillLevel: skillLevelMap[prefsData.skill_level || ""] || "intermediate",
+          skillLevel:
+            skillLevelMap[prefsData.skill_level || ""] || "intermediate",
           householdSize: prefsData.household_size || undefined,
           maxCookTime: prefsData.max_cook_time || undefined,
           budget: prefsData.budget || undefined,
@@ -57,7 +61,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const result = await findRecipes(ingredients, userPreferences, cookingMethod);
+    const result = await findRecipes(
+      ingredients,
+      userPreferences,
+      cookingMethod,
+    );
 
     return NextResponse.json({
       recipes: result.data.recipes,
@@ -67,7 +75,7 @@ export async function POST(request: NextRequest) {
     console.error("Error discovering recipes:", error);
     return NextResponse.json(
       { error: "Failed to discover recipes" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

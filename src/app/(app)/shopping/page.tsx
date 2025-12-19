@@ -61,7 +61,9 @@ export default function ShoppingListsPage() {
           .map((list: ShoppingList) => list.recipe_id);
 
         if (recipeIds.length > 0) {
-          const recipesRes = await fetch(`/api/recipes?ids=${recipeIds.join(",")}`);
+          const recipesRes = await fetch(
+            `/api/recipes?ids=${recipeIds.join(",")}`,
+          );
           if (recipesRes.ok) {
             const recipesData = await recipesRes.json();
             setRecipes(recipesData.recipes || []);
@@ -113,7 +115,9 @@ export default function ShoppingListsPage() {
     }
     if (list.meal_plan_id) {
       const planNumber = getMealPlanNumber(list.meal_plan_id);
-      return planNumber ? `Shopping List for Meal Plan ${planNumber}` : "Shopping List";
+      return planNumber
+        ? `Shopping List for Meal Plan ${planNumber}`
+        : "Shopping List";
     }
     return "Shopping List";
   };
@@ -121,7 +125,11 @@ export default function ShoppingListsPage() {
   const getCompletionStats = (items: ShoppingListItem[]) => {
     const total = items.length;
     const purchased = items.filter((i) => i.purchased).length;
-    return { total, purchased, percentage: total > 0 ? Math.round((purchased / total) * 100) : 0 };
+    return {
+      total,
+      purchased,
+      percentage: total > 0 ? Math.round((purchased / total) * 100) : 0,
+    };
   };
 
   if (loading) {
@@ -137,8 +145,18 @@ export default function ShoppingListsPage() {
           disabled={mealPlans.length === 0}
           className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 4v16m8-8H4"
+            />
           </svg>
           <span className="hidden sm:inline">New Shopping List</span>
           <span className="sm:hidden">New List</span>
@@ -153,10 +171,22 @@ export default function ShoppingListsPage() {
 
       {shoppingLists.length === 0 ? (
         <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-          <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+          <svg
+            className="mx-auto h-12 w-12 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+            />
           </svg>
-          <h3 className="mt-4 text-lg font-medium text-gray-900">No shopping lists yet</h3>
+          <h3 className="mt-4 text-lg font-medium text-gray-900">
+            No shopping lists yet
+          </h3>
           <p className="mt-2 text-gray-600 max-w-sm mx-auto">
             {mealPlans.length === 0
               ? "Create a meal plan first, then generate a shopping list from it."
@@ -194,13 +224,18 @@ export default function ShoppingListsPage() {
                       {getListName(list)}
                     </h3>
                     <p className="text-sm text-gray-600 mt-1">
-                      {list.items.length} items • Created {formatDateTime(list.created_at)}
+                      {list.items.length} items • Created{" "}
+                      {formatDateTime(list.created_at)}
                     </p>
                   </div>
                   <div className="text-right">
-                    <span className={`text-sm font-medium ${
-                      stats.percentage === 100 ? "text-green-700" : "text-gray-700"
-                    }`}>
+                    <span
+                      className={`text-sm font-medium ${
+                        stats.percentage === 100
+                          ? "text-green-700"
+                          : "text-gray-700"
+                      }`}
+                    >
                       {stats.purchased}/{stats.total}
                     </span>
                     <p className="text-xs text-gray-500">completed</p>
@@ -212,7 +247,9 @@ export default function ShoppingListsPage() {
                   <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                     <div
                       className={`h-full transition-all ${
-                        stats.percentage === 100 ? "bg-green-500" : "bg-emerald-500"
+                        stats.percentage === 100
+                          ? "bg-green-500"
+                          : "bg-emerald-500"
                       }`}
                       style={{ width: `${stats.percentage}%` }}
                     />
@@ -221,7 +258,9 @@ export default function ShoppingListsPage() {
 
                 {/* Category preview */}
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {Array.from(new Set(list.items.map((i) => i.category).filter(Boolean)))
+                  {Array.from(
+                    new Set(list.items.map((i) => i.category).filter(Boolean)),
+                  )
                     .slice(0, 4)
                     .map((category) => (
                       <span
@@ -344,8 +383,18 @@ function CreateListModal({
                   onClick={onClose}
                   className="text-gray-400 hover:text-gray-500"
                 >
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
@@ -387,8 +436,16 @@ function CreateListModal({
                         </p>
                       </div>
                       {selectedPlan === plan.id && (
-                        <svg className="w-5 h-5 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        <svg
+                          className="w-5 h-5 text-emerald-600"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clipRule="evenodd"
+                          />
                         </svg>
                       )}
                     </label>
@@ -405,9 +462,24 @@ function CreateListModal({
               >
                 {generating ? (
                   <>
-                    <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    <svg
+                      className="animate-spin w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
                     </svg>
                     Generating...
                   </>

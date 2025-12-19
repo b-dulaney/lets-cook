@@ -6,7 +6,7 @@ import type { Database } from "@/types/database";
 
 type UserProfile = Database["public"]["Tables"]["users"]["Row"];
 
-export async function signInWithGoogle(redirectTo?: string) {
+export async function signInWithGoogle() {
   const supabase = await createClient();
 
   // Use explicit app URL from env, falling back to localhost for development
@@ -54,7 +54,7 @@ export async function signInWithEmail(email: string, password: string) {
 export async function signUpWithEmail(
   email: string,
   password: string,
-  name?: string
+  name?: string,
 ) {
   const supabase = await createClient();
 

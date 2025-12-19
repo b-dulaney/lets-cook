@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
       console.error("Error fetching recipes by IDs:", error);
       return NextResponse.json(
         { error: "Failed to fetch recipes" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching recipes:", error);
     return NextResponse.json(
       { error: "Failed to fetch recipes" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -88,10 +88,7 @@ export async function POST(request: NextRequest) {
   } = body;
 
   if (!title) {
-    return NextResponse.json(
-      { error: "Title is required" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Title is required" }, { status: 400 });
   }
 
   const { data: recipe, error } = await supabase
@@ -114,7 +111,7 @@ export async function POST(request: NextRequest) {
     console.error("Error creating recipe:", error);
     return NextResponse.json(
       { error: "Failed to create recipe" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 

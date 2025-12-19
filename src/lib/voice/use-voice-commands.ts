@@ -27,7 +27,12 @@ interface UseVoiceCommandsReturn {
 const COMMANDS: Record<CookingCommand, string[]> = {
   next: ["next", "continue", "next step", "go on", "forward"],
   previous: ["previous", "back", "go back", "last step", "before"],
-  ingredients: ["ingredients", "show ingredients", "what do i need", "ingredient list"],
+  ingredients: [
+    "ingredients",
+    "show ingredients",
+    "what do i need",
+    "ingredient list",
+  ],
   exit: ["exit", "done", "finish", "stop cooking", "close", "quit"],
 };
 
@@ -43,7 +48,7 @@ function parseCommand(transcript: string): CookingCommand | null {
 }
 
 export function useVoiceCommands(
-  options: UseVoiceCommandsOptions
+  options: UseVoiceCommandsOptions,
 ): UseVoiceCommandsReturn {
   const { onNext, onPrevious, onIngredients, onExit, enabled = true } = options;
 
@@ -77,20 +82,14 @@ export function useVoiceCommands(
         setTimeout(() => setLastCommand(null), 1500);
       }
     },
-    [onNext, onPrevious, onIngredients, onExit]
+    [onNext, onPrevious, onIngredients, onExit],
   );
 
-  const {
-    isListening,
-    isSupported,
-    error,
-    start,
-    stop,
-    toggle,
-  } = useSpeechRecognition({
-    continuous: true,
-    onResult: handleResult,
-  });
+  const { isListening, isSupported, error, start, stop, toggle } =
+    useSpeechRecognition({
+      continuous: true,
+      onResult: handleResult,
+    });
 
   // Auto-start if enabled and supported
   useEffect(() => {

@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
       .eq("user_id", user.id);
 
     const favoriteIds = new Set<string>(
-      favorites?.map((f) => f.recipe_id) || []
+      favorites?.map((f) => f.recipe_id) || [],
     );
 
     // Get recipe IDs from user's meal plans via junction table
@@ -61,18 +61,25 @@ export async function GET(request: NextRequest) {
     const db = supabase as any;
     const { data: mealPlanRecipeLinks } = await db
       .from("meal_plan_recipes")
-      .select(`
+      .select(
+        `
         recipe_id,
         meal_plans!inner(user_id)
-      `)
+      `,
+      )
       .eq("meal_plans.user_id", user.id);
 
     const mealPlanRecipeIds = new Set<string>(
-      mealPlanRecipeLinks?.map((link: { recipe_id: string }) => link.recipe_id) || []
+      mealPlanRecipeLinks?.map(
+        (link: { recipe_id: string }) => link.recipe_id,
+      ) || [],
     );
 
     // Combine all recipe IDs the user has access to
-    const allRecipeIds = new Set<string>([...favoriteIds, ...mealPlanRecipeIds]);
+    const allRecipeIds = new Set<string>([
+      ...favoriteIds,
+      ...mealPlanRecipeIds,
+    ]);
 
     if (allRecipeIds.size === 0) {
       return NextResponse.json({ recipes: [] });
@@ -91,15 +98,20 @@ export async function GET(request: NextRequest) {
     // Fetch recipes - cast to any since difficulty/total_time may not be in generated types
     const { data: recipes, error } = await (db
       .from("recipes")
-      .select("id, title, description, difficulty, total_time, servings, image_url, created_at, metadata")
+      .select(
+        "id, title, description, difficulty, total_time, servings, image_url, created_at, metadata",
+      )
       .in("id", recipeIds)
-      .order("created_at", { ascending: false }) as Promise<{ data: DbRecipe[] | null; error: Error | null }>);
+      .order("created_at", { ascending: false }) as Promise<{
+      data: DbRecipe[] | null;
+      error: Error | null;
+    }>);
 
     if (error) {
       console.error("Error fetching saved recipes:", error);
       return NextResponse.json(
         { error: "Failed to fetch saved recipes" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -108,30 +120,32 @@ export async function GET(request: NextRequest) {
     if (search) {
       const searchLower = search.toLowerCase();
       filteredRecipes = filteredRecipes.filter((r) =>
-        r.title.toLowerCase().includes(searchLower)
+        r.title.toLowerCase().includes(searchLower),
       );
     }
 
     // Add isFavorite flag to each recipe
-    const recipesWithFavorites: SavedRecipe[] = filteredRecipes.map((recipe) => ({
-      id: recipe.id,
-      title: recipe.title,
-      description: recipe.description,
-      difficulty: recipe.difficulty,
-      total_time: recipe.total_time,
-      servings: recipe.servings,
-      image_url: recipe.image_url,
-      created_at: recipe.created_at,
-      metadata: recipe.metadata as SavedRecipe["metadata"],
-      isFavorite: favoriteIds.has(recipe.id),
-    }));
+    const recipesWithFavorites: SavedRecipe[] = filteredRecipes.map(
+      (recipe) => ({
+        id: recipe.id,
+        title: recipe.title,
+        description: recipe.description,
+        difficulty: recipe.difficulty,
+        total_time: recipe.total_time,
+        servings: recipe.servings,
+        image_url: recipe.image_url,
+        created_at: recipe.created_at,
+        metadata: recipe.metadata as SavedRecipe["metadata"],
+        isFavorite: favoriteIds.has(recipe.id),
+      }),
+    );
 
     return NextResponse.json({ recipes: recipesWithFavorites });
   } catch (error) {
     console.error("Error fetching saved recipes:", error);
     return NextResponse.json(
       { error: "Failed to fetch saved recipes" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

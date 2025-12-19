@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
     if (!message) {
       return NextResponse.json(
         { error: "Message is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -194,14 +194,15 @@ export async function POST(request: NextRequest) {
     console.error("Chat API error:", error);
     return NextResponse.json(
       { error: "Internal server error", details: String(error) },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 // GET endpoint to check session state
 export async function GET(request: NextRequest) {
-  const sessionId = request.nextUrl.searchParams.get("sessionId") || "test-session";
+  const sessionId =
+    request.nextUrl.searchParams.get("sessionId") || "test-session";
   const sessionData = sessions.get(sessionId) || {};
 
   return NextResponse.json({

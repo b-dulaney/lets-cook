@@ -21,7 +21,7 @@ const APPLIANCE_LABELS: Record<string, string> = {
   "air-fryer": "Air Fryer",
   "slow-cooker": "Slow Cooker",
   "instant-pot": "Instant Pot",
-  "grill": "Grill",
+  grill: "Grill",
 };
 
 export default function RecipesPage() {
@@ -207,51 +207,51 @@ export default function RecipesPage() {
             className="flex-1 flex flex-wrap gap-2 p-3 border border-gray-300 rounded-lg bg-gray-50 min-h-13 cursor-text"
             onClick={() => inputRef.current?.focus()}
           >
-          {ingredients.map((ingredient, idx) => (
-            <span
-              key={idx}
-              className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-sm"
-            >
-              {ingredient}
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleRemoveIngredient(idx);
-                }}
-                className="ml-1 text-emerald-600 hover:text-emerald-800 cursor-pointer"
+            {ingredients.map((ingredient, idx) => (
+              <span
+                key={idx}
+                className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-sm"
               >
-                <svg
-                  className="w-3.5 h-3.5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+                {ingredient}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRemoveIngredient(idx);
+                  }}
+                  className="ml-1 text-emerald-600 hover:text-emerald-800 cursor-pointer"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </span>
-          ))}
-          <input
-            ref={inputRef}
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={
-              isListening
-                ? "Listening... say ingredients"
-                : ingredients.length === 0
-                ? "Type an ingredient and press Enter..."
-                : "Add more..."
-            }
-            className="flex-1 min-w-[150px] outline-none bg-transparent text-gray-900 placeholder:text-gray-500"
-          />
+                  <svg
+                    className="w-3.5 h-3.5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </span>
+            ))}
+            <input
+              ref={inputRef}
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={
+                isListening
+                  ? "Listening... say ingredients"
+                  : ingredients.length === 0
+                  ? "Type an ingredient and press Enter..."
+                  : "Add more..."
+              }
+              className="flex-min-w-37.5x] outline-none bg-transparent text-gray-900 placeholder:text-gray-500"
+            />
           </div>
           <VoiceButton
             isListening={isListening}
@@ -310,7 +310,8 @@ export default function RecipesPage() {
             </div>
             {cookingMethod && (
               <p className="text-xs text-gray-500 mt-2">
-                Recipes will use your {APPLIANCE_LABELS[cookingMethod] || cookingMethod}
+                Recipes will use your{" "}
+                {APPLIANCE_LABELS[cookingMethod] || cookingMethod}
               </p>
             )}
           </div>

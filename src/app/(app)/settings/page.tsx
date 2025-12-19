@@ -81,7 +81,10 @@ const CUISINES = [
 export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   // Form state
   const [skillLevel, setSkillLevel] = useState<string>("");
@@ -144,17 +147,28 @@ export default function SettingsPage() {
           dietary,
           allergies,
           appliances,
-          dislikes: dislikes ? dislikes.split(",").map((s) => s.trim()).filter(Boolean) : [],
+          dislikes: dislikes
+            ? dislikes
+                .split(",")
+                .map((s) => s.trim())
+                .filter(Boolean)
+            : [],
           favoriteCuisines,
           additionalNotes: additionalNotes || null,
         }),
       });
 
       if (res.ok) {
-        setMessage({ type: "success", text: "Preferences saved successfully!" });
+        setMessage({
+          type: "success",
+          text: "Preferences saved successfully!",
+        });
       } else {
         const data = await res.json();
-        setMessage({ type: "error", text: data.error || "Failed to save preferences" });
+        setMessage({
+          type: "error",
+          text: data.error || "Failed to save preferences",
+        });
       }
     } catch (error) {
       console.error("Error saving preferences:", error);
@@ -167,7 +181,7 @@ export default function SettingsPage() {
   const toggleArrayItem = (
     arr: string[],
     setArr: (arr: string[]) => void,
-    item: string
+    item: string,
   ) => {
     if (arr.includes(item)) {
       setArr(arr.filter((i) => i !== item));
@@ -199,7 +213,9 @@ export default function SettingsPage() {
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Cooking Experience */}
         <section className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Cooking Experience</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Cooking Experience
+          </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -291,7 +307,9 @@ export default function SettingsPage() {
 
         {/* Dietary Preferences */}
         <section className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Dietary Preferences</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Dietary Preferences
+          </h2>
           <p className="text-sm text-gray-600 mb-3">Select all that apply</p>
           <div className="flex flex-wrap gap-2">
             {COMMON_DIETARY.map((item) => (
@@ -313,8 +331,12 @@ export default function SettingsPage() {
 
         {/* Allergies */}
         <section className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Allergies</h2>
-          <p className="text-sm text-gray-600 mb-3">Select any food allergies</p>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Allergies
+          </h2>
+          <p className="text-sm text-gray-600 mb-3">
+            Select any food allergies
+          </p>
           <div className="flex flex-wrap gap-2">
             {COMMON_ALLERGIES.map((item) => (
               <button
@@ -335,14 +357,21 @@ export default function SettingsPage() {
 
         {/* Kitchen Appliances */}
         <section className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Kitchen Appliances</h2>
-          <p className="text-sm text-gray-600 mb-3">Select appliances you have - we&apos;ll suggest recipes that use them</p>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Kitchen Appliances
+          </h2>
+          <p className="text-sm text-gray-600 mb-3">
+            Select appliances you have - we&apos;ll suggest recipes that use
+            them
+          </p>
           <div className="flex flex-wrap gap-2">
             {KITCHEN_APPLIANCES.map((item) => (
               <button
                 key={item.value}
                 type="button"
-                onClick={() => toggleArrayItem(appliances, setAppliances, item.value)}
+                onClick={() =>
+                  toggleArrayItem(appliances, setAppliances, item.value)
+                }
                 className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                   appliances.includes(item.value)
                     ? "bg-orange-600 text-white"
@@ -357,14 +386,20 @@ export default function SettingsPage() {
 
         {/* Favorite Cuisines */}
         <section className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Favorite Cuisines</h2>
-          <p className="text-sm text-gray-600 mb-3">Select cuisines you enjoy</p>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Favorite Cuisines
+          </h2>
+          <p className="text-sm text-gray-600 mb-3">
+            Select cuisines you enjoy
+          </p>
           <div className="flex flex-wrap gap-2">
             {CUISINES.map((item) => (
               <button
                 key={item}
                 type="button"
-                onClick={() => toggleArrayItem(favoriteCuisines, setFavoriteCuisines, item)}
+                onClick={() =>
+                  toggleArrayItem(favoriteCuisines, setFavoriteCuisines, item)
+                }
                 className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                   favoriteCuisines.includes(item)
                     ? "bg-green-600 text-white"
@@ -379,7 +414,9 @@ export default function SettingsPage() {
 
         {/* Dislikes & Notes */}
         <section className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Additional Information</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Additional Information
+          </h2>
 
           <div className="space-y-4">
             <div>
@@ -393,7 +430,9 @@ export default function SettingsPage() {
                 placeholder="e.g., cilantro, olives, mushrooms"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500 focus:ring-emerald-500 focus:border-emerald-500"
               />
-              <p className="mt-1 text-xs text-gray-500">Separate items with commas</p>
+              <p className="mt-1 text-xs text-gray-500">
+                Separate items with commas
+              </p>
             </div>
 
             <div>

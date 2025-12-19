@@ -3,11 +3,7 @@ interface SkeletonProps {
 }
 
 export function Skeleton({ className = "" }: SkeletonProps) {
-  return (
-    <div
-      className={`animate-pulse bg-gray-200 rounded ${className}`}
-    />
-  );
+  return <div className={`animate-pulse bg-gray-200 rounded ${className}`} />;
 }
 
 export function SkeletonText({ className = "" }: SkeletonProps) {
@@ -130,7 +126,10 @@ export function SkeletonMealPlanDetail() {
       {/* Days */}
       <div className="grid gap-4 mb-8">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+          <div
+            key={i}
+            className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6"
+          >
             <div className="flex items-center gap-3 mb-2">
               <Skeleton className="h-6 w-16 rounded" />
               <Skeleton className="h-5 w-12 rounded" />
@@ -178,7 +177,10 @@ export function SkeletonShoppingListDetail() {
       {/* Categories */}
       <div className="space-y-6">
         {[...Array(3)].map((_, i) => (
-          <div key={i} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <div
+            key={i}
+            className="bg-white rounded-lg border border-gray-200 overflow-hidden"
+          >
             <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
               <SkeletonHeading className="w-24 mb-1" />
               <SkeletonText className="w-16" />
@@ -200,7 +202,13 @@ export function SkeletonShoppingListDetail() {
 }
 
 // List page skeleton (meal plans or shopping lists)
-export function SkeletonListPage({ cardCount = 3, type = "meal-plan" }: { cardCount?: number; type?: "meal-plan" | "shopping" }) {
+export function SkeletonListPage({
+  cardCount = 3,
+  type = "meal-plan",
+}: {
+  cardCount?: number;
+  type?: "meal-plan" | "shopping";
+}) {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -208,9 +216,13 @@ export function SkeletonListPage({ cardCount = 3, type = "meal-plan" }: { cardCo
         <SkeletonButton />
       </div>
       <div className="grid gap-4">
-        {[...Array(cardCount)].map((_, i) => (
-          type === "meal-plan" ? <SkeletonCard key={i} /> : <SkeletonShoppingCard key={i} />
-        ))}
+        {[...Array(cardCount)].map((_, i) =>
+          type === "meal-plan" ? (
+            <SkeletonCard key={i} />
+          ) : (
+            <SkeletonShoppingCard key={i} />
+          ),
+        )}
       </div>
     </div>
   );
@@ -329,7 +341,10 @@ export function SkeletonSettings() {
       <SkeletonHeading className="w-24 mb-6" />
 
       {[...Array(4)].map((_, i) => (
-        <div key={i} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+        <div
+          key={i}
+          className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8"
+        >
           <SkeletonHeading className="w-40 mb-4" />
           {i === 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

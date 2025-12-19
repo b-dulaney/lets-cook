@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching meal plans:", error);
     return NextResponse.json(
       { error: "Failed to fetch meal plans" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -50,7 +50,14 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { weekStart, meals, generate, numberOfDays, preferences, slowCookerMeals } = body;
+  const {
+    weekStart,
+    meals,
+    generate,
+    numberOfDays,
+    preferences,
+    slowCookerMeals,
+  } = body;
 
   // If generate flag is set, use Claude to create the meal plan
   if (generate) {
@@ -78,7 +85,12 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      const response = await createMealPlan(preferences, numberOfDays || 7, recentRecipes, slowCookerMeals);
+      const response = await createMealPlan(
+        preferences,
+        numberOfDays || 7,
+        recentRecipes,
+        slowCookerMeals,
+      );
 
       // Calculate week start date (next Monday if not provided)
       const startDate = weekStart || getNextMonday();
@@ -97,7 +109,7 @@ export async function POST(request: NextRequest) {
         console.error("Error saving meal plan:", error);
         return NextResponse.json(
           { error: "Failed to save meal plan" },
-          { status: 500 }
+          { status: 500 },
         );
       }
 
@@ -109,7 +121,7 @@ export async function POST(request: NextRequest) {
       console.error("Error generating meal plan:", error);
       return NextResponse.json(
         { error: "Failed to generate meal plan" },
-        { status: 500 }
+        { status: 500 },
       );
     }
   }
@@ -118,7 +130,7 @@ export async function POST(request: NextRequest) {
   if (!weekStart || !meals) {
     return NextResponse.json(
       { error: "weekStart and meals are required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -136,7 +148,7 @@ export async function POST(request: NextRequest) {
     console.error("Error creating meal plan:", error);
     return NextResponse.json(
       { error: "Failed to create meal plan" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 

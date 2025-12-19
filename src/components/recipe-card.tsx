@@ -15,7 +15,11 @@ const difficultyColors = {
   Hard: "bg-red-100 text-red-700",
 };
 
-export function RecipeCard({ recipe, onSelect, backTo = "/recipes" }: RecipeCardProps) {
+export function RecipeCard({
+  recipe,
+  onSelect,
+  backTo = "/recipes",
+}: RecipeCardProps) {
   const router = useRouter();
 
   const handleClick = () => {
@@ -90,7 +94,9 @@ export function RecipeCard({ recipe, onSelect, backTo = "/recipes" }: RecipeCard
       </div>
 
       <div className="border-t border-gray-100 pt-3">
-        <p className="text-xs font-medium text-gray-500 mb-2">Uses your ingredients:</p>
+        <p className="text-xs font-medium text-gray-500 mb-2">
+          Uses your ingredients:
+        </p>
         <div className="flex flex-wrap gap-1">
           {recipe.usesIngredients.slice(0, 5).map((ingredient, idx) => (
             <span
@@ -109,7 +115,9 @@ export function RecipeCard({ recipe, onSelect, backTo = "/recipes" }: RecipeCard
 
         {recipe.additionalIngredients.length > 0 && (
           <div className="mt-2">
-            <p className="text-xs font-medium text-gray-500 mb-1">You&apos;ll also need:</p>
+            <p className="text-xs font-medium text-gray-500 mb-1">
+              You&apos;ll also need:
+            </p>
             <p className="text-xs text-gray-600">
               {recipe.additionalIngredients.slice(0, 4).join(", ")}
               {recipe.additionalIngredients.length > 4 &&

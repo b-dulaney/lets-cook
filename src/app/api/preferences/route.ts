@@ -23,7 +23,7 @@ export async function GET() {
     console.error("Error fetching preferences:", error);
     return NextResponse.json(
       { error: "Failed to fetch preferences" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -71,15 +71,13 @@ export async function PUT(request: NextRequest) {
   if (allergies !== undefined) updates.allergies = allergies;
   if (appliances !== undefined) updates.appliances = appliances;
   if (dislikes !== undefined) updates.dislikes = dislikes;
-  if (favoriteCuisines !== undefined) updates.favorite_cuisines = favoriteCuisines;
+  if (favoriteCuisines !== undefined)
+    updates.favorite_cuisines = favoriteCuisines;
   if (pantryItems !== undefined) updates.pantry_items = pantryItems;
   if (additionalNotes !== undefined) updates.additional_notes = additionalNotes;
 
   if (Object.keys(updates).length === 0) {
-    return NextResponse.json(
-      { error: "No fields to update" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "No fields to update" }, { status: 400 });
   }
 
   const { data: preferences, error } = await supabase
@@ -93,7 +91,7 @@ export async function PUT(request: NextRequest) {
     console.error("Error updating preferences:", error);
     return NextResponse.json(
       { error: "Failed to update preferences" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 

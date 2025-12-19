@@ -37,10 +37,10 @@ export function VoiceStatus({
           error
             ? "bg-red-100 text-red-700"
             : lastCommand
-            ? "bg-emerald-100 text-emerald-700"
-            : isListening
-            ? "bg-red-50 text-red-600"
-            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              ? "bg-emerald-100 text-emerald-700"
+              : isListening
+                ? "bg-red-50 text-red-600"
+                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
         }
       `}
     >
@@ -69,10 +69,10 @@ export function VoiceStatus({
         {error
           ? "Mic Error"
           : lastCommand
-          ? commandLabels[lastCommand]
-          : isListening
-          ? "Listening..."
-          : "Voice Off"}
+            ? commandLabels[lastCommand]
+            : isListening
+              ? "Listening..."
+              : "Voice Off"}
       </span>
     </button>
   );

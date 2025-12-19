@@ -90,7 +90,6 @@ type TaskContext =
 interface AskClaudeParams {
   task: TaskType;
   context: TaskContext;
-  sessionId: string;
 }
 
 // Response types for each task
@@ -215,7 +214,7 @@ function buildPrompt(task: TaskType, context: TaskContext): string {
       return getRecipeDetailsPrompt(
         ctx.recipeName,
         ctx.ingredients,
-        ctx.skillLevel
+        ctx.skillLevel,
       );
     }
 
@@ -223,7 +222,7 @@ function buildPrompt(task: TaskType, context: TaskContext): string {
       const ctx = context as CreateMealPlanContext;
       return generateWeeklyMealPlanPrompt(
         ctx.userPreferences || {},
-        ctx.numberOfDays || 7
+        ctx.numberOfDays || 7,
       );
     }
 
@@ -236,7 +235,7 @@ function buildPrompt(task: TaskType, context: TaskContext): string {
       const ctx = context as UpdatePreferencesContext;
       return updateUserPreferencesPrompt(
         ctx.userInput,
-        ctx.currentPreferences || {}
+        ctx.currentPreferences || {},
       );
     }
 
@@ -254,7 +253,7 @@ function buildPrompt(task: TaskType, context: TaskContext): string {
       const ctx = context as CookingModeContext;
       return COOKING_MODE_PROMPT.replace(
         "{recipe}",
-        JSON.stringify(ctx.recipe, null, 2)
+        JSON.stringify(ctx.recipe, null, 2),
       ).replace("{currentStep}", String(ctx.currentStep || 1));
     }
 
@@ -262,7 +261,7 @@ function buildPrompt(task: TaskType, context: TaskContext): string {
       const ctx = context as GeneralQueryContext;
       return GENERAL_QUERY_PROMPT.replace(
         "{preferences}",
-        JSON.stringify(ctx.userPreferences || {}, null, 2)
+        JSON.stringify(ctx.userPreferences || {}, null, 2),
       ).replace("{query}", ctx.query);
     }
 
@@ -322,7 +321,6 @@ function getTemperatureForTask(task: TaskType): number {
 export async function askClaude({
   task,
   context,
-  sessionId,
 }: AskClaudeParams): Promise<ClaudeResponse> {
   const prompt = buildPrompt(task, context);
   const model = getModelForTask(task);
@@ -376,9 +374,13 @@ export async function askClaude({
 export async function findRecipes(
   ingredients: string[],
   userPreferences?: UserPreferences,
-  cookingMethod?: string
+  cookingMethod?: string,
 ): Promise<RecipeSuggestionsResponse> {
-  const prompt = generateRecipePrompt(ingredients, userPreferences || {}, cookingMethod);
+  const prompt = generateRecipePrompt(
+    ingredients,
+    userPreferences || {},
+    cookingMethod,
+  );
 
   const response = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
@@ -390,7 +392,7 @@ export async function findRecipes(
   });
 
   const toolUse = response.content.find(
-    (block): block is Anthropic.ToolUseBlock => block.type === "tool_use"
+    (block): block is Anthropic.ToolUseBlock => block.type === "tool_use",
   );
 
   if (!toolUse) {
@@ -409,9 +411,14 @@ export async function getRecipeDetails(
   recipeName: string,
   ingredients: string[],
   skillLevel?: string,
-  constraints?: RecipeConstraints
+  constraints?: RecipeConstraints,
 ): Promise<RecipeDetailsResponse> {
-  const prompt = getRecipeDetailsPrompt(recipeName, ingredients, skillLevel, constraints);
+  const prompt = getRecipeDetailsPrompt(
+    recipeName,
+    ingredients,
+    skillLevel,
+    constraints,
+  );
 
   const response = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
@@ -423,7 +430,7 @@ export async function getRecipeDetails(
   });
 
   const toolUse = response.content.find(
-    (block): block is Anthropic.ToolUseBlock => block.type === "tool_use"
+    (block): block is Anthropic.ToolUseBlock => block.type === "tool_use",
   );
 
   if (!toolUse) {
@@ -442,9 +449,14 @@ export async function createMealPlan(
   userPreferences?: UserPreferences,
   numberOfDays: number = 7,
   recentRecipes: string[] = [],
-  slowCookerMeals?: number
+  slowCookerMeals?: number,
 ): Promise<MealPlanResponse> {
-  const prompt = generateWeeklyMealPlanPrompt(userPreferences || {}, numberOfDays, recentRecipes, slowCookerMeals);
+  const prompt = generateWeeklyMealPlanPrompt(
+    userPreferences || {},
+    numberOfDays,
+    recentRecipes,
+    slowCookerMeals,
+  );
 
   const response = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
@@ -456,7 +468,7 @@ export async function createMealPlan(
   });
 
   const toolUse = response.content.find(
-    (block): block is Anthropic.ToolUseBlock => block.type === "tool_use"
+    (block): block is Anthropic.ToolUseBlock => block.type === "tool_use",
   );
 
   if (!toolUse) {
@@ -473,7 +485,7 @@ export async function createMealPlan(
 
 export async function generateShoppingList(
   mealPlan: WeeklyMealPlan | MealPlanDay[],
-  pantryItems?: string[]
+  pantryItems?: string[],
 ): Promise<ShoppingListResponse> {
   const prompt = generateShoppingListPrompt(mealPlan, pantryItems);
 
@@ -487,14 +499,22 @@ export async function generateShoppingList(
   });
 
   // Log response metadata for debugging
-  console.log("Shopping list response - stop_reason:", response.stop_reason, "usage:", response.usage);
+  console.log(
+    "Shopping list response - stop_reason:",
+    response.stop_reason,
+    "usage:",
+    response.usage,
+  );
 
   const toolUse = response.content.find(
-    (block): block is Anthropic.ToolUseBlock => block.type === "tool_use"
+    (block): block is Anthropic.ToolUseBlock => block.type === "tool_use",
   );
 
   if (!toolUse) {
-    console.error("No tool_use block in Claude response:", JSON.stringify(response.content, null, 2));
+    console.error(
+      "No tool_use block in Claude response:",
+      JSON.stringify(response.content, null, 2),
+    );
     throw new Error("Failed to get structured response from Claude");
   }
 
@@ -502,7 +522,10 @@ export async function generateShoppingList(
 
   // Validate the response structure
   if (!result.shoppingList) {
-    console.error("Claude tool response missing shoppingList:", JSON.stringify(result, null, 2));
+    console.error(
+      "Claude tool response missing shoppingList:",
+      JSON.stringify(result, null, 2),
+    );
     console.error("Full tool_use block:", JSON.stringify(toolUse, null, 2));
     throw new Error("Claude response missing required shoppingList property");
   }
@@ -516,18 +539,16 @@ export async function generateShoppingList(
 export async function updatePreferences(
   userInput: string,
   currentPreferences?: UserPreferences,
-  sessionId: string = "default"
 ): Promise<PreferencesResponse> {
   return askClaude({
     task: "update_preferences",
     context: { userInput, currentPreferences },
-    sessionId,
   }) as Promise<PreferencesResponse>;
 }
 
 export async function modifyRecipe(
   recipe: FullRecipe,
-  modification: string
+  modification: string,
 ): Promise<ModifiedRecipeResponse> {
   const prompt = modifyRecipePrompt(recipe, modification);
 
@@ -541,7 +562,7 @@ export async function modifyRecipe(
   });
 
   const toolUse = response.content.find(
-    (block): block is Anthropic.ToolUseBlock => block.type === "tool_use"
+    (block): block is Anthropic.ToolUseBlock => block.type === "tool_use",
   );
 
   if (!toolUse) {
@@ -574,7 +595,10 @@ const findRecipesTool: Anthropic.Tool = {
           type: "object",
           properties: {
             name: { type: "string", description: "Name of the recipe" },
-            description: { type: "string", description: "Brief description of the dish" },
+            description: {
+              type: "string",
+              description: "Brief description of the dish",
+            },
             cookTime: { type: "string", description: "Total cooking time" },
             difficulty: { type: "string", enum: ["Easy", "Medium", "Hard"] },
             usesIngredients: {
@@ -589,7 +613,15 @@ const findRecipesTool: Anthropic.Tool = {
             },
             cuisineType: { type: "string", description: "Type of cuisine" },
           },
-          required: ["name", "description", "cookTime", "difficulty", "usesIngredients", "additionalIngredients", "cuisineType"],
+          required: [
+            "name",
+            "description",
+            "cookTime",
+            "difficulty",
+            "usesIngredients",
+            "additionalIngredients",
+            "cuisineType",
+          ],
         },
       },
     },
@@ -600,7 +632,8 @@ const findRecipesTool: Anthropic.Tool = {
 // Tool for full recipe details
 const recipeDetailsTool: Anthropic.Tool = {
   name: "submit_recipe_details",
-  description: "Submit complete recipe details with ingredients, instructions, and tips",
+  description:
+    "Submit complete recipe details with ingredients, instructions, and tips",
   input_schema: {
     type: "object" as const,
     properties: {
@@ -659,27 +692,89 @@ const recipeDetailsTool: Anthropic.Tool = {
       },
       cuisineType: {
         type: "string",
-        enum: ["African", "American", "British", "Cajun", "Caribbean", "Chinese", "Eastern European", "French", "German", "Greek", "Indian", "Irish", "Italian", "Japanese", "Jewish", "Korean", "Latin American", "Mediterranean", "Mexican", "Middle Eastern", "Nordic", "Southern", "Spanish", "Thai", "Vietnamese"],
+        enum: [
+          "African",
+          "American",
+          "British",
+          "Cajun",
+          "Caribbean",
+          "Chinese",
+          "Eastern European",
+          "French",
+          "German",
+          "Greek",
+          "Indian",
+          "Irish",
+          "Italian",
+          "Japanese",
+          "Jewish",
+          "Korean",
+          "Latin American",
+          "Mediterranean",
+          "Mexican",
+          "Middle Eastern",
+          "Nordic",
+          "Southern",
+          "Spanish",
+          "Thai",
+          "Vietnamese",
+        ],
         description: "The cuisine type of this recipe",
       },
       imageSearchTerms: {
         type: "string",
-        description: "TWO or THREE words: main protein/ingredient + dish type (e.g., 'chicken pasta', 'beef tacos', 'salmon bowl', 'vegetable curry')",
+        description:
+          "TWO or THREE words: main protein/ingredient + dish type (e.g., 'chicken pasta', 'beef tacos', 'salmon bowl', 'vegetable curry')",
       },
       cardColor: {
         type: "string",
-        enum: ["red", "orange", "amber", "yellow", "lime", "green", "emerald", "teal", "cyan", "sky", "blue", "indigo", "violet", "purple", "fuchsia", "pink", "rose", "slate"],
-        description: "Color theme based on dish: red=tomato/spicy, orange=citrus/carrots, amber=curry/golden, yellow=lemon/corn, lime=fresh/zesty, green=salads/vegetables, emerald=herbs/mediterranean, teal=seafood/asian, cyan=light seafood, pink=salmon/light, slate=earthy/mushrooms",
+        enum: [
+          "red",
+          "orange",
+          "amber",
+          "yellow",
+          "lime",
+          "green",
+          "emerald",
+          "teal",
+          "cyan",
+          "sky",
+          "blue",
+          "indigo",
+          "violet",
+          "purple",
+          "fuchsia",
+          "pink",
+          "rose",
+          "slate",
+        ],
+        description:
+          "Color theme based on dish: red=tomato/spicy, orange=citrus/carrots, amber=curry/golden, yellow=lemon/corn, lime=fresh/zesty, green=salads/vegetables, emerald=herbs/mediterranean, teal=seafood/asian, cyan=light seafood, pink=salmon/light, slate=earthy/mushrooms",
       },
     },
-    required: ["recipeName", "servings", "prepTime", "cookTime", "totalTime", "difficulty", "ingredients", "instructions", "tips", "substitutions", "nutrition", "cuisineType", "cardColor"],
+    required: [
+      "recipeName",
+      "servings",
+      "prepTime",
+      "cookTime",
+      "totalTime",
+      "difficulty",
+      "ingredients",
+      "instructions",
+      "tips",
+      "substitutions",
+      "nutrition",
+      "cuisineType",
+      "cardColor",
+    ],
   },
 };
 
 // Tool for weekly meal plan
 const mealPlanTool: Anthropic.Tool = {
   name: "submit_meal_plan",
-  description: "Submit a weekly meal plan with shopping categories and prep tips",
+  description:
+    "Submit a weekly meal plan with shopping categories and prep tips",
   input_schema: {
     type: "object" as const,
     properties: {
@@ -697,7 +792,15 @@ const mealPlanTool: Anthropic.Tool = {
             cuisineType: { type: "string" },
             tags: { type: "array", items: { type: "string" } },
           },
-          required: ["day", "meal", "cookTime", "difficulty", "description", "mainIngredients", "cuisineType"],
+          required: [
+            "day",
+            "meal",
+            "cookTime",
+            "difficulty",
+            "description",
+            "mainIngredients",
+            "cuisineType",
+          ],
         },
       },
       shoppingCategories: {
@@ -739,7 +842,8 @@ const shoppingListTool: Anthropic.Tool = {
     properties: {
       shoppingList: {
         type: "object",
-        description: "Categorized shopping list by store section. Include all categories, use empty arrays for categories with no items.",
+        description:
+          "Categorized shopping list by store section. Include all categories, use empty arrays for categories with no items.",
         properties: {
           Produce: { type: "array", items: shoppingListItemSchema },
           Meat: { type: "array", items: shoppingListItemSchema },
@@ -765,7 +869,12 @@ const shoppingListTool: Anthropic.Tool = {
       },
       moneySavingTips: { type: "array", items: { type: "string" } },
     },
-    required: ["shoppingList", "estimatedTotal", "optionalItems", "moneySavingTips"],
+    required: [
+      "shoppingList",
+      "estimatedTotal",
+      "optionalItems",
+      "moneySavingTips",
+    ],
   },
 };
 
@@ -840,19 +949,40 @@ const modifyRecipeTool: Anthropic.Tool = {
             reason: { type: "string" },
             impactOnRecipe: { type: "string" },
           },
-          required: ["type", "original", "replacement", "reason", "impactOnRecipe"],
+          required: [
+            "type",
+            "original",
+            "replacement",
+            "reason",
+            "impactOnRecipe",
+          ],
         },
       },
       modificationNotes: { type: "string" },
     },
-    required: ["recipeName", "servings", "prepTime", "cookTime", "totalTime", "difficulty", "ingredients", "instructions", "tips", "substitutions", "nutrition", "modifications", "modificationNotes"],
+    required: [
+      "recipeName",
+      "servings",
+      "prepTime",
+      "cookTime",
+      "totalTime",
+      "difficulty",
+      "ingredients",
+      "instructions",
+      "tips",
+      "substitutions",
+      "nutrition",
+      "modifications",
+      "modificationNotes",
+    ],
   },
 };
 
 // Tool for reroll meal
 const rerollMealTool: Anthropic.Tool = {
   name: "submit_rerolled_meal",
-  description: "Submit the new replacement meal and updated shopping categories",
+  description:
+    "Submit the new replacement meal and updated shopping categories",
   input_schema: {
     type: "object" as const,
     properties: {
@@ -860,24 +990,44 @@ const rerollMealTool: Anthropic.Tool = {
         type: "object",
         description: "The new replacement meal",
         properties: {
-          day: { type: "string", description: "Day of the week (e.g., Monday)" },
+          day: {
+            type: "string",
+            description: "Day of the week (e.g., Monday)",
+          },
           meal: { type: "string", description: "Name of the meal" },
-          cookTime: { type: "string", description: "Cooking time (e.g., 30 minutes)" },
+          cookTime: {
+            type: "string",
+            description: "Cooking time (e.g., 30 minutes)",
+          },
           difficulty: { type: "string", enum: ["Easy", "Medium", "Hard"] },
-          description: { type: "string", description: "Brief appetizing description" },
+          description: {
+            type: "string",
+            description: "Brief appetizing description",
+          },
           mainIngredients: {
             type: "array",
             items: { type: "string" },
             description: "List of main ingredients",
           },
-          cuisineType: { type: "string", description: "Type of cuisine (e.g., Italian, Mexican)" },
+          cuisineType: {
+            type: "string",
+            description: "Type of cuisine (e.g., Italian, Mexican)",
+          },
           tags: {
             type: "array",
             items: { type: "string" },
             description: "Tags like quick, healthy, comfort food",
           },
         },
-        required: ["day", "meal", "cookTime", "difficulty", "description", "mainIngredients", "cuisineType"],
+        required: [
+          "day",
+          "meal",
+          "cookTime",
+          "difficulty",
+          "description",
+          "mainIngredients",
+          "cuisineType",
+        ],
       },
       shoppingCategories: {
         type: "object",
@@ -897,7 +1047,6 @@ const rerollMealTool: Anthropic.Tool = {
 
 export async function rerollMeal(
   context: RerollMealContext,
-  sessionId: string = "default"
 ): Promise<RerolledMealResponse> {
   // Build the prompt (reuse existing prompt logic)
   const prompt = rerollMealPrompt(context);
@@ -919,11 +1068,14 @@ export async function rerollMeal(
 
   // Extract the tool use response
   const toolUse = response.content.find(
-    (block): block is Anthropic.ToolUseBlock => block.type === "tool_use"
+    (block): block is Anthropic.ToolUseBlock => block.type === "tool_use",
   );
 
   if (!toolUse || toolUse.name !== "submit_rerolled_meal") {
-    console.error("No tool use in response:", JSON.stringify(response.content, null, 2));
+    console.error(
+      "No tool use in response:",
+      JSON.stringify(response.content, null, 2),
+    );
     throw new Error("Failed to get structured response from Claude");
   }
 

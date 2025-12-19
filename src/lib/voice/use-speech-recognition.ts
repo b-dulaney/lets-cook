@@ -2,6 +2,14 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 
+// Check for speech recognition support once at module level (client-side only)
+function getSpeechRecognitionAPI() {
+  if (typeof window === "undefined") return null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const win = window as any;
+  return win.SpeechRecognition || win.webkitSpeechRecognition || null;
+}
+
 export interface UseSpeechRecognitionOptions {
   continuous?: boolean;
   language?: string;
@@ -20,93 +28,86 @@ export interface UseSpeechRecognitionReturn {
 }
 
 export function useSpeechRecognition(
-  options: UseSpeechRecognitionOptions = {}
+  options: UseSpeechRecognitionOptions = {},
 ): UseSpeechRecognitionReturn {
-  const {
-    continuous = false,
-    language = "en-US",
-    onResult,
-    onError,
-  } = options;
+  const { continuous = false, language = "en-US", onResult, onError } = options;
 
   const [transcript, setTranscript] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isSupported, setIsSupported] = useState(false);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
   const isStoppingRef = useRef(false);
 
-  // Check for browser support
+  // Get the API once - this is stable across renders
+  const SpeechRecognitionAPI = getSpeechRecognitionAPI();
+  const isSupported = SpeechRecognitionAPI !== null;
+
+  // Initialize speech recognition
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const win = window as any;
-    const SpeechRecognitionAPI =
-      win.SpeechRecognition || win.webkitSpeechRecognition;
-
-    setIsSupported(!!SpeechRecognitionAPI);
-
-    if (SpeechRecognitionAPI) {
-      const recognition = new SpeechRecognitionAPI();
-      recognition.continuous = continuous;
-      recognition.interimResults = false;
-      recognition.lang = language;
-
-      recognition.onstart = () => {
-        setIsListening(true);
-        setError(null);
-      };
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      recognition.onresult = (event: any) => {
-        const last = event.results.length - 1;
-        const text = event.results[last][0].transcript;
-        setTranscript(text);
-        onResult?.(text);
-      };
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      recognition.onerror = (event: any) => {
-        // Don't treat "no-speech" as an error in continuous mode
-        if (event.error === "no-speech" && continuous) {
-          return;
-        }
-
-        let errorMessage = "Speech recognition error";
-        switch (event.error) {
-          case "not-allowed":
-            errorMessage = "Microphone access denied";
-            break;
-          case "no-speech":
-            errorMessage = "No speech detected";
-            break;
-          case "network":
-            errorMessage = "Network error";
-            break;
-          case "audio-capture":
-            errorMessage = "No microphone found";
-            break;
-        }
-        setError(errorMessage);
-        setIsListening(false);
-        onError?.(errorMessage);
-      };
-
-      recognition.onend = () => {
-        setIsListening(false);
-        // Auto-restart in continuous mode unless explicitly stopped
-        if (continuous && !isStoppingRef.current && recognitionRef.current) {
-          try {
-            recognition.start();
-          } catch (_e) {
-            // Ignore errors from rapid start/stop
-          }
-        }
-      };
-
-      recognitionRef.current = recognition;
+    if (!SpeechRecognitionAPI) {
+      return;
     }
+
+    const recognition = new SpeechRecognitionAPI();
+    recognition.continuous = continuous;
+    recognition.interimResults = false;
+    recognition.lang = language;
+
+    recognition.onstart = () => {
+      setIsListening(true);
+      setError(null);
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    recognition.onresult = (event: any) => {
+      const last = event.results.length - 1;
+      const text = event.results[last][0].transcript;
+      setTranscript(text);
+      onResult?.(text);
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    recognition.onerror = (event: any) => {
+      // Don't treat "no-speech" as an error in continuous mode
+      if (event.error === "no-speech" && continuous) {
+        return;
+      }
+
+      let errorMessage = "Speech recognition error";
+      switch (event.error) {
+        case "not-allowed":
+          errorMessage = "Microphone access denied";
+          break;
+        case "no-speech":
+          errorMessage = "No speech detected";
+          break;
+        case "network":
+          errorMessage = "Network error";
+          break;
+        case "audio-capture":
+          errorMessage = "No microphone found";
+          break;
+      }
+      setError(errorMessage);
+      setIsListening(false);
+      onError?.(errorMessage);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+      // Auto-restart in continuous mode unless explicitly stopped
+      if (continuous && !isStoppingRef.current && recognitionRef.current) {
+        try {
+          recognition.start();
+        } catch {
+          // Ignore errors from rapid start/stop
+        }
+      }
+    };
+
+    recognitionRef.current = recognition;
 
     return () => {
       if (recognitionRef.current) {
@@ -115,7 +116,7 @@ export function useSpeechRecognition(
         recognitionRef.current = null;
       }
     };
-  }, [continuous, language, onResult, onError]);
+  }, [continuous, language, onResult, onError, SpeechRecognitionAPI]);
 
   const start = useCallback(() => {
     if (recognitionRef.current && !isListening) {
@@ -124,7 +125,7 @@ export function useSpeechRecognition(
       setError(null);
       try {
         recognitionRef.current.start();
-      } catch (_e) {
+      } catch {
         // Ignore if already started
       }
     }

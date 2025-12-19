@@ -29,7 +29,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
   if (error || !shoppingList) {
     return NextResponse.json(
       { error: "Shopping list not found" },
-      { status: 404 }
+      { status: 404 },
     );
   }
 
@@ -55,7 +55,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   if (!items) {
     return NextResponse.json(
       { error: "Items array is required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -71,14 +71,14 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     console.error("Error updating shopping list:", error);
     return NextResponse.json(
       { error: "Failed to update shopping list" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
   if (!shoppingList) {
     return NextResponse.json(
       { error: "Shopping list not found" },
-      { status: 404 }
+      { status: 404 },
     );
   }
 
@@ -108,7 +108,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     console.error("Error deleting shopping list:", error);
     return NextResponse.json(
       { error: "Failed to delete shopping list" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 

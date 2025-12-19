@@ -48,32 +48,52 @@ export interface RecipeSubstitution {
 
 // Supported Spoonacular cuisines for image search
 export type CuisineType =
-  | "African" | "American" | "British" | "Cajun" | "Caribbean"
-  | "Chinese" | "Eastern European" | "French" | "German" | "Greek"
-  | "Indian" | "Irish" | "Italian" | "Japanese" | "Jewish"
-  | "Korean" | "Latin American" | "Mediterranean" | "Mexican"
-  | "Middle Eastern" | "Nordic" | "Southern" | "Spanish" | "Thai" | "Vietnamese";
+  | "African"
+  | "American"
+  | "British"
+  | "Cajun"
+  | "Caribbean"
+  | "Chinese"
+  | "Eastern European"
+  | "French"
+  | "German"
+  | "Greek"
+  | "Indian"
+  | "Irish"
+  | "Italian"
+  | "Japanese"
+  | "Jewish"
+  | "Korean"
+  | "Latin American"
+  | "Mediterranean"
+  | "Mexican"
+  | "Middle Eastern"
+  | "Nordic"
+  | "Southern"
+  | "Spanish"
+  | "Thai"
+  | "Vietnamese";
 
 // Color options for recipe card gradients - based on dish characteristics
 export type RecipeCardColor =
-  | "red"      // tomato-based, spicy dishes
-  | "orange"   // citrus, carrots, sweet potatoes
-  | "amber"    // curry, turmeric, golden dishes
-  | "yellow"   // lemon, corn, bright dishes
-  | "lime"     // fresh, zesty, herb-forward
-  | "green"    // salads, vegetables, pesto
-  | "emerald"  // herbs, mediterranean
-  | "teal"     // seafood, asian-inspired
-  | "cyan"     // light seafood, refreshing
-  | "sky"      // light, airy dishes
-  | "blue"     // blueberries, rare proteins
-  | "indigo"   // eggplant, purple cabbage
-  | "violet"   // lavender, unique dishes
-  | "purple"   // beets, acai, exotic
-  | "fuchsia"  // dragon fruit, vibrant
-  | "pink"     // salmon, strawberry, light
-  | "rose"     // delicate, floral dishes
-  | "slate";   // neutral, earthy, mushrooms
+  | "red" // tomato-based, spicy dishes
+  | "orange" // citrus, carrots, sweet potatoes
+  | "amber" // curry, turmeric, golden dishes
+  | "yellow" // lemon, corn, bright dishes
+  | "lime" // fresh, zesty, herb-forward
+  | "green" // salads, vegetables, pesto
+  | "emerald" // herbs, mediterranean
+  | "teal" // seafood, asian-inspired
+  | "cyan" // light seafood, refreshing
+  | "sky" // light, airy dishes
+  | "blue" // blueberries, rare proteins
+  | "indigo" // eggplant, purple cabbage
+  | "violet" // lavender, unique dishes
+  | "purple" // beets, acai, exotic
+  | "fuchsia" // dragon fruit, vibrant
+  | "pink" // salmon, strawberry, light
+  | "rose" // delicate, floral dishes
+  | "slate"; // neutral, earthy, mushrooms
 
 export interface FullRecipe {
   recipeName: string;
@@ -152,28 +172,33 @@ export interface RecipeModification {
 
 // Cooking method labels for prompts
 const COOKING_METHOD_PROMPTS: Record<string, string> = {
-  "air-fryer": "COOKING METHOD: Air Fryer - All recipes MUST be cooked using an air fryer. Focus on recipes that benefit from air frying: crispy proteins, vegetables, appetizers. Air fryer cooking is fast and uses less oil.",
-  "slow-cooker": "COOKING METHOD: Slow Cooker/Crockpot - All recipes MUST be slow cooker recipes. Focus on dishes that benefit from slow cooking: stews, braised meats, soups, chilis, pulled meats. These are hands-off meals that cook for hours.",
-  "instant-pot": "COOKING METHOD: Instant Pot/Pressure Cooker - All recipes MUST use a pressure cooker. Focus on dishes that benefit from pressure cooking: beans, tough cuts of meat, risotto, stock-based dishes. These cook quickly under pressure.",
-  "grill": "COOKING METHOD: Grill - All recipes MUST be grilled. Focus on proteins and vegetables that are excellent when grilled. Consider marinades and smoky flavors.",
+  "air-fryer":
+    "COOKING METHOD: Air Fryer - All recipes MUST be cooked using an air fryer. Focus on recipes that benefit from air frying: crispy proteins, vegetables, appetizers. Air fryer cooking is fast and uses less oil.",
+  "slow-cooker":
+    "COOKING METHOD: Slow Cooker/Crockpot - All recipes MUST be slow cooker recipes. Focus on dishes that benefit from slow cooking: stews, braised meats, soups, chilis, pulled meats. These are hands-off meals that cook for hours.",
+  "instant-pot":
+    "COOKING METHOD: Instant Pot/Pressure Cooker - All recipes MUST use a pressure cooker. Focus on dishes that benefit from pressure cooking: beans, tough cuts of meat, risotto, stock-based dishes. These cook quickly under pressure.",
+  grill:
+    "COOKING METHOD: Grill - All recipes MUST be grilled. Focus on proteins and vegetables that are excellent when grilled. Consider marinades and smoky flavors.",
 };
 
 // 1. Generate Recipe Suggestions from Ingredients
 export function generateRecipePrompt(
   ingredients: string[],
   userPreferences: UserPreferences,
-  cookingMethod?: string
+  cookingMethod?: string,
 ): string {
   const dietary = Array.isArray(userPreferences.dietary)
     ? userPreferences.dietary.join(", ")
     : userPreferences.dietary || "none";
 
-  const cookingMethodInstruction = cookingMethod && COOKING_METHOD_PROMPTS[cookingMethod]
-    ? `\n${COOKING_METHOD_PROMPTS[cookingMethod]}\n`
-    : "";
+  const cookingMethodInstruction =
+    cookingMethod && COOKING_METHOD_PROMPTS[cookingMethod]
+      ? `\n${COOKING_METHOD_PROMPTS[cookingMethod]}\n`
+      : "";
 
   return `You are a helpful cooking assistant. A user has these ingredients: ${ingredients.join(
-    ", "
+    ", ",
   )}.
 ${cookingMethodInstruction}
 User preferences:
@@ -225,7 +250,7 @@ export function getRecipeDetailsPrompt(
   recipeName: string,
   ingredients: string[],
   userSkillLevel?: string,
-  constraints?: RecipeConstraints
+  constraints?: RecipeConstraints,
 ): string {
   // Build constraints section if we have any
   let constraintsSection = "";
@@ -233,12 +258,12 @@ export function getRecipeDetailsPrompt(
     const parts: string[] = [];
     if (constraints.servings) {
       parts.push(
-        `- Servings: MUST be exactly ${constraints.servings} servings (scale ingredients accordingly)`
+        `- Servings: MUST be exactly ${constraints.servings} servings (scale ingredients accordingly)`,
       );
     }
     if (constraints.cookTime) {
       parts.push(
-        `- Total time: MUST be approximately ${constraints.cookTime} or less`
+        `- Total time: MUST be approximately ${constraints.cookTime} or less`,
       );
     }
     if (constraints.difficulty) {
@@ -324,7 +349,7 @@ export function generateWeeklyMealPlanPrompt(
   userPreferences: UserPreferences,
   numberOfMeals: number = 7,
   recentRecipes: string[] = [],
-  slowCookerMeals?: number
+  slowCookerMeals?: number,
 ): string {
   const dietary = Array.isArray(userPreferences.dietary)
     ? userPreferences.dietary.join(", ")
@@ -343,10 +368,14 @@ ${recipesToAvoid.map((r) => `- ${r}`).join("\n")}
 
   // Build complexity instruction based on preference
   const complexityDescriptions: Record<string, string> = {
-    minimal: "MINIMAL - MAXIMUM 5 main ingredients per recipe. Only the essentials, no extras.",
-    simple: "SIMPLE - MAXIMUM 7 main ingredients per recipe. Keep it approachable and quick.",
-    standard: "STANDARD - 8-12 main ingredients allowed. Good balance of simplicity and depth.",
-    complex: "COMPLEX - 12+ ingredients welcome. Elaborate, restaurant-quality dishes.",
+    minimal:
+      "MINIMAL - MAXIMUM 5 main ingredients per recipe. Only the essentials, no extras.",
+    simple:
+      "SIMPLE - MAXIMUM 7 main ingredients per recipe. Keep it approachable and quick.",
+    standard:
+      "STANDARD - 8-12 main ingredients allowed. Good balance of simplicity and depth.",
+    complex:
+      "COMPLEX - 12+ ingredients welcome. Elaborate, restaurant-quality dishes.",
   };
   const complexityInstruction = userPreferences.mealComplexity
     ? `\n- **RECIPE COMPLEXITY (MUST FOLLOW)**: ${complexityDescriptions[userPreferences.mealComplexity]}`
@@ -358,31 +387,36 @@ ${recipesToAvoid.map((r) => `- ${r}`).join("\n")}
 
   if (appliances.includes("air-fryer")) {
     applianceInstructions.push(
-      "- **AIR FRYER**: User has an air fryer. Suggest air fryer cooking methods where appropriate for crispy textures (proteins, vegetables, appetizers). Air fryer recipes are faster and use less oil."
+      "- **AIR FRYER**: User has an air fryer. Suggest air fryer cooking methods where appropriate for crispy textures (proteins, vegetables, appetizers). Air fryer recipes are faster and use less oil.",
     );
   }
 
-  if (appliances.includes("slow-cooker") && slowCookerMeals && slowCookerMeals > 0) {
+  if (
+    appliances.includes("slow-cooker") &&
+    slowCookerMeals &&
+    slowCookerMeals > 0
+  ) {
     applianceInstructions.push(
-      `- **SLOW COOKER**: Include exactly ${slowCookerMeals} slow cooker/crockpot meal(s) this week. These are ideal for busy weekdays - set in the morning, ready by dinner. Great for stews, braised meats, soups, and chilis. Mark these clearly with "Slow Cooker" in the meal name or description.`
+      `- **SLOW COOKER**: Include exactly ${slowCookerMeals} slow cooker/crockpot meal(s) this week. These are ideal for busy weekdays - set in the morning, ready by dinner. Great for stews, braised meats, soups, and chilis. Mark these clearly with "Slow Cooker" in the meal name or description.`,
     );
   }
 
   if (appliances.includes("instant-pot")) {
     applianceInstructions.push(
-      "- **INSTANT POT**: User has an Instant Pot. Consider pressure cooker recipes for dishes that would normally take hours (beans, tough meats, risotto, stock-based dishes). These can be ready in 30-45 minutes instead of hours."
+      "- **INSTANT POT**: User has an Instant Pot. Consider pressure cooker recipes for dishes that would normally take hours (beans, tough meats, risotto, stock-based dishes). These can be ready in 30-45 minutes instead of hours.",
     );
   }
 
   if (appliances.includes("grill")) {
     applianceInstructions.push(
-      "- **GRILL**: User has a grill. Include grilled recipes for proteins and vegetables when appropriate. Great for quick weeknight meals and adds smoky flavor."
+      "- **GRILL**: User has a grill. Include grilled recipes for proteins and vegetables when appropriate. Great for quick weeknight meals and adds smoky flavor.",
     );
   }
 
-  const applianceSection = applianceInstructions.length > 0
-    ? `\nKITCHEN APPLIANCES (incorporate these cooking methods):\n${applianceInstructions.join("\n")}\n`
-    : "";
+  const applianceSection =
+    applianceInstructions.length > 0
+      ? `\nKITCHEN APPLIANCES (incorporate these cooking methods):\n${applianceInstructions.join("\n")}\n`
+      : "";
 
   // Store-specific instructions
   const storeInstructions: Record<string, string> = {
@@ -408,7 +442,9 @@ RECIPE STYLE FOR TRADER JOE'S:
 `,
   };
 
-  const storeSection = userPreferences.store ? storeInstructions[userPreferences.store] || "" : "";
+  const storeSection = userPreferences.store
+    ? storeInstructions[userPreferences.store] || ""
+    : "";
 
   return `Create a ${numberOfMeals}-day meal plan for dinner.
 ${storeSection}${applianceSection}
@@ -487,13 +523,13 @@ Only return valid JSON, no other text.`;
 // 4. Generate Shopping List from Meal Plan
 export function generateShoppingListPrompt(
   mealPlan: WeeklyMealPlan | MealPlanDay[],
-  pantryItems: string[] = []
+  pantryItems: string[] = [],
 ): string {
   // Extract just the meals data to keep prompt focused
   const meals = Array.isArray(mealPlan) ? mealPlan : mealPlan.weekPlan;
 
   // Format meals concisely
-  const mealsFormatted = meals.map(meal => ({
+  const mealsFormatted = meals.map((meal) => ({
     day: meal.day,
     meal: meal.meal,
     ingredients: meal.mainIngredients,
@@ -527,7 +563,7 @@ Include all 7 categories. Use empty arrays [] for categories with no items.`;
 // 5. Update User Preferences from Natural Language
 export function updateUserPreferencesPrompt(
   userInput: string,
-  currentPreferences: UserPreferences
+  currentPreferences: UserPreferences,
 ): string {
   return `A user has stated their dietary preferences or restrictions. Extract and structure this information.
 
@@ -563,7 +599,7 @@ Only return valid JSON, no other text.`;
 // 6. Modify/Substitute Recipe
 export function modifyRecipePrompt(
   originalRecipe: FullRecipe,
-  modification: string
+  modification: string,
 ): string {
   return `Modify this recipe based on the user's request.
 

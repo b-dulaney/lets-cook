@@ -44,17 +44,13 @@ export function VoiceButton({
           isListening
             ? "bg-red-500 text-white hover:bg-red-600"
             : error
-            ? "bg-red-100 text-red-600 hover:bg-red-200"
-            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              ? "bg-red-100 text-red-600 hover:bg-red-200"
+              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
         }
         ${className}
       `}
       title={
-        error
-          ? error
-          : isListening
-          ? "Stop listening"
-          : "Start voice input"
+        error ? error : isListening ? "Stop listening" : "Start voice input"
       }
     >
       {/* Microphone icon */}

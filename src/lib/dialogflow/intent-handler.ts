@@ -24,45 +24,38 @@ interface IntentHandlerParams {
 export async function handleIntent({
   intentName,
   parameters,
-  sessionId,
   userQuery,
   sessionParameters,
 }: IntentHandlerParams): Promise<DialogflowResponse> {
   switch (intentName) {
     case "find.recipe.by.ingredients":
-      return handleFindRecipeByIngredients(
-        parameters,
-        sessionId,
-        sessionParameters
-      );
+      return handleFindRecipeByIngredients(parameters, sessionParameters);
 
     case "get.recipe.details":
-      return handleGetRecipeDetails(parameters, sessionId, sessionParameters);
+      return handleGetRecipeDetails(parameters, sessionParameters);
 
     case "create.meal.plan":
-      return handleCreateMealPlan(parameters, sessionId, sessionParameters);
+      return handleCreateMealPlan(parameters, sessionParameters);
 
     case "get.shopping.list":
-      return handleGetShoppingList(sessionId, sessionParameters);
+      return handleGetShoppingList(sessionParameters);
 
     case "save.favorite.recipe":
-      return handleSaveFavorite(parameters, sessionId);
+      return handleSaveFavorite(parameters);
 
     case "start.cooking.mode":
-      return handleStartCookingMode(parameters, sessionId, sessionParameters);
+      return handleStartCookingMode(parameters, sessionParameters);
 
     default:
-      return handleDefaultFallback(userQuery, sessionId, sessionParameters);
+      return handleDefaultFallback(userQuery, sessionParameters);
   }
 }
 
 async function handleFindRecipeByIngredients(
   parameters: Record<string, DialogflowParameter>,
-  sessionId: string,
-  sessionParameters?: Record<string, unknown>
+  sessionParameters?: Record<string, unknown>,
 ): Promise<DialogflowResponse> {
-  const ingredients =
-    (parameters.ingredients?.resolvedValue as string[]) || [];
+  const ingredients = (parameters.ingredients?.resolvedValue as string[]) || [];
   const userPreferences =
     (sessionParameters?.userPreferences as UserPreferences) || {};
 
@@ -83,8 +76,7 @@ async function handleFindRecipeByIngredients(
 
 async function handleGetRecipeDetails(
   parameters: Record<string, DialogflowParameter>,
-  sessionId: string,
-  sessionParameters?: Record<string, unknown>
+  sessionParameters?: Record<string, unknown>,
 ): Promise<DialogflowResponse> {
   const recipeName = (parameters.recipe_name?.resolvedValue as string) || "";
   const ingredients =
@@ -95,11 +87,7 @@ async function handleGetRecipeDetails(
     (sessionParameters?.userPreferences as UserPreferences) || {};
   const skillLevel = userPreferences.skillLevel || "intermediate";
 
-  const response = await getRecipeDetails(
-    recipeName,
-    ingredients,
-    skillLevel
-  );
+  const response = await getRecipeDetails(recipeName, ingredients, skillLevel);
 
   return {
     fulfillmentResponse: {
@@ -115,8 +103,7 @@ async function handleGetRecipeDetails(
 
 async function handleCreateMealPlan(
   parameters: Record<string, DialogflowParameter>,
-  sessionId: string,
-  sessionParameters?: Record<string, unknown>
+  sessionParameters?: Record<string, unknown>,
 ): Promise<DialogflowResponse> {
   const numberOfDays = (parameters.days?.resolvedValue as number) || 7;
   const userPreferences =
@@ -130,10 +117,7 @@ async function handleCreateMealPlan(
     userPreferences.dietary = dietaryFromParams;
   }
 
-  const response = await createMealPlan(
-    userPreferences,
-    numberOfDays
-  );
+  const response = await createMealPlan(userPreferences, numberOfDays);
 
   return {
     fulfillmentResponse: {
@@ -148,8 +132,7 @@ async function handleCreateMealPlan(
 }
 
 async function handleGetShoppingList(
-  sessionId: string,
-  sessionParameters?: Record<string, unknown>
+  sessionParameters?: Record<string, unknown>,
 ): Promise<DialogflowResponse> {
   const mealPlan = sessionParameters?.currentMealPlan as
     | WeeklyMealPlan
@@ -188,7 +171,6 @@ async function handleGetShoppingList(
 
 async function handleSaveFavorite(
   parameters: Record<string, DialogflowParameter>,
-  sessionId: string
 ): Promise<DialogflowResponse> {
   const recipeName = (parameters.recipe_name?.resolvedValue as string) || "";
 
@@ -208,9 +190,8 @@ async function handleSaveFavorite(
 }
 
 async function handleStartCookingMode(
-  parameters: Record<string, DialogflowParameter>,
-  sessionId: string,
-  sessionParameters?: Record<string, unknown>
+  _parameters: Record<string, DialogflowParameter>,
+  sessionParameters?: Record<string, unknown>,
 ): Promise<DialogflowResponse> {
   const recipe = sessionParameters?.currentRecipe as FullRecipe | undefined;
 
@@ -233,7 +214,6 @@ async function handleStartCookingMode(
   const response = await askClaude({
     task: "start_cooking_mode",
     context: { recipe, currentStep: 1 },
-    sessionId,
   });
 
   return {
@@ -252,8 +232,7 @@ async function handleStartCookingMode(
 
 async function handleDefaultFallback(
   userQuery: string,
-  sessionId: string,
-  sessionParameters?: Record<string, unknown>
+  sessionParameters?: Record<string, unknown>,
 ): Promise<DialogflowResponse> {
   const userPreferences =
     (sessionParameters?.userPreferences as UserPreferences) || {};
@@ -261,7 +240,6 @@ async function handleDefaultFallback(
   const response = await askClaude({
     task: "general_query",
     context: { query: userQuery, userPreferences },
-    sessionId,
   });
 
   return {

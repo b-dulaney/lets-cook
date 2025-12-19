@@ -51,7 +51,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     console.error("Error adding favorite:", error);
     return NextResponse.json(
       { error: "Failed to add favorite" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -81,7 +81,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     console.error("Error removing favorite:", error);
     return NextResponse.json(
       { error: "Failed to remove favorite" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 

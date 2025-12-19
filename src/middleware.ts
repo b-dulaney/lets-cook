@@ -16,17 +16,17 @@ export async function middleware(request: NextRequest) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
+            request.cookies.set(name, value),
           );
           supabaseResponse = NextResponse.next({
             request,
           });
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            supabaseResponse.cookies.set(name, value, options),
           );
         },
       },
-    }
+    },
   );
 
   // Refresh session if expired - required for Server Components
@@ -37,17 +37,14 @@ export async function middleware(request: NextRequest) {
   // Public paths that don't require authentication
   const publicPaths = ["/", "/login", "/auth/callback"];
   const isPublicPath = publicPaths.some(
-    (path) => request.nextUrl.pathname === path
+    (path) => request.nextUrl.pathname === path,
   );
 
   // Protect all routes except public paths
   if (!isPublicPath && !user) {
     // For API routes, return 401 instead of redirecting
     if (request.nextUrl.pathname.startsWith("/api/")) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // For pages, redirect to login
@@ -58,8 +55,13 @@ export async function middleware(request: NextRequest) {
   }
 
   // Redirect logged-in users away from home and login pages to dashboard
-  if ((request.nextUrl.pathname === "/" || request.nextUrl.pathname === "/login") && user) {
-    const redirectTo = request.nextUrl.searchParams.get("redirectTo") || "/dashboard";
+  if (
+    (request.nextUrl.pathname === "/" ||
+      request.nextUrl.pathname === "/login") &&
+    user
+  ) {
+    const redirectTo =
+      request.nextUrl.searchParams.get("redirectTo") || "/dashboard";
     const url = request.nextUrl.clone();
     url.pathname = redirectTo;
     url.searchParams.delete("redirectTo");

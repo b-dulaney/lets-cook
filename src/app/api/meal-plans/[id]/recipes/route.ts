@@ -15,7 +15,7 @@ interface MealPlanRecipeLink {
 // If no dayIndex: return all recipe links for this meal plan
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const supabase = await createClient();
   const { id: mealPlanId } = await params;
@@ -37,10 +37,7 @@ export async function GET(
     .maybeSingle();
 
   if (mealPlanError || !mealPlan) {
-    return NextResponse.json(
-      { error: "Meal plan not found" },
-      { status: 404 }
-    );
+    return NextResponse.json({ error: "Meal plan not found" }, { status: 404 });
   }
 
   const dayIndex = request.nextUrl.searchParams.get("dayIndex");
@@ -62,7 +59,7 @@ export async function GET(
       console.error("Error checking meal plan recipe:", linkError);
       return NextResponse.json(
         { error: "Failed to check recipe" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -73,17 +70,20 @@ export async function GET(
   }
 
   // Return all links for this meal plan
-  const { data: links, error: linksError } = await db
+  const { data: links, error: linksError } = (await db
     .from("meal_plan_recipes")
     .select("day_index, recipe_id")
     .eq("meal_plan_id", mealPlanId)
-    .order("day_index") as { data: MealPlanRecipeLink[] | null; error: Error | null };
+    .order("day_index")) as {
+    data: MealPlanRecipeLink[] | null;
+    error: Error | null;
+  };
 
   if (linksError) {
     console.error("Error fetching meal plan recipes:", linksError);
     return NextResponse.json(
       { error: "Failed to fetch recipe links" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -94,7 +94,7 @@ export async function GET(
 // Link a recipe to a specific day in the meal plan
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const supabase = await createClient();
   const { id: mealPlanId } = await params;
@@ -113,7 +113,7 @@ export async function POST(
   if (dayIndex === undefined || !recipeId) {
     return NextResponse.json(
       { error: "dayIndex and recipeId are required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -126,10 +126,7 @@ export async function POST(
     .maybeSingle();
 
   if (mealPlanError || !mealPlan) {
-    return NextResponse.json(
-      { error: "Meal plan not found" },
-      { status: 404 }
-    );
+    return NextResponse.json({ error: "Meal plan not found" }, { status: 404 });
   }
 
   // Use any-typed supabase client for new table not in generated types
@@ -137,7 +134,7 @@ export async function POST(
   const db = supabase as any;
 
   // Insert or update the link (upsert)
-  const { data: link, error: insertError } = await db
+  const { data: link, error: insertError } = (await db
     .from("meal_plan_recipes")
     .upsert(
       {
@@ -147,16 +144,16 @@ export async function POST(
       },
       {
         onConflict: "meal_plan_id,day_index",
-      }
+      },
     )
     .select()
-    .single() as { data: MealPlanRecipeLink | null; error: Error | null };
+    .single()) as { data: MealPlanRecipeLink | null; error: Error | null };
 
   if (insertError) {
     console.error("Error linking recipe to meal plan:", insertError);
     return NextResponse.json(
       { error: "Failed to link recipe" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 

@@ -54,12 +54,14 @@ export function StepTimer({ timeString, onComplete }: StepTimerProps) {
   const [remaining, setRemaining] = useState(totalSeconds || 0);
   const [state, setState] = useState<TimerState>("idle");
 
-  // Reset timer when timeString changes
-  useEffect(() => {
-    const newTotal = parseTimeString(timeString);
-    setRemaining(newTotal || 0);
+  // Track previous timeString to detect changes during render
+  // This is the React-recommended pattern for updating state based on props
+  const [prevTimeString, setPrevTimeString] = useState(timeString);
+  if (timeString !== prevTimeString) {
+    setPrevTimeString(timeString);
+    setRemaining(parseTimeString(timeString) || 0);
     setState("idle");
-  }, [timeString]);
+  }
 
   // Countdown effect
   useEffect(() => {
@@ -116,8 +118,8 @@ export function StepTimer({ timeString, onComplete }: StepTimerProps) {
           isComplete
             ? "text-emerald-600"
             : isRunning
-            ? "text-gray-900"
-            : "text-gray-600"
+              ? "text-gray-900"
+              : "text-gray-600"
         }`}
       >
         {formatTime(remaining)}
@@ -167,8 +169,18 @@ export function StepTimer({ timeString, onComplete }: StepTimerProps) {
               onClick={handleReset}
               className="flex items-center gap-2 px-4 py-3 bg-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-300 transition-colors cursor-pointer"
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
               </svg>
               Reset
             </button>
@@ -180,8 +192,18 @@ export function StepTimer({ timeString, onComplete }: StepTimerProps) {
             onClick={handleReset}
             className="flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 transition-colors cursor-pointer"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
             </svg>
             Reset Timer
           </button>

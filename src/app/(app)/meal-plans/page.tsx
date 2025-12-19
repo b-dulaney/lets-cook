@@ -182,8 +182,8 @@ export default function MealPlansPage() {
                       plan.meals.weekPlan.length <= 3
                         ? "grid-cols-3"
                         : plan.meals.weekPlan.length <= 5
-                        ? "grid-cols-2 sm:grid-cols-5"
-                        : "grid-cols-2 sm:grid-cols-4 lg:grid-cols-7"
+                          ? "grid-cols-2 sm:grid-cols-5"
+                          : "grid-cols-2 sm:grid-cols-4 lg:grid-cols-7"
                     }`}
                   >
                     {plan.meals.weekPlan.map((day, idx) => (
@@ -329,7 +329,7 @@ function GeneratePlanModal({
   const toggleArrayItem = (
     arr: string[],
     setArr: (arr: string[]) => void,
-    item: string
+    item: string,
   ) => {
     if (arr.includes(item)) {
       setArr(arr.filter((i) => i !== item));
@@ -455,7 +455,8 @@ function GeneratePlanModal({
                     </select>
                     {store === "trader-joes" && (
                       <p className="mt-1 text-xs text-gray-500">
-                        Recipes will feature Trader Joe&apos;s signature items and products
+                        Recipes will feature Trader Joe&apos;s signature items
+                        and products
                       </p>
                     )}
                   </div>
@@ -487,9 +488,13 @@ function GeneratePlanModal({
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 focus:ring-emerald-500 focus:border-emerald-500"
                     >
                       <option value="">Any</option>
-                      <option value="minimal">Minimal (&lt;5 ingredients)</option>
+                      <option value="minimal">
+                        Minimal (&lt;5 ingredients)
+                      </option>
                       <option value="simple">Simple (5-7 ingredients)</option>
-                      <option value="standard">Standard (8-12 ingredients)</option>
+                      <option value="standard">
+                        Standard (8-12 ingredients)
+                      </option>
                       <option value="complex">Complex (12+ ingredients)</option>
                     </select>
                   </div>
@@ -505,7 +510,9 @@ function GeneratePlanModal({
                         min="0"
                         max={numberOfDays}
                         value={slowCookerMeals}
-                        onChange={(e) => setSlowCookerMeals(parseInt(e.target.value))}
+                        onChange={(e) =>
+                          setSlowCookerMeals(parseInt(e.target.value))
+                        }
                         className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-orange-600"
                       />
                       <div className="flex justify-between text-xs text-gray-500 mt-1">
@@ -616,7 +623,7 @@ function GeneratePlanModal({
                             toggleArrayItem(
                               favoriteCuisines,
                               setFavoriteCuisines,
-                              item
+                              item,
                             )
                           }
                           className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${

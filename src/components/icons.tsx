@@ -33,9 +33,27 @@ export function HomeIcon({ className = "", size = 24 }: IconProps) {
         strokeLinejoin="round"
       />
       {/* Door */}
-      <rect x="10" y="14" width="4" height="6" rx="0.5" fill="#86EFAC" stroke="currentColor" strokeWidth="1" />
+      <rect
+        x="10"
+        y="14"
+        width="4"
+        height="6"
+        rx="0.5"
+        fill="#86EFAC"
+        stroke="currentColor"
+        strokeWidth="1"
+      />
       {/* Window */}
-      <rect x="6" y="12" width="3" height="3" rx="0.5" fill="#FEF3C7" stroke="currentColor" strokeWidth="1" />
+      <rect
+        x="6"
+        y="12"
+        width="3"
+        height="3"
+        rx="0.5"
+        fill="#FEF3C7"
+        stroke="currentColor"
+        strokeWidth="1"
+      />
       {/* Heart smoke */}
       <path
         d="M16 6C16.5 5.5 17.5 5.5 18 6C18.5 6.5 18.5 7.5 17 9C15.5 7.5 15.5 6.5 16 6Z"
@@ -75,9 +93,33 @@ export function RecipeBookIcon({ className = "", size = 24 }: IconProps) {
         strokeLinejoin="round"
       />
       {/* Page lines */}
-      <line x1="10" y1="10" x2="16" y2="10" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
-      <line x1="10" y1="13" x2="15" y2="13" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
-      <line x1="10" y1="16" x2="14" y2="16" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+      <line
+        x1="10"
+        y1="10"
+        x2="16"
+        y2="10"
+        stroke="currentColor"
+        strokeWidth="1"
+        strokeLinecap="round"
+      />
+      <line
+        x1="10"
+        y1="13"
+        x2="15"
+        y2="13"
+        stroke="currentColor"
+        strokeWidth="1"
+        strokeLinecap="round"
+      />
+      <line
+        x1="10"
+        y1="16"
+        x2="14"
+        y2="16"
+        stroke="currentColor"
+        strokeWidth="1"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -106,8 +148,18 @@ export function MealPlanIcon({ className = "", size = 24 }: IconProps) {
       {/* Calendar top */}
       <path d="M3 9H21" stroke="currentColor" strokeWidth="1.5" />
       {/* Calendar hooks */}
-      <path d="M8 3V6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M16 3V6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path
+        d="M8 3V6"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M16 3V6"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
       {/* Fork */}
       <path
         d="M9 12V17M8 12V14M10 12V14"
@@ -116,8 +168,21 @@ export function MealPlanIcon({ className = "", size = 24 }: IconProps) {
         strokeLinecap="round"
       />
       {/* Spoon */}
-      <ellipse cx="15" cy="13" rx="1.5" ry="2" fill="#FEF3C7" stroke="currentColor" strokeWidth="1" />
-      <path d="M15 15V17" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+      <ellipse
+        cx="15"
+        cy="13"
+        rx="1.5"
+        ry="2"
+        fill="#FEF3C7"
+        stroke="currentColor"
+        strokeWidth="1"
+      />
+      <path
+        d="M15 15V17"
+        stroke="currentColor"
+        strokeWidth="1"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -152,8 +217,18 @@ export function ShoppingIcon({ className = "", size = 24 }: IconProps) {
       <circle cx="12" cy="8" r="1.5" fill="#FCD34D" /> {/* Lemon */}
       <circle cx="15" cy="9" r="1.5" fill="#86EFAC" /> {/* Lettuce */}
       {/* Basket lines */}
-      <path d="M8 14H16" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
-      <path d="M7 17H17" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+      <path
+        d="M8 14H16"
+        stroke="currentColor"
+        strokeWidth="1"
+        strokeLinecap="round"
+      />
+      <path
+        d="M7 17H17"
+        stroke="currentColor"
+        strokeWidth="1"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -178,7 +253,15 @@ export function SavedRecipesIcon({ className = "", size = 24 }: IconProps) {
         stroke="currentColor"
         strokeWidth="1.5"
       />
-      <ellipse cx="12" cy="14" rx="5" ry="2.5" fill="#FFFBEB" stroke="currentColor" strokeWidth="1" />
+      <ellipse
+        cx="12"
+        cy="14"
+        rx="5"
+        ry="2.5"
+        fill="#FFFBEB"
+        stroke="currentColor"
+        strokeWidth="1"
+      />
       {/* Heart on plate */}
       <path
         d="M12 11C11 9.5 9 9.5 9 11C9 12.5 12 15 12 15C12 15 15 12.5 15 11C15 9.5 13 9.5 12 11Z"
@@ -201,7 +284,14 @@ export function SettingsIcon({ className = "", size = 24 }: IconProps) {
       className={className}
     >
       {/* Main gear */}
-      <circle cx="12" cy="12" r="3" fill="#BBF7D0" stroke="currentColor" strokeWidth="1.5" />
+      <circle
+        cx="12"
+        cy="12"
+        r="3"
+        fill="#BBF7D0"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
       {/* Gear teeth */}
       <path
         d="M12 2V4M12 20V22M2 12H4M20 12H22M4.93 4.93L6.34 6.34M17.66 17.66L19.07 19.07M4.93 19.07L6.34 17.66M17.66 6.34L19.07 4.93"
@@ -210,7 +300,14 @@ export function SettingsIcon({ className = "", size = 24 }: IconProps) {
         strokeLinecap="round"
       />
       {/* Outer ring */}
-      <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="1.5" strokeDasharray="2 2" />
+      <circle
+        cx="12"
+        cy="12"
+        r="6"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeDasharray="2 2"
+      />
       {/* Sparkle */}
       <path
         d="M18 4L18.5 5L19.5 5.5L18.5 6L18 7L17.5 6L16.5 5.5L17.5 5L18 4Z"
@@ -273,11 +370,34 @@ export function CookingPotIcon({ className = "", size = 24 }: IconProps) {
       className={className}
     >
       {/* Steam */}
-      <path d="M8 5C8 4 9 3 9 2" stroke="#9CA3AF" strokeWidth="1" strokeLinecap="round" />
-      <path d="M12 4C12 3 13 2 13 1" stroke="#9CA3AF" strokeWidth="1" strokeLinecap="round" />
-      <path d="M16 5C16 4 17 3 17 2" stroke="#9CA3AF" strokeWidth="1" strokeLinecap="round" />
+      <path
+        d="M8 5C8 4 9 3 9 2"
+        stroke="#9CA3AF"
+        strokeWidth="1"
+        strokeLinecap="round"
+      />
+      <path
+        d="M12 4C12 3 13 2 13 1"
+        stroke="#9CA3AF"
+        strokeWidth="1"
+        strokeLinecap="round"
+      />
+      <path
+        d="M16 5C16 4 17 3 17 2"
+        stroke="#9CA3AF"
+        strokeWidth="1"
+        strokeLinecap="round"
+      />
       {/* Pot lid */}
-      <ellipse cx="12" cy="8" rx="7" ry="2" fill="#86EFAC" stroke="currentColor" strokeWidth="1.5" />
+      <ellipse
+        cx="12"
+        cy="8"
+        rx="7"
+        ry="2"
+        fill="#86EFAC"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
       <circle cx="12" cy="6" r="1" fill="currentColor" />
       {/* Pot body */}
       <path
@@ -287,8 +407,16 @@ export function CookingPotIcon({ className = "", size = 24 }: IconProps) {
         strokeWidth="1.5"
       />
       {/* Handles */}
-      <path d="M5 12H3C2.5 12 2 12.5 2 13V14C2 14.5 2.5 15 3 15H5" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M19 12H21C21.5 12 22 12.5 22 13V14C22 14.5 21.5 15 21 15H19" stroke="currentColor" strokeWidth="1.5" />
+      <path
+        d="M5 12H3C2.5 12 2 12.5 2 13V14C2 14.5 2.5 15 3 15H5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      <path
+        d="M19 12H21C21.5 12 22 12.5 22 13V14C22 14.5 21.5 15 21 15H19"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
     </svg>
   );
 }
@@ -304,9 +432,30 @@ export function ChefHatIcon({ className = "", size = 24 }: IconProps) {
       className={className}
     >
       {/* Hat puffs */}
-      <circle cx="8" cy="8" r="3" fill="#FFFBEB" stroke="currentColor" strokeWidth="1.5" />
-      <circle cx="12" cy="6" r="3.5" fill="#FFFBEB" stroke="currentColor" strokeWidth="1.5" />
-      <circle cx="16" cy="8" r="3" fill="#FFFBEB" stroke="currentColor" strokeWidth="1.5" />
+      <circle
+        cx="8"
+        cy="8"
+        r="3"
+        fill="#FFFBEB"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      <circle
+        cx="12"
+        cy="6"
+        r="3.5"
+        fill="#FFFBEB"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      <circle
+        cx="16"
+        cy="8"
+        r="3"
+        fill="#FFFBEB"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
       {/* Hat base */}
       <path
         d="M6 10C6 10 5 12 5 14H19C19 12 18 10 18 10"
@@ -315,9 +464,27 @@ export function ChefHatIcon({ className = "", size = 24 }: IconProps) {
         strokeWidth="1.5"
       />
       {/* Pink band */}
-      <rect x="5" y="14" width="14" height="3" rx="1" fill="#FBCFE8" stroke="currentColor" strokeWidth="1" />
+      <rect
+        x="5"
+        y="14"
+        width="14"
+        height="3"
+        rx="1"
+        fill="#FBCFE8"
+        stroke="currentColor"
+        strokeWidth="1"
+      />
       {/* Hat body */}
-      <rect x="6" y="17" width="12" height="4" rx="1" fill="#FFFBEB" stroke="currentColor" strokeWidth="1.5" />
+      <rect
+        x="6"
+        y="17"
+        width="12"
+        height="4"
+        rx="1"
+        fill="#FFFBEB"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
     </svg>
   );
 }

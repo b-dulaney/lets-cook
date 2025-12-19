@@ -19,22 +19,38 @@ function categorizeIngredient(item: string): string {
   const lower = item.toLowerCase();
 
   // Proteins
-  if (/chicken|beef|pork|fish|salmon|tuna|shrimp|tofu|tempeh|eggs?|turkey|lamb|bacon|sausage/.test(lower)) {
+  if (
+    /chicken|beef|pork|fish|salmon|tuna|shrimp|tofu|tempeh|eggs?|turkey|lamb|bacon|sausage/.test(
+      lower,
+    )
+  ) {
     return "Meat";
   }
 
   // Dairy
-  if (/milk|cheese|butter|cream|yogurt|sour cream|parmesan|mozzarella|cheddar/.test(lower)) {
+  if (
+    /milk|cheese|butter|cream|yogurt|sour cream|parmesan|mozzarella|cheddar/.test(
+      lower,
+    )
+  ) {
     return "Dairy";
   }
 
   // Produce - vegetables
-  if (/onion|garlic|tomato|pepper|carrot|celery|broccoli|spinach|lettuce|cucumber|zucchini|mushroom|potato|sweet potato|cabbage|kale|greens|squash|eggplant|corn|peas|beans|asparagus|cauliflower/.test(lower)) {
+  if (
+    /onion|garlic|tomato|pepper|carrot|celery|broccoli|spinach|lettuce|cucumber|zucchini|mushroom|potato|sweet potato|cabbage|kale|greens|squash|eggplant|corn|peas|beans|asparagus|cauliflower/.test(
+      lower,
+    )
+  ) {
     return "Produce";
   }
 
   // Produce - fruits
-  if (/apple|banana|orange|lemon|lime|berry|berries|strawberry|blueberry|avocado|mango|peach|pear|grape|melon/.test(lower)) {
+  if (
+    /apple|banana|orange|lemon|lime|berry|berries|strawberry|blueberry|avocado|mango|peach|pear|grape|melon/.test(
+      lower,
+    )
+  ) {
     return "Produce";
   }
 
@@ -49,7 +65,11 @@ function categorizeIngredient(item: string): string {
   }
 
   // Condiments/Sauces
-  if (/sauce|ketchup|mustard|mayo|mayonnaise|vinegar|dressing|salsa|hot sauce|soy sauce|worcestershire|sriracha/.test(lower)) {
+  if (
+    /sauce|ketchup|mustard|mayo|mayonnaise|vinegar|dressing|salsa|hot sauce|soy sauce|worcestershire|sriracha/.test(
+      lower,
+    )
+  ) {
     return "Condiments/Sauces";
   }
 
@@ -64,8 +84,13 @@ function flattenShoppingList(data: ClaudeShoppingList): ShoppingListItem[] {
 
   // Defensive check - log what we received if shoppingList is missing
   if (!categories) {
-    console.error("Claude response missing shoppingList. Received:", JSON.stringify(data, null, 2));
-    throw new Error("Invalid shopping list response: missing shoppingList property");
+    console.error(
+      "Claude response missing shoppingList. Received:",
+      JSON.stringify(data, null, 2),
+    );
+    throw new Error(
+      "Invalid shopping list response: missing shoppingList property",
+    );
   }
 
   for (const [category, categoryItems] of Object.entries(categories)) {
@@ -115,7 +140,7 @@ export async function GET(request: NextRequest) {
       console.error("Error fetching shopping list:", error);
       return NextResponse.json(
         { error: "Failed to fetch shopping list" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -137,7 +162,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching shopping lists:", error);
     return NextResponse.json(
       { error: "Failed to fetch shopping lists" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -163,17 +188,20 @@ export async function POST(request: NextRequest) {
   if (generate && recipeId) {
     // Fetch the recipe - cast to any since generated types may not be up to date
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: recipe, error: recipeError } = await (supabase as any)
+    const { data: recipe, error: recipeError } = (await (supabase as any)
       .from("recipes")
       .select("title, ingredients")
       .eq("id", recipeId)
-      .single() as { data: { title: string; ingredients: Array<{ item: string; amount: string; notes?: string }> } | null; error: Error | null };
+      .single()) as {
+      data: {
+        title: string;
+        ingredients: Array<{ item: string; amount: string; notes?: string }>;
+      } | null;
+      error: Error | null;
+    };
 
     if (recipeError || !recipe) {
-      return NextResponse.json(
-        { error: "Recipe not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Recipe not found" }, { status: 404 });
     }
 
     // Extract ingredients from recipe
@@ -202,7 +230,7 @@ export async function POST(request: NextRequest) {
       console.error("Error saving shopping list:", error);
       return NextResponse.json(
         { error: "Failed to save shopping list" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -225,14 +253,14 @@ export async function POST(request: NextRequest) {
     if (mealPlanError || !mealPlan) {
       return NextResponse.json(
         { error: "Meal plan not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     try {
       const response = await generateShoppingList(
         mealPlan.meals as unknown as WeeklyMealPlan,
-        pantryItems || []
+        pantryItems || [],
       );
 
       // Flatten the categorized shopping list into a flat array with purchased status
@@ -252,7 +280,7 @@ export async function POST(request: NextRequest) {
         console.error("Error saving shopping list:", error);
         return NextResponse.json(
           { error: "Failed to save shopping list" },
-          { status: 500 }
+          { status: 500 },
         );
       }
 
@@ -264,7 +292,7 @@ export async function POST(request: NextRequest) {
       console.error("Error generating shopping list:", error);
       return NextResponse.json(
         { error: "Failed to generate shopping list" },
-        { status: 500 }
+        { status: 500 },
       );
     }
   }
@@ -273,17 +301,19 @@ export async function POST(request: NextRequest) {
   if (!items || !Array.isArray(items)) {
     return NextResponse.json(
       { error: "Items array is required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   // Ensure all items have purchased status
-  const itemsWithStatus: ShoppingListItem[] = items.map((item: Partial<ShoppingListItem>) => ({
-    item: item.item || "",
-    quantity: item.quantity || "",
-    category: item.category,
-    purchased: item.purchased ?? false,
-  }));
+  const itemsWithStatus: ShoppingListItem[] = items.map(
+    (item: Partial<ShoppingListItem>) => ({
+      item: item.item || "",
+      quantity: item.quantity || "",
+      category: item.category,
+      purchased: item.purchased ?? false,
+    }),
+  );
 
   const { data: shoppingList, error } = await supabase
     .from("shopping_lists")
@@ -299,7 +329,7 @@ export async function POST(request: NextRequest) {
     console.error("Error creating shopping list:", error);
     return NextResponse.json(
       { error: "Failed to create shopping list" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 

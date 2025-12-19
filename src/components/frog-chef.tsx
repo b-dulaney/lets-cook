@@ -192,9 +192,30 @@ export function FrogChefIcon({
         strokeWidth="1.5"
       />
       {/* Hat puff top */}
-      <circle cx="38" cy="18" r="7" fill="#FFFBEB" stroke="#D1D5DB" strokeWidth="1" />
-      <circle cx="50" cy="14" r="8" fill="#FFFBEB" stroke="#D1D5DB" strokeWidth="1" />
-      <circle cx="62" cy="18" r="7" fill="#FFFBEB" stroke="#D1D5DB" strokeWidth="1" />
+      <circle
+        cx="38"
+        cy="18"
+        r="7"
+        fill="#FFFBEB"
+        stroke="#D1D5DB"
+        strokeWidth="1"
+      />
+      <circle
+        cx="50"
+        cy="14"
+        r="8"
+        fill="#FFFBEB"
+        stroke="#D1D5DB"
+        strokeWidth="1"
+      />
+      <circle
+        cx="62"
+        cy="18"
+        r="7"
+        fill="#FFFBEB"
+        stroke="#D1D5DB"
+        strokeWidth="1"
+      />
       {/* Hat base/rim */}
       <ellipse cx="50" cy="34" rx="20" ry="5" fill="#FFFBEB" />
       <path

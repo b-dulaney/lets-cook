@@ -20,11 +20,13 @@ export async function GET(request: NextRequest) {
   // Get favorites with recipe details
   const { data: favorites, error } = await supabase
     .from("favorite_recipes")
-    .select(`
+    .select(
+      `
       id,
       created_at,
       recipe:recipes (*)
-    `)
+    `,
+    )
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
@@ -33,7 +35,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching favorites:", error);
     return NextResponse.json(
       { error: "Failed to fetch favorites" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 

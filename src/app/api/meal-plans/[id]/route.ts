@@ -59,10 +59,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   if (meals !== undefined) updates.meals = meals as Json;
 
   if (Object.keys(updates).length === 0) {
-    return NextResponse.json(
-      { error: "No fields to update" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "No fields to update" }, { status: 400 });
   }
 
   const { data: mealPlan, error } = await supabase
@@ -77,7 +74,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     console.error("Error updating meal plan:", error);
     return NextResponse.json(
       { error: "Failed to update meal plan" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -111,7 +108,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     console.error("Error deleting meal plan:", error);
     return NextResponse.json(
       { error: "Failed to delete meal plan" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -137,7 +134,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   if (typeof dayIndex !== "number") {
     return NextResponse.json(
       { error: "dayIndex is required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -161,10 +158,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   };
 
   if (!meals.weekPlan || dayIndex < 0 || dayIndex >= meals.weekPlan.length) {
-    return NextResponse.json(
-      { error: "Invalid day index" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Invalid day index" }, { status: 400 });
   }
 
   // Fetch user preferences
@@ -175,11 +169,12 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     .single();
 
   const userPreferences: UserPreferences = {
-    dietary: prefsData?.dietary as string[] || [],
-    allergies: prefsData?.allergies as string[] || [],
-    dislikes: prefsData?.dislikes as string[] || [],
-    favoriteCuisines: prefsData?.favorite_cuisines as string[] || [],
-    skillLevel: prefsData?.skill_level as UserPreferences["skillLevel"] || undefined,
+    dietary: (prefsData?.dietary as string[]) || [],
+    allergies: (prefsData?.allergies as string[]) || [],
+    dislikes: (prefsData?.dislikes as string[]) || [],
+    favoriteCuisines: (prefsData?.favorite_cuisines as string[]) || [],
+    skillLevel:
+      (prefsData?.skill_level as UserPreferences["skillLevel"]) || undefined,
     maxCookTime: prefsData?.max_cook_time || undefined,
     budget: prefsData?.budget || undefined,
     householdSize: prefsData?.household_size || undefined,
@@ -202,16 +197,19 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     updatedWeekPlan[dayIndex] = response.data;
 
     // Only update shopping categories if we got valid ones back
-    const hasValidShoppingCategories = response.shoppingCategories &&
+    const hasValidShoppingCategories =
+      response.shoppingCategories &&
       (response.shoppingCategories.proteins?.length > 0 ||
-       response.shoppingCategories.produce?.length > 0 ||
-       response.shoppingCategories.pantry?.length > 0 ||
-       response.shoppingCategories.dairy?.length > 0);
+        response.shoppingCategories.produce?.length > 0 ||
+        response.shoppingCategories.pantry?.length > 0 ||
+        response.shoppingCategories.dairy?.length > 0);
 
     const updatedMeals = {
       ...meals,
       weekPlan: updatedWeekPlan,
-      ...(hasValidShoppingCategories && { shoppingCategories: response.shoppingCategories }),
+      ...(hasValidShoppingCategories && {
+        shoppingCategories: response.shoppingCategories,
+      }),
     };
 
     const { data: updatedPlan, error: updateError } = await supabase
@@ -226,7 +224,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       console.error("Error updating meal plan:", updateError);
       return NextResponse.json(
         { error: "Failed to update meal plan" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -246,7 +244,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     console.error("Error re-rolling meal:", error);
     return NextResponse.json(
       { error: "Failed to generate new meal" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
