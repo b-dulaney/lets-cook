@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FullPageLoader } from "@/components/full-page-loader";
 import { SkeletonListPage } from "@/components/skeleton";
@@ -34,6 +35,7 @@ interface Preferences {
 }
 
 export default function MealPlansPage() {
+  const router = useRouter();
   const [mealPlans, setMealPlans] = useState<MealPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -62,8 +64,7 @@ export default function MealPlansPage() {
   };
 
   const handlePlanCreated = (newPlan: MealPlan) => {
-    setMealPlans([newPlan, ...mealPlans]);
-    setShowModal(false);
+    router.push(`/meal-plans/${newPlan.id}`);
   };
 
   const formatDateTime = (dateString: string) => {
