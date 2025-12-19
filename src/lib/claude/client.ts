@@ -653,8 +653,13 @@ const recipeDetailsTool: Anthropic.Tool = {
         type: "string",
         description: "TWO or THREE words: main protein/ingredient + dish type (e.g., 'chicken pasta', 'beef tacos', 'salmon bowl', 'vegetable curry')",
       },
+      cardColor: {
+        type: "string",
+        enum: ["red", "orange", "amber", "yellow", "lime", "green", "emerald", "teal", "cyan", "sky", "blue", "indigo", "violet", "purple", "fuchsia", "pink", "rose", "slate"],
+        description: "Color theme based on dish: red=tomato/spicy, orange=citrus/carrots, amber=curry/golden, yellow=lemon/corn, lime=fresh/zesty, green=salads/vegetables, emerald=herbs/mediterranean, teal=seafood/asian, cyan=light seafood, pink=salmon/light, slate=earthy/mushrooms",
+      },
     },
-    required: ["recipeName", "servings", "prepTime", "cookTime", "totalTime", "difficulty", "ingredients", "instructions", "tips", "substitutions", "nutrition", "cuisineType", "imageSearchTerms"],
+    required: ["recipeName", "servings", "prepTime", "cookTime", "totalTime", "difficulty", "ingredients", "instructions", "tips", "substitutions", "nutrition", "cuisineType", "cardColor"],
   },
 };
 

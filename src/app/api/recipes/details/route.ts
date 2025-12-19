@@ -70,8 +70,9 @@ export async function POST(request: NextRequest) {
 
     const generatedRecipe = result.data;
 
-    // Fetch image from Spoonacular using Claude's optimized search terms
-    const imageUrl = await searchRecipeImage(generatedRecipe.imageSearchTerms || recipeName);
+    // Image search disabled for now - results too unpredictable
+    // const imageUrl = await searchRecipeImage(generatedRecipe.imageSearchTerms || recipeName);
+    const imageUrl = null;
 
     // Save the generated recipe to the database
     const { data: savedRecipe, error: insertError } = await supabase
@@ -94,6 +95,7 @@ export async function POST(request: NextRequest) {
           nutrition: generatedRecipe.nutrition,
           generatedName: generatedRecipe.recipeName,
           constraints: hasConstraints ? constraints : undefined,
+          cardColor: generatedRecipe.cardColor,
         } as unknown as Json,
       })
       .select("id")

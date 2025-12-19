@@ -13,6 +13,7 @@ interface SavedRecipe {
   isFavorite: boolean;
   metadata: {
     generatedName?: string;
+    cardColor?: string;
   } | null;
 }
 

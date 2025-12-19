@@ -16,6 +16,7 @@ interface SavedRecipe {
   isFavorite: boolean;
   metadata: {
     generatedName?: string;
+    cardColor?: string;
   } | null;
 }
 
@@ -25,40 +26,76 @@ const difficultyColors: Record<string, string> = {
   Hard: "bg-red-100 text-red-700",
 };
 
+// Gradient colors for recipe cards based on dish characteristics
+const cardGradients: Record<string, string> = {
+  red: "from-red-200 to-red-100",
+  orange: "from-orange-200 to-orange-100",
+  amber: "from-amber-200 to-amber-100",
+  yellow: "from-yellow-200 to-yellow-100",
+  lime: "from-lime-200 to-lime-100",
+  green: "from-green-200 to-green-100",
+  emerald: "from-emerald-200 to-emerald-100",
+  teal: "from-teal-200 to-teal-100",
+  cyan: "from-cyan-200 to-cyan-100",
+  sky: "from-sky-200 to-sky-100",
+  blue: "from-blue-200 to-blue-100",
+  indigo: "from-indigo-200 to-indigo-100",
+  violet: "from-violet-200 to-violet-100",
+  purple: "from-purple-200 to-purple-100",
+  fuchsia: "from-fuchsia-200 to-fuchsia-100",
+  pink: "from-pink-200 to-pink-100",
+  rose: "from-rose-200 to-rose-100",
+  slate: "from-slate-300 to-slate-200",
+};
+
+const cardIconColors: Record<string, string> = {
+  red: "text-red-400",
+  orange: "text-orange-400",
+  amber: "text-amber-400",
+  yellow: "text-yellow-400",
+  lime: "text-lime-400",
+  green: "text-green-400",
+  emerald: "text-emerald-400",
+  teal: "text-teal-400",
+  cyan: "text-cyan-400",
+  sky: "text-sky-400",
+  blue: "text-blue-400",
+  indigo: "text-indigo-400",
+  violet: "text-violet-400",
+  purple: "text-purple-400",
+  fuchsia: "text-fuchsia-400",
+  pink: "text-pink-400",
+  rose: "text-rose-400",
+  slate: "text-slate-400",
+};
+
 function SavedRecipeCard({ recipe }: { recipe: SavedRecipe }) {
   const displayName = recipe.metadata?.generatedName || recipe.title;
+  const cardColor = recipe.metadata?.cardColor || "emerald";
+  const gradientClass = cardGradients[cardColor] || cardGradients.emerald;
+  const iconColorClass = cardIconColors[cardColor] || cardIconColors.emerald;
 
   return (
     <Link
       href={`/recipes/${recipe.id}?back=/recipes/saved`}
       className="block bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md hover:border-gray-300 transition-all"
     >
-      {/* Image */}
-      {recipe.image_url ? (
-        <div className="h-40 overflow-hidden">
-          <img
-            src={recipe.image_url}
-            alt={displayName}
-            className="w-full h-full object-cover"
+      {/* Colored gradient header */}
+      <div className={`h-40 bg-gradient-to-br ${gradientClass} flex items-center justify-center`}>
+        <svg
+          className={`w-12 h-12 ${iconColorClass}`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
           />
-        </div>
-      ) : (
-        <div className="h-40 bg-gradient-to-br from-emerald-100 to-emerald-50 flex items-center justify-center">
-          <svg
-            className="w-12 h-12 text-emerald-300"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
-            />
-          </svg>
-        </div>
-      )}
+        </svg>
+      </div>
 
       <div className="p-4">
         <div className="flex items-start justify-between mb-2">

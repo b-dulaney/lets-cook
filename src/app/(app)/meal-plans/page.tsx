@@ -236,6 +236,7 @@ function GeneratePlanModal({
 
   // Form state
   const [numberOfDays, setNumberOfDays] = useState(7);
+  const [store, setStore] = useState<string>("");
   const [householdSize, setHouseholdSize] = useState<string>("");
   const [mealComplexity, setMealComplexity] = useState<string>("");
   const [dietary, setDietary] = useState<string[]>([]);
@@ -284,6 +285,7 @@ function GeneratePlanModal({
       const preferences = {
         householdSize: householdSize ? parseInt(householdSize) : undefined,
         mealComplexity: mealComplexity || undefined,
+        store: store || undefined,
         dietary,
         allergies,
         dislikes,
@@ -402,7 +404,7 @@ function GeneratePlanModal({
                   Loading preferences...
                 </div>
               ) : (
-                <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+                <div className="space-y-4 sm:max-h-[70vh] sm:overflow-y-auto">
                   {error && (
                     <div className="p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-200">
                       {error}
@@ -430,6 +432,26 @@ function GeneratePlanModal({
                         </button>
                       ))}
                     </div>
+                  </div>
+
+                  {/* Store Selection */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Shopping At
+                    </label>
+                    <select
+                      value={store}
+                      onChange={(e) => setStore(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 focus:ring-emerald-500 focus:border-emerald-500"
+                    >
+                      <option value="">Any grocery store</option>
+                      <option value="trader-joes">Trader Joe&apos;s</option>
+                    </select>
+                    {store === "trader-joes" && (
+                      <p className="mt-1 text-xs text-gray-500">
+                        Recipes will feature Trader Joe&apos;s signature items and products
+                      </p>
+                    )}
                   </div>
 
                   {/* Household Size */}

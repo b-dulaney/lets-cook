@@ -13,6 +13,7 @@ export interface UserPreferences {
   householdSize?: number;
   pantryItems?: string[];
   additionalNotes?: string;
+  store?: string; // e.g., "trader-joes"
 }
 
 export interface RecipeSuggestion {
@@ -52,6 +53,27 @@ export type CuisineType =
   | "Korean" | "Latin American" | "Mediterranean" | "Mexican"
   | "Middle Eastern" | "Nordic" | "Southern" | "Spanish" | "Thai" | "Vietnamese";
 
+// Color options for recipe card gradients - based on dish characteristics
+export type RecipeCardColor =
+  | "red"      // tomato-based, spicy dishes
+  | "orange"   // citrus, carrots, sweet potatoes
+  | "amber"    // curry, turmeric, golden dishes
+  | "yellow"   // lemon, corn, bright dishes
+  | "lime"     // fresh, zesty, herb-forward
+  | "green"    // salads, vegetables, pesto
+  | "emerald"  // herbs, mediterranean
+  | "teal"     // seafood, asian-inspired
+  | "cyan"     // light seafood, refreshing
+  | "sky"      // light, airy dishes
+  | "blue"     // blueberries, rare proteins
+  | "indigo"   // eggplant, purple cabbage
+  | "violet"   // lavender, unique dishes
+  | "purple"   // beets, acai, exotic
+  | "fuchsia"  // dragon fruit, vibrant
+  | "pink"     // salmon, strawberry, light
+  | "rose"     // delicate, floral dishes
+  | "slate";   // neutral, earthy, mushrooms
+
 export interface FullRecipe {
   recipeName: string;
   servings: number;
@@ -68,8 +90,9 @@ export interface FullRecipe {
     protein: string;
     notes: string;
   };
-  cuisineType?: CuisineType; // For image search filtering
-  imageSearchTerms?: string; // 2-3 words: protein/ingredient + dish type (e.g., "chicken pasta", "beef tacos")
+  cuisineType?: CuisineType;
+  imageSearchTerms?: string;
+  cardColor?: RecipeCardColor; // Color theme for recipe card based on dish characteristics
 }
 
 export interface MealPlanDay {
@@ -314,7 +337,34 @@ ${recipesToAvoid.map((r) => `- ${r}`).join("\n")}
     ? `\n- **RECIPE COMPLEXITY (MUST FOLLOW)**: ${complexityDescriptions[userPreferences.mealComplexity]}`
     : "";
 
+  // Store-specific instructions
+  const storeInstructions: Record<string, string> = {
+    "trader-joes": `
+**TRADER JOE'S MEAL PLAN**
+Create recipes that specifically feature Trader Joe's signature products and ingredients. This is a Trader Joe's-focused meal plan - embrace their unique offerings!
+
+TRADER JOE'S SIGNATURE ITEMS TO INCORPORATE:
+- Frozen: Mandarin Orange Chicken, Cauliflower Gnocchi, Chicken Tikka Masala, Korean Beef Short Ribs, Hashbrowns, Riced Cauliflower, Gyoza/Potstickers, Butter Chicken, Palak Paneer, Kung Pao Chicken, Beef Bulgogi, Tempura Shrimp, Chicken Shawarma
+- Sauces & Seasonings: Everything But The Bagel Seasoning, Green Dragon Hot Sauce, Chili Onion Crunch, Ajika Georgian Seasoning, Bomba Sauce, Sriracha Ranch, Cowboy Caviar Salsa, Chimichurri, Romesco Sauce, Thai Yellow Curry Sauce, Tikka Masala Sauce, Soyaki Sauce
+- Pasta & Grains: Lemon Pepper Pappardelle, Cacio e Pepe Pasta, Truffle Pasta, Gnocchi alla Sorrentina, Harvest Grains Blend
+- Proteins: Unexpected Cheddar, Toscano Cheese, Halloumi, Shawarma Chicken Thighs, Chile Lime Chicken Burgers, Italian Chicken Sausages, Smoked Salmon
+- Produce & Prepared: Cruciferous Crunch, Power Greens, Shredded Cabbage, Fresh Bruschetta, Cowboy Caviar, Elote Corn Chip Dip
+- Snacks that work in meals: Elote Seasoned Tortilla Chips (crushed as topping), Everything But The Bagel Seasoned Crackers
+
+RECIPE STYLE FOR TRADER JOE'S:
+- Feature 1-2 TJ's signature items per meal
+- Combine TJ's prepared items with fresh ingredients for quick but impressive meals
+- Use TJ's unique seasonings and sauces to add distinctive flavors
+- Take advantage of their quality frozen options for weeknight convenience
+- Pair TJ's proteins with their fresh produce and specialty items
+
+`,
+  };
+
+  const storeSection = userPreferences.store ? storeInstructions[userPreferences.store] || "" : "";
+
   return `Create a ${numberOfMeals}-day meal plan for dinner.
+${storeSection}
 
 User preferences:
 - Dietary restrictions: ${dietary}
