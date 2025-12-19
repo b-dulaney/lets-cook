@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { FrogChef } from "@/components/frog-chef";
-import { MealPlanIcon, ShoppingIcon, SavedRecipesIcon } from "@/components/icons";
+import {
+  MealPlanIcon,
+  ShoppingIcon,
+  SavedRecipesIcon,
+} from "@/components/icons";
 
 export default function Home() {
   return (
@@ -13,7 +17,9 @@ export default function Home() {
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <FrogChef size={40} />
-            <span className="text-xl font-bold text-emerald-800 font-display">Let&apos;s Cook</span>
+            <span className="text-xl font-bold text-emerald-800 font-display">
+              Let&apos;s Cook
+            </span>
           </div>
           <Link
             href="/login"
@@ -33,10 +39,18 @@ export default function Home() {
               <div className="relative">
                 <FrogChef size={160} animated />
                 {/* Decorative sparkles */}
-                <svg className="absolute -top-2 -right-2 w-8 h-8 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
+                <svg
+                  className="absolute -top-2 -right-2 w-8 h-8 text-yellow-400"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
                   <path d="M12 2L13.5 8.5L20 10L13.5 11.5L12 18L10.5 11.5L4 10L10.5 8.5L12 2Z" />
                 </svg>
-                <svg className="absolute -bottom-1 -left-3 w-6 h-6 text-pink-300" viewBox="0 0 24 24" fill="currentColor">
+                <svg
+                  className="absolute -bottom-1 -left-3 w-6 h-6 text-pink-300"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
                   <path d="M12 2L13.5 8.5L20 10L13.5 11.5L12 18L10.5 11.5L4 10L10.5 8.5L12 2Z" />
                 </svg>
               </div>
@@ -48,23 +62,35 @@ export default function Home() {
             </h1>
 
             <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-              Plan delicious meals, discover recipes based on what you have, and generate
-              smart shopping lists. Let our friendly frog chef help you cook with confidence!
+              Plan delicious meals, discover recipes based on what you have, and
+              generate smart shopping lists. Let our friendly chef help you cook
+              with confidence!
             </p>
 
             {/* CTA Card */}
             <div className="max-w-md mx-auto">
               <div className="bg-white rounded-2xl shadow-lg border border-emerald-100 p-8">
                 <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                  <svg
+                    className="w-8 h-8 text-emerald-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                    />
                   </svg>
                 </div>
                 <h2 className="text-xl font-semibold text-gray-900 mb-2">
                   Ready to start cooking?
                 </h2>
                 <p className="text-gray-600 mb-6">
-                  Sign in to create personalized meal plans and save your favorite recipes.
+                  Sign in to create personalized meal plans and save your
+                  favorite recipes.
                 </p>
                 <Link
                   href="/login"
@@ -102,11 +128,11 @@ export default function Home() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="flex items-center justify-center gap-2 mb-2">
             <FrogChef size={24} />
-            <span className="text-sm font-medium text-gray-600 font-display">Let&apos;s Cook</span>
+            <span className="text-sm font-medium text-gray-600 font-display">
+              Let&apos;s Cook
+            </span>
           </div>
-          <p className="text-xs text-gray-500">
-            Made with love for home cooks everywhere
-          </p>
+          <p className="text-xs text-gray-500">❤️ Brendan</p>
         </div>
       </footer>
     </div>
