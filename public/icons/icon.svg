@@ -3,49 +3,47 @@
   <circle cx="256" cy="256" r="256" fill="#059669"/>
 
   <!-- Frog face -->
-  <ellipse cx="256" cy="290" rx="140" ry="120" fill="#86EFAC"/>
+  <ellipse cx="256" cy="300" rx="140" ry="120" fill="#86EFAC"/>
 
   <!-- Lighter belly/face area -->
-  <ellipse cx="256" cy="310" rx="100" ry="80" fill="#BBF7D0"/>
+  <ellipse cx="256" cy="320" rx="100" ry="80" fill="#BBF7D0"/>
+
+  <!-- Eye bumps -->
+  <circle cx="190" cy="230" r="52" fill="#86EFAC"/>
+  <circle cx="322" cy="230" r="52" fill="#86EFAC"/>
 
   <!-- Eyes - white part -->
-  <circle cx="190" cy="210" r="50" fill="white"/>
-  <circle cx="322" cy="210" r="50" fill="white"/>
-
-  <!-- Eyes - green outline -->
-  <circle cx="190" cy="210" r="50" fill="none" stroke="#059669" stroke-width="4"/>
-  <circle cx="322" cy="210" r="50" fill="none" stroke="#059669" stroke-width="4"/>
+  <circle cx="190" cy="230" r="38" fill="white"/>
+  <circle cx="322" cy="230" r="38" fill="white"/>
 
   <!-- Pupils -->
-  <circle cx="195" cy="215" r="22" fill="#1F2937"/>
-  <circle cx="327" cy="215" r="22" fill="#1F2937"/>
+  <circle cx="198" cy="235" r="20" fill="#1F2937"/>
+  <circle cx="330" cy="235" r="20" fill="#1F2937"/>
 
   <!-- Eye shine -->
-  <circle cx="202" cy="205" r="8" fill="white"/>
-  <circle cx="334" cy="205" r="8" fill="white"/>
+  <circle cx="188" cy="222" r="9" fill="white"/>
+  <circle cx="320" cy="222" r="9" fill="white"/>
 
   <!-- Blush marks -->
-  <ellipse cx="150" cy="300" rx="25" ry="15" fill="#FBCFE8" opacity="0.7"/>
-  <ellipse cx="362" cy="300" rx="25" ry="15" fill="#FBCFE8" opacity="0.7"/>
+  <ellipse cx="145" cy="310" rx="25" ry="15" fill="#FECACA" opacity="0.6"/>
+  <ellipse cx="367" cy="310" rx="25" ry="15" fill="#FECACA" opacity="0.6"/>
 
   <!-- Smile -->
-  <path d="M200 340 Q256 390 312 340" fill="none" stroke="#059669" stroke-width="8" stroke-linecap="round"/>
+  <path d="M200 355 Q256 405 312 355" fill="none" stroke="#166534" stroke-width="12" stroke-linecap="round"/>
 
-  <!-- Chef hat shadow -->
-  <ellipse cx="256" cy="145" rx="85" ry="20" fill="#9CA3AF" opacity="0.3"/>
+  <!-- Nostrils -->
+  <circle cx="230" cy="320" r="7" fill="#166534"/>
+  <circle cx="282" cy="320" r="7" fill="#166534"/>
 
   <!-- Chef hat body -->
-  <path d="M145 145 C145 145 140 60 256 60 C372 60 367 145 367 145" fill="#FFFBEB" stroke="#D1D5DB" stroke-width="3"/>
+  <path d="M145 175 C145 175 140 70 256 70 C372 70 367 175 367 175" fill="#FFFBEB" stroke="#D1D5DB" stroke-width="4"/>
 
   <!-- Chef hat top puffs -->
-  <circle cx="200" cy="75" r="35" fill="#FFFBEB"/>
-  <circle cx="256" cy="65" r="40" fill="#FFFBEB"/>
-  <circle cx="312" cy="75" r="35" fill="#FFFBEB"/>
+  <circle cx="200" cy="90" r="38" fill="#FFFBEB" stroke="#D1D5DB" stroke-width="3"/>
+  <circle cx="256" cy="75" r="44" fill="#FFFBEB" stroke="#D1D5DB" stroke-width="3"/>
+  <circle cx="312" cy="90" r="38" fill="#FFFBEB" stroke="#D1D5DB" stroke-width="3"/>
 
-  <!-- Hat rim -->
-  <ellipse cx="256" cy="145" rx="85" ry="18" fill="#FFFBEB"/>
-
-  <!-- Pink ribbon on hat -->
-  <ellipse cx="256" cy="145" rx="85" ry="12" fill="#FBCFE8"/>
-  <ellipse cx="256" cy="142" rx="85" ry="8" fill="#F9A8D4" opacity="0.6"/>
+  <!-- Hat base/rim -->
+  <ellipse cx="256" cy="175" rx="110" ry="28" fill="#FFFBEB"/>
+  <path d="M 146 175 A 110 28 0 0 0 366 175" stroke="#D1D5DB" stroke-width="4" fill="none"/>
 </svg>
