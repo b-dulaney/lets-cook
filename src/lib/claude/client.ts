@@ -651,7 +651,7 @@ const recipeDetailsTool: Anthropic.Tool = {
       },
       imageSearchTerms: {
         type: "string",
-        description: "ONE or TWO simple words for the main dish (e.g., 'salmon', 'pasta', 'tacos', 'curry')",
+        description: "TWO or THREE words: main protein/ingredient + dish type (e.g., 'chicken pasta', 'beef tacos', 'salmon bowl', 'vegetable curry')",
       },
     },
     required: ["recipeName", "servings", "prepTime", "cookTime", "totalTime", "difficulty", "ingredients", "instructions", "tips", "substitutions", "nutrition", "cuisineType", "imageSearchTerms"],

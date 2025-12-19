@@ -69,7 +69,7 @@ export interface FullRecipe {
     notes: string;
   };
   cuisineType?: CuisineType; // For image search filtering
-  imageSearchTerms?: string; // 1-2 word basic food term (e.g., "salmon", "pasta", "tacos")
+  imageSearchTerms?: string; // 2-3 words: protein/ingredient + dish type (e.g., "chicken pasta", "beef tacos")
 }
 
 export interface MealPlanDay {
@@ -245,7 +245,7 @@ Format as JSON:
   "totalTime": "35 minutes",
   "difficulty": "Easy",
   "cuisineType": "Italian",
-  "imageSearchTerms": "pasta",
+  "imageSearchTerms": "chicken pasta",
   "ingredients": [
     {
       "item": "chicken breast",
