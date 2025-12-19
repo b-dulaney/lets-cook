@@ -259,13 +259,13 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 | Claude Integration | ✅ Complete (with Tool Use) |
 | API Routes | ✅ Core routes working |
 | Intent Handling | ✅ Basic implementation |
-| Authentication | ✅ Complete |
+| Authentication | ✅ Google OAuth only |
 | Data Persistence | ✅ Complete |
 | Meal Plan Features | ✅ Re-roll, variety, complexity, numbered display |
 | Shopping Lists | ✅ Single-recipe lists, source naming |
-| Recipe Pages | ✅ Discovery, detail, caching |
+| Recipe Pages | ✅ Discovery, detail, images, caching |
 | Google Assistant | ⏳ Intents designed only |
-| Web UI | ✅ Core pages complete |
+| Web UI | ✅ Core pages + profile dropdown |
 | Cooking Mode | ✅ Complete with voice commands |
 | Testing | ⏳ Not started |
 | Deployment | ✅ Live at letscook.dev |
@@ -276,19 +276,57 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 
 | Feature | Effort | Value | Description |
 |---------|--------|-------|-------------|
-| Recipe images | Medium | High | Fetch images from Spoonacular/Unsplash for visual appeal |
-| Meal plan detail improvements | Low | High | Show numbered plan, created date, link to shopping list |
 | Chat interface | High | Medium | Natural language interaction for recipe discovery |
 | Google Assistant | High | Medium | Voice-first experience via smart speakers |
 | Testing suite | Medium | Medium | Unit/integration tests for reliability |
 | Error tracking | Low | Medium | Sentry integration for production monitoring |
-| Text-to-speech | Low | Medium | Read cooking instructions aloud |
+| Text-to-speech | Low | Medium | Read cooking instructions aloud in cooking mode |
 | Nutrition tracking | Medium | Medium | Aggregate nutrition info for meal plans |
 | Recipe scaling | Low | Medium | Adjust ingredient quantities for different serving sizes |
+| Offline support | Medium | Medium | PWA caching for recipes and shopping lists |
 
 ---
 
 ## Changelog
+
+### 2025-12-18 (Session 7)
+
+**Authentication Simplification**
+- Removed email/password sign-up from login page (Google-only auth)
+- Removed code-based email allowlist (use Google OAuth "Test Users" instead)
+- Simplified auth callback to just exchange code for session
+
+**UI Polish & Branding**
+- Added gradient backgrounds to home and login pages (radial emerald overlay)
+- FrogChef hat now bounces with animation in both `FrogChef` and `FrogChefCooking` components
+- Added FrogChefIcon to center of mobile app header
+
+**Profile Dropdown**
+- Added user avatar button in app header (Google profile image or initials)
+- Dropdown includes user name/email, Settings link, and Sign out button
+- Click-outside-to-close behavior
+- Responsive sizing (smaller on mobile)
+
+**Recipe Discovery Page**
+- Cleaned up header layout (stacks on mobile, side-by-side on desktop)
+- Shortened description text
+- Renamed "Saved Recipes" button to "My Recipes"
+- Added `whitespace-nowrap` to prevent button text wrapping
+
+**Image Search Improvements**
+- Changed search terms from "1-2 words" to "2-3 words: protein + dish type"
+- Example: "chicken pasta" instead of just "pasta" for better image matches
+
+**Files Modified**
+- `src/app/login/page.tsx` - Google-only auth, gradient background
+- `src/app/page.tsx` - Gradient background
+- `src/app/auth/callback/route.ts` - Removed email allowlist
+- `src/app/(app)/layout.tsx` - Pass avatar URL to AppShell
+- `src/components/app-shell.tsx` - Profile dropdown, mobile frog icon, initials helper
+- `src/components/frog-chef.tsx` - Hat animation on both FrogChef variants
+- `src/app/(app)/recipes/page.tsx` - Cleaner header layout
+- `src/lib/claude/client.ts` - Updated imageSearchTerms description
+- `src/lib/claude/prompts.ts` - Updated imageSearchTerms comment and example
 
 ### 2025-12-18 (Session 6)
 
