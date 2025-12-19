@@ -157,19 +157,16 @@ export default function RecipesPage() {
 
   return (
     <div>
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Find Recipes
-          </h1>
-          <p className="text-gray-600">
-            Tell us what ingredients you have, and we&apos;ll find delicious
-            recipes for you.
+          <h1 className="text-2xl font-bold text-gray-900">Find Recipes</h1>
+          <p className="text-gray-600 text-sm mt-1">
+            Enter ingredients to discover recipe ideas
           </p>
         </div>
         <Link
           href="/recipes/saved"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium whitespace-nowrap shrink-0"
         >
           <svg
             className="w-4 h-4"
@@ -184,7 +181,7 @@ export default function RecipesPage() {
               d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
             />
           </svg>
-          Saved Recipes
+          My Recipes
         </Link>
       </div>
 

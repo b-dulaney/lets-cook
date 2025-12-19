@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "@/lib/auth";
@@ -12,6 +12,17 @@ import {
   ShoppingIcon,
   SettingsIcon,
 } from "./icons";
+
+function getInitials(name?: string | null, email?: string): string {
+  if (name) {
+    const parts = name.split(" ").filter(Boolean);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  }
+  return email?.slice(0, 2).toUpperCase() || "?";
+}
 
 interface NavItem {
   name: string;
@@ -57,6 +68,7 @@ interface AppShellProps {
   user: {
     email: string;
     name?: string | null;
+    avatarUrl?: string | null;
   };
 }
 
@@ -81,7 +93,22 @@ function isChildActive(href: string, pathname: string): boolean {
 
 export function AppShell({ children, user }: AppShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setProfileOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const initials = getInitials(user.name, user.email);
 
   const renderNavItem = (item: NavItem, mobile: boolean = false) => {
     const isActive = isNavItemActive(item, pathname);
@@ -186,6 +213,7 @@ export function AppShell({ children, user }: AppShellProps) {
         {/* Top header */}
         <header className="sticky top-0 z-30 bg-white border-b border-gray-200">
           <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
+            {/* Left: hamburger menu (mobile) */}
             <button
               onClick={() => setSidebarOpen(true)}
               className="p-2 text-gray-500 hover:text-gray-700 lg:hidden"
@@ -195,20 +223,60 @@ export function AppShell({ children, user }: AppShellProps) {
               </svg>
             </button>
 
-            <div className="flex-1 lg:flex-none" />
+            {/* Center: frog icon (mobile only) */}
+            <div className="lg:hidden">
+              <FrogChefIcon size={32} />
+            </div>
 
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600 hidden sm:block">
-                {user.name || user.email}
-              </span>
-              <form action={signOut}>
-                <button
-                  type="submit"
-                  className="text-sm text-gray-600 hover:text-gray-900 font-medium cursor-pointer"
-                >
-                  Sign out
-                </button>
-              </form>
+            {/* Right: profile dropdown */}
+            <div className="relative lg:ml-auto" ref={profileRef}>
+              <button
+                onClick={() => setProfileOpen(!profileOpen)}
+                className="flex items-center gap-2 p-1 rounded-full hover:bg-gray-100 transition-colors"
+              >
+                {user.avatarUrl ? (
+                  <img
+                    src={user.avatarUrl}
+                    alt={user.name || "Profile"}
+                    className="w-8 h-8 lg:w-9 lg:h-9 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-8 h-8 lg:w-9 lg:h-9 rounded-full bg-emerald-600 flex items-center justify-center text-white text-sm font-medium">
+                    {initials}
+                  </div>
+                )}
+              </button>
+
+              {/* Dropdown menu */}
+              {profileOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                  <div className="px-4 py-2 border-b border-gray-100">
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {user.name || "User"}
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                  </div>
+                  <Link
+                    href="/settings"
+                    onClick={() => setProfileOpen(false)}
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  >
+                    <SettingsIcon size={16} />
+                    Settings
+                  </Link>
+                  <form action={signOut}>
+                    <button
+                      type="submit"
+                      className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
+                      Sign out
+                    </button>
+                  </form>
+                </div>
+              )}
             </div>
           </div>
         </header>
