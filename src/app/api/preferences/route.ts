@@ -47,6 +47,7 @@ export async function PUT(request: NextRequest) {
   // Extract only allowed fields
   const {
     skillLevel,
+    mealComplexity,
     maxCookTime,
     budget,
     householdSize,
@@ -61,6 +62,7 @@ export async function PUT(request: NextRequest) {
   // Build update object with snake_case keys
   const updates: Record<string, unknown> = {};
   if (skillLevel !== undefined) updates.skill_level = skillLevel;
+  if (mealComplexity !== undefined) updates.meal_complexity = mealComplexity;
   if (maxCookTime !== undefined) updates.max_cook_time = maxCookTime;
   if (budget !== undefined) updates.budget = budget;
   if (householdSize !== undefined) updates.household_size = householdSize;

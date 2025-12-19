@@ -7,6 +7,7 @@ export interface UserPreferences {
   cuisines?: string[];
   favoriteCuisines?: string[];
   skillLevel?: "beginner" | "intermediate" | "advanced";
+  mealComplexity?: "minimal" | "simple" | "standard" | "complex";
   maxCookTime?: string;
   budget?: string;
   householdSize?: number;
@@ -288,6 +289,17 @@ ${recipesToAvoid.map((r) => `- ${r}`).join("\n")}
 `
       : "";
 
+  // Build complexity instruction based on preference
+  const complexityDescriptions: Record<string, string> = {
+    minimal: "MINIMAL - MAXIMUM 5 main ingredients per recipe. Only the essentials, no extras.",
+    simple: "SIMPLE - MAXIMUM 7 main ingredients per recipe. Keep it approachable and quick.",
+    standard: "STANDARD - 8-12 main ingredients allowed. Good balance of simplicity and depth.",
+    complex: "COMPLEX - 12+ ingredients welcome. Elaborate, restaurant-quality dishes.",
+  };
+  const complexityInstruction = userPreferences.mealComplexity
+    ? `\n- **RECIPE COMPLEXITY (MUST FOLLOW)**: ${complexityDescriptions[userPreferences.mealComplexity]}`
+    : "";
+
   return `Create a ${numberOfMeals}-day meal plan for dinner.
 
 User preferences:
@@ -302,13 +314,14 @@ User preferences:
 - Skill level: ${userPreferences.skillLevel || "intermediate"}
 - Cooking time preference: ${userPreferences.maxCookTime || "45 minutes max"}
 - Budget: ${userPreferences.budget || "moderate"}
-- Household size: ${userPreferences.householdSize || "2-4 people"}
+- Household size: ${userPreferences.householdSize || "2-4 people"}${complexityInstruction}
 ${exclusionSection}
 CRITICAL REQUIREMENTS:
 1. NEVER suggest recipes containing foods from the "FOODS TO AVOID" list - not as main ingredients, side ingredients, garnishes, or in sauces. If the user dislikes mushrooms, do not include ANY mushroom variety in ANY meal.
 2. Respect all dietary restrictions and allergies strictly.
 3. MAXIMIZE VARIETY: Each meal MUST be distinctly different. Even with dietary restrictions, explore the full range of global cuisines and cooking techniques available. Never repeat similar dishes (e.g., don't have multiple stir-fries, multiple pasta dishes, or multiple curries in the same week).
 4. DO NOT suggest any recipes from the "RECIPES TO AVOID" list or close variations of them. Be creative and explore less common dishes.
+5. STRICTLY FOLLOW the recipe complexity preference. If set to "minimal" or "simple", each recipe MUST use only 5-7 main ingredients maximum. Do NOT add extra ingredients. Count the mainIngredients array - it must not exceed the complexity limit.
 
 VARIETY GUIDELINES (especially important for restrictive diets):
 - Use at least 4-5 different cuisines across the week (e.g., Italian, Mexican, Indian, Thai, Mediterranean, Japanese, Middle Eastern, American, Ethiopian, Greek, Korean, Vietnamese, Moroccan, Caribbean, Peruvian)

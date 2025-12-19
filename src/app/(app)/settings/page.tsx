@@ -6,6 +6,7 @@ import { SkeletonSettings } from "@/components/skeleton";
 interface Preferences {
   user_id: string;
   skill_level: string | null;
+  meal_complexity: string | null;
   max_cook_time: string | null;
   budget: string | null;
   household_size: number | null;
@@ -21,6 +22,13 @@ const SKILL_LEVELS = [
   { value: "beginner", label: "Beginner" },
   { value: "intermediate", label: "Intermediate" },
   { value: "advanced", label: "Advanced" },
+];
+
+const MEAL_COMPLEXITY = [
+  { value: "minimal", label: "Minimal", description: "Under 5 ingredients" },
+  { value: "simple", label: "Simple", description: "5-7 ingredients" },
+  { value: "standard", label: "Standard", description: "8-12 ingredients" },
+  { value: "complex", label: "Complex", description: "12+ ingredients" },
 ];
 
 const COMMON_DIETARY = [
@@ -69,6 +77,7 @@ export default function SettingsPage() {
 
   // Form state
   const [skillLevel, setSkillLevel] = useState<string>("");
+  const [mealComplexity, setMealComplexity] = useState<string>("");
   const [maxCookTime, setMaxCookTime] = useState<string>("");
   const [budget, setBudget] = useState<string>("");
   const [householdSize, setHouseholdSize] = useState<string>("");
@@ -90,6 +99,7 @@ export default function SettingsPage() {
         const prefs = data.preferences as Preferences;
 
         setSkillLevel(prefs.skill_level || "");
+        setMealComplexity(prefs.meal_complexity || "");
         setMaxCookTime(prefs.max_cook_time || "");
         setBudget(prefs.budget || "");
         setHouseholdSize(prefs.household_size?.toString() || "");
@@ -117,6 +127,7 @@ export default function SettingsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           skillLevel: skillLevel || null,
+          mealComplexity: mealComplexity || null,
           maxCookTime: maxCookTime || null,
           budget: budget || null,
           householdSize: householdSize ? parseInt(householdSize) : null,
@@ -193,6 +204,24 @@ export default function SettingsPage() {
                 {SKILL_LEVELS.map((level) => (
                   <option key={level.value} value={level.value}>
                     {level.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Meal Complexity
+              </label>
+              <select
+                value={mealComplexity}
+                onChange={(e) => setMealComplexity(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 focus:ring-emerald-500 focus:border-emerald-500"
+              >
+                <option value="">No preference</option>
+                {MEAL_COMPLEXITY.map((level) => (
+                  <option key={level.value} value={level.value}>
+                    {level.label} ({level.description})
                   </option>
                 ))}
               </select>

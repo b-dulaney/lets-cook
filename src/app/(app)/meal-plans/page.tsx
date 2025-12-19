@@ -22,6 +22,7 @@ interface MealPlan {
 
 interface Preferences {
   skill_level: string | null;
+  meal_complexity: string | null;
   max_cook_time: string | null;
   budget: string | null;
   household_size: number | null;
@@ -247,6 +248,7 @@ function GeneratePlanModal({
   // Form state
   const [numberOfDays, setNumberOfDays] = useState(7);
   const [householdSize, setHouseholdSize] = useState<string>("");
+  const [mealComplexity, setMealComplexity] = useState<string>("");
   const [dietary, setDietary] = useState<string[]>([]);
   const [allergies, setAllergies] = useState<string[]>([]);
   const [dislikes, setDislikes] = useState<string[]>([]);
@@ -267,6 +269,7 @@ function GeneratePlanModal({
 
         // Pre-populate from saved preferences
         setHouseholdSize(prefs.household_size?.toString() || "");
+        setMealComplexity(prefs.meal_complexity || "");
         setDietary(prefs.dietary || []);
         setAllergies(prefs.allergies || []);
         setDislikes(prefs.dislikes || []);
@@ -291,6 +294,7 @@ function GeneratePlanModal({
     try {
       const preferences = {
         householdSize: householdSize ? parseInt(householdSize) : undefined,
+        mealComplexity: mealComplexity || undefined,
         dietary,
         allergies,
         dislikes,
@@ -453,6 +457,24 @@ function GeneratePlanModal({
                       placeholder="Number of people"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500 focus:ring-emerald-500 focus:border-emerald-500"
                     />
+                  </div>
+
+                  {/* Meal Complexity */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Meal Complexity
+                    </label>
+                    <select
+                      value={mealComplexity}
+                      onChange={(e) => setMealComplexity(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 focus:ring-emerald-500 focus:border-emerald-500"
+                    >
+                      <option value="">Any</option>
+                      <option value="minimal">Minimal (&lt;5 ingredients)</option>
+                      <option value="simple">Simple (5-7 ingredients)</option>
+                      <option value="standard">Standard (8-12 ingredients)</option>
+                      <option value="complex">Complex (12+ ingredients)</option>
+                    </select>
                   </div>
 
                   {/* Budget & Cook Time */}
