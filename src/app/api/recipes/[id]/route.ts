@@ -25,6 +25,7 @@ interface DbRecipe {
   total_time: string | null;
   servings: number | null;
   difficulty: string | null;
+  image_url: string | null;
   metadata: Json | null;
 }
 
@@ -79,11 +80,13 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     .eq("recipe_id", id)
     .maybeSingle();
 
-  const fullRecipe = dbToFullRecipe(recipe as unknown as DbRecipe);
+  const dbRecipe = recipe as unknown as DbRecipe;
+  const fullRecipe = dbToFullRecipe(dbRecipe);
 
   return NextResponse.json({
     recipe: fullRecipe,
     recipeId: recipe.id,
+    imageUrl: dbRecipe.image_url,
     isFavorite: !!favorite,
   });
 }

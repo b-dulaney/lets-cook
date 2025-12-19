@@ -44,6 +44,14 @@ export interface RecipeSubstitution {
   reason: string;
 }
 
+// Supported Spoonacular cuisines for image search
+export type CuisineType =
+  | "African" | "American" | "British" | "Cajun" | "Caribbean"
+  | "Chinese" | "Eastern European" | "French" | "German" | "Greek"
+  | "Indian" | "Irish" | "Italian" | "Japanese" | "Jewish"
+  | "Korean" | "Latin American" | "Mediterranean" | "Mexican"
+  | "Middle Eastern" | "Nordic" | "Southern" | "Spanish" | "Thai" | "Vietnamese";
+
 export interface FullRecipe {
   recipeName: string;
   servings: number;
@@ -60,6 +68,8 @@ export interface FullRecipe {
     protein: string;
     notes: string;
   };
+  cuisineType?: CuisineType; // For image search filtering
+  imageSearchTerms?: string; // 1-2 word basic food term (e.g., "salmon", "pasta", "tacos")
 }
 
 export interface MealPlanDay {
@@ -219,6 +229,8 @@ Provide a comprehensive recipe with:
 4. Servings
 5. Pro tips (2-3 helpful hints)
 6. Substitution suggestions (if applicable)
+7. Cuisine type - one of: African, American, British, Cajun, Caribbean, Chinese, Eastern European, French, German, Greek, Indian, Irish, Italian, Japanese, Jewish, Korean, Latin American, Mediterranean, Mexican, Middle Eastern, Nordic, Southern, Spanish, Thai, Vietnamese
+8. Image search term - ONE or TWO simple words for the main dish (e.g., "salmon", "pasta", "tacos", "stir fry", "curry"). Use the most basic, common food term.
 
 Tailor the complexity and detail to the user's skill level.
 For beginners: more detailed steps, basic techniques explained
@@ -232,6 +244,8 @@ Format as JSON:
   "cookTime": "25 minutes",
   "totalTime": "35 minutes",
   "difficulty": "Easy",
+  "cuisineType": "Italian",
+  "imageSearchTerms": "pasta",
   "ingredients": [
     {
       "item": "chicken breast",

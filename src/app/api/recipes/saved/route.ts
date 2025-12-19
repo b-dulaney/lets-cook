@@ -8,6 +8,7 @@ interface SavedRecipe {
   difficulty: string | null;
   total_time: string | null;
   servings: number | null;
+  image_url: string | null;
   created_at: string;
   isFavorite: boolean;
   metadata: {
@@ -22,6 +23,7 @@ interface DbRecipe {
   difficulty: string | null;
   total_time: string | null;
   servings: number | null;
+  image_url: string | null;
   created_at: string;
   metadata: unknown;
 }
@@ -88,7 +90,7 @@ export async function GET(request: NextRequest) {
     // Fetch recipes - cast to any since difficulty/total_time may not be in generated types
     const { data: recipes, error } = await (db
       .from("recipes")
-      .select("id, title, description, difficulty, total_time, servings, created_at, metadata")
+      .select("id, title, description, difficulty, total_time, servings, image_url, created_at, metadata")
       .in("id", recipeIds)
       .order("created_at", { ascending: false }) as Promise<{ data: DbRecipe[] | null; error: Error | null }>);
 
@@ -117,6 +119,7 @@ export async function GET(request: NextRequest) {
       difficulty: recipe.difficulty,
       total_time: recipe.total_time,
       servings: recipe.servings,
+      image_url: recipe.image_url,
       created_at: recipe.created_at,
       metadata: recipe.metadata as SavedRecipe["metadata"],
       isFavorite: favoriteIds.has(recipe.id),

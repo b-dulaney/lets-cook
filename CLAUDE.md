@@ -9,7 +9,7 @@ Quick start for Claude Code:
    - ANTHROPIC_API_KEY
    - SUPABASE_URL
    - SUPABASE_ANON_KEY
-   - SPOONACULAR_API_KEY (optional)
+   - SPOONACULAR_API_KEY (optional, for recipe images)
 
 ## Development Commands
 

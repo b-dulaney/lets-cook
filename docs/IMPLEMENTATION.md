@@ -105,6 +105,8 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 - [x] **Stale list detection** - Track when meal plan changes after list creation
 - [x] **Regenerate stale lists** - One-click regeneration with warning banner
 - [x] Link shopping lists to meal plans (`meal_plan_id` foreign key)
+- [x] **Single-recipe shopping lists** - Create shopping list from any recipe
+- [x] **Source-based naming** - "Shopping List for Meal Plan X" or "Shopping List for [Recipe]"
 
 ---
 
@@ -194,16 +196,15 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 
 ## Phase 6: External APIs & Enhancements
 
-### Spoonacular/Edamam Integration
-- [ ] Set up API client
-- [ ] Fetch recipe images
-- [ ] Supplement recipe data
-- [ ] Ingredient autocomplete
+### Spoonacular Integration
+- [x] Set up API client (`src/lib/spoonacular/client.ts`)
+- [x] Fetch recipe images on recipe generation
+- [x] Claude generates optimized search terms for better matches
 
 ### Recipe Images
-- [ ] Display images in recipe cards
-- [ ] Image placeholders/fallbacks
-- [ ] Image optimization
+- [x] Display images in recipe detail pages
+- [x] Display images in saved recipe cards
+- [x] Image placeholders/fallbacks (gradient + icon)
 
 ---
 
@@ -260,8 +261,8 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 | Intent Handling | ✅ Basic implementation |
 | Authentication | ✅ Complete |
 | Data Persistence | ✅ Complete |
-| Meal Plan Features | ✅ Re-roll, variety, recipe linking |
-| Shopping Lists | ✅ Stale detection, regeneration |
+| Meal Plan Features | ✅ Re-roll, variety, complexity, numbered display |
+| Shopping Lists | ✅ Single-recipe lists, source naming |
 | Recipe Pages | ✅ Discovery, detail, caching |
 | Google Assistant | ⏳ Intents designed only |
 | Web UI | ✅ Core pages complete |
@@ -269,22 +270,86 @@ High-level progress tracker for the Meal Planning AI Assistant project.
 | Testing | ⏳ Not started |
 | Deployment | ✅ Live at letscook.dev |
 
-**Current Phase:** Voice Commands Complete
+**Current Phase:** UX Polish & Feature Completion
 
 **Next Steps (choose based on priority):**
 
 | Feature | Effort | Value | Description |
 |---------|--------|-------|-------------|
 | Recipe images | Medium | High | Fetch images from Spoonacular/Unsplash for visual appeal |
+| Meal plan detail improvements | Low | High | Show numbered plan, created date, link to shopping list |
 | Chat interface | High | Medium | Natural language interaction for recipe discovery |
 | Google Assistant | High | Medium | Voice-first experience via smart speakers |
 | Testing suite | Medium | Medium | Unit/integration tests for reliability |
 | Error tracking | Low | Medium | Sentry integration for production monitoring |
 | Text-to-speech | Low | Medium | Read cooking instructions aloud |
+| Nutrition tracking | Medium | Medium | Aggregate nutrition info for meal plans |
+| Recipe scaling | Low | Medium | Adjust ingredient quantities for different serving sizes |
 
 ---
 
 ## Changelog
+
+### 2025-12-18 (Session 6)
+
+**Recipe Images with Spoonacular + Claude-Generated Search Terms**
+- Created Spoonacular API client (`src/lib/spoonacular/client.ts`)
+- Claude generates `imageSearchTerms` field with optimized 3-5 word search queries
+- Search terms use generic food terms (e.g., "grilled salmon asparagus plate") instead of creative recipe names
+- Images fetched automatically when generating new recipes
+- Image stored in `image_url` column (already existed in schema)
+- Recipe detail pages show hero image at top
+- Saved recipe cards show image with fallback gradient placeholder
+- Image size: 636x393 (largest available from Spoonacular)
+
+**Files Created/Modified**
+- `src/lib/spoonacular/client.ts` - Spoonacular API client
+- `src/lib/claude/prompts.ts` - Added `imageSearchTerms` to FullRecipe interface and prompt
+- `src/lib/claude/client.ts` - Added `imageSearchTerms` to recipe details tool schema
+- `src/app/api/recipes/details/route.ts` - Fetch image using Claude's search terms
+- `src/app/api/recipes/[id]/route.ts` - Return imageUrl in response
+- `src/app/api/recipes/saved/route.ts` - Include image_url in saved recipes
+- `src/app/(app)/recipes/[id]/page.tsx` - Display hero image
+- `src/app/(app)/recipes/view/page.tsx` - Display hero image
+- `src/app/(app)/recipes/saved/page.tsx` - Show images on cards
+
+**Environment Variables**
+- `SPOONACULAR_API_KEY` - Required for recipe images
+
+### 2025-12-18 (Session 5)
+
+**Meal Complexity Preference**
+- Added `meal_complexity` column to `user_preferences` table
+- Four levels: minimal (<5 ingredients), simple (5-7), standard (8-12), complex (12+)
+- Added complexity dropdown to Settings page
+- Added complexity selector to Generate Meal Plan modal (allows override per-generation)
+- Updated prompt with CRITICAL REQUIREMENT to enforce ingredient limits
+- Migration: `20251218172018_add_meal_complexity.sql`
+
+**Single-Recipe Shopping Lists**
+- "Create Shopping List" button on recipe detail pages (`/recipes/[id]` and `/recipes/view`)
+- API extracts ingredients from recipe and auto-categorizes them
+- Categories: Meat, Dairy, Produce, Bakery, Frozen, Condiments/Sauces, Pantry/Dry Goods
+- Added `recipe_id` column to `shopping_lists` table
+- Migration: `20251218180258_add_recipe_id_to_shopping_lists.sql`
+
+**Improved Naming & Organization**
+- Meal plans now show "Meal Plan X" (numbered by creation order, oldest = 1)
+- Meal plan cards show created date/time instead of week range
+- Shopping lists show source: "Shopping List for Meal Plan X" or "Shopping List for [Recipe Name]"
+- All lists sorted by `created_at` descending (most recent first)
+- Updated meal plan creation modal to show plan numbers
+- Updated shopping list creation modal to show plan numbers with created date/time
+
+**Recipe Variety Improvements**
+- Added historical context: queries last 3 meal plans to avoid repeating recipes
+- Added `OVERUSED_RECIPE_PATTERNS` constant with 16 common defaults to avoid
+- Enhanced prompt with diverse cuisine suggestions (Korean, Vietnamese, Moroccan, etc.)
+
+**API Changes**
+- `/api/meal-plans` - now sorts by `created_at` descending
+- `/api/recipes` - added `ids` query param for fetching specific recipes by ID
+- `/api/shopping-lists` - added `recipeId` support for single-recipe list creation
 
 ### 2025-12-18 (Session 4)
 

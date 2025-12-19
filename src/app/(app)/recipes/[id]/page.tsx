@@ -30,6 +30,7 @@ export default function RecipeByIdPage({ params }: PageProps) {
   const [isFavorite, setIsFavorite] = useState(false);
   const [togglingFavorite, setTogglingFavorite] = useState(false);
   const [creatingList, setCreatingList] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   const backTo = searchParams.get("back") || "/recipes";
 
@@ -48,6 +49,7 @@ export default function RecipeByIdPage({ params }: PageProps) {
         const data = await res.json();
         setRecipe(data.recipe);
         setIsFavorite(data.isFavorite || false);
+        setImageUrl(data.imageUrl || null);
       } else if (res.status === 404) {
         setError("Recipe not found");
       } else {
@@ -152,6 +154,17 @@ export default function RecipeByIdPage({ params }: PageProps) {
         </svg>
         Back
       </Link>
+
+      {/* Recipe Image */}
+      {imageUrl && (
+        <div className="mb-6 max-w-sm rounded-xl overflow-hidden">
+          <img
+            src={imageUrl}
+            alt={recipe.recipeName}
+            className="w-full h-48 object-cover"
+          />
+        </div>
+      )}
 
       {/* Header */}
       <div className="mb-6">

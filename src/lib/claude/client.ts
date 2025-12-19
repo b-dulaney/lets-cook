@@ -644,8 +644,17 @@ const recipeDetailsTool: Anthropic.Tool = {
         },
         required: ["calories", "protein", "notes"],
       },
+      cuisineType: {
+        type: "string",
+        enum: ["African", "American", "British", "Cajun", "Caribbean", "Chinese", "Eastern European", "French", "German", "Greek", "Indian", "Irish", "Italian", "Japanese", "Jewish", "Korean", "Latin American", "Mediterranean", "Mexican", "Middle Eastern", "Nordic", "Southern", "Spanish", "Thai", "Vietnamese"],
+        description: "The cuisine type of this recipe",
+      },
+      imageSearchTerms: {
+        type: "string",
+        description: "ONE or TWO simple words for the main dish (e.g., 'salmon', 'pasta', 'tacos', 'curry')",
+      },
     },
-    required: ["recipeName", "servings", "prepTime", "cookTime", "totalTime", "difficulty", "ingredients", "instructions", "tips", "substitutions", "nutrition"],
+    required: ["recipeName", "servings", "prepTime", "cookTime", "totalTime", "difficulty", "ingredients", "instructions", "tips", "substitutions", "nutrition", "cuisineType", "imageSearchTerms"],
   },
 };
 

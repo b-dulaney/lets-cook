@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { getRecipeDetails } from "@/lib/claude/client";
+import { searchRecipeImage } from "@/lib/spoonacular/client";
 import type { Json } from "@/types/database";
 
 // Parse time string like "30 minutes" to number
@@ -69,6 +70,9 @@ export async function POST(request: NextRequest) {
 
     const generatedRecipe = result.data;
 
+    // Fetch image from Spoonacular using Claude's optimized search terms
+    const imageUrl = await searchRecipeImage(generatedRecipe.imageSearchTerms || recipeName);
+
     // Save the generated recipe to the database
     const { data: savedRecipe, error: insertError } = await supabase
       .from("recipes")
@@ -82,6 +86,7 @@ export async function POST(request: NextRequest) {
         total_time: generatedRecipe.totalTime,
         servings: generatedRecipe.servings,
         difficulty: generatedRecipe.difficulty,
+        image_url: imageUrl,
         source: "claude",
         metadata: {
           tips: generatedRecipe.tips,
@@ -100,6 +105,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         recipe: generatedRecipe,
         recipeId: null,
+        imageUrl,
         message: result.message,
         saved: false,
       });
@@ -108,6 +114,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       recipe: generatedRecipe,
       recipeId: savedRecipe.id,
+      imageUrl,
       message: result.message,
       saved: true,
     });

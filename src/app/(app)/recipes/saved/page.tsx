@@ -11,6 +11,7 @@ interface SavedRecipe {
   difficulty: string | null;
   total_time: string | null;
   servings: number | null;
+  image_url: string | null;
   created_at: string;
   isFavorite: boolean;
   metadata: {
@@ -30,77 +31,106 @@ function SavedRecipeCard({ recipe }: { recipe: SavedRecipe }) {
   return (
     <Link
       href={`/recipes/${recipe.id}?back=/recipes/saved`}
-      className="block bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md hover:border-gray-300 transition-all"
+      className="block bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md hover:border-gray-300 transition-all"
     >
-      <div className="flex items-start justify-between mb-2">
-        <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 flex-1">
-          {displayName}
-        </h3>
-        <div className="flex items-center gap-2 ml-3">
-          {recipe.isFavorite && (
-            <svg
-              className="w-5 h-5 text-red-500 fill-current"
-              viewBox="0 0 24 24"
-            >
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-            </svg>
+      {/* Image */}
+      {recipe.image_url ? (
+        <div className="h-40 overflow-hidden">
+          <img
+            src={recipe.image_url}
+            alt={displayName}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      ) : (
+        <div className="h-40 bg-gradient-to-br from-emerald-100 to-emerald-50 flex items-center justify-center">
+          <svg
+            className="w-12 h-12 text-emerald-300"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
+            />
+          </svg>
+        </div>
+      )}
+
+      <div className="p-4">
+        <div className="flex items-start justify-between mb-2">
+          <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 flex-1">
+            {displayName}
+          </h3>
+          <div className="flex items-center gap-2 ml-3">
+            {recipe.isFavorite && (
+              <svg
+                className="w-5 h-5 text-red-500 fill-current"
+                viewBox="0 0 24 24"
+              >
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+              </svg>
+            )}
+            {recipe.difficulty && (
+              <span
+                className={`text-xs font-medium px-2 py-1 rounded whitespace-nowrap ${
+                  difficultyColors[recipe.difficulty] ||
+                  "bg-gray-100 text-gray-700"
+                }`}
+              >
+                {recipe.difficulty}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {recipe.description && (
+          <p className="text-sm text-gray-600 line-clamp-2 mb-3">
+            {recipe.description}
+          </p>
+        )}
+
+        <div className="flex items-center gap-4 text-sm text-gray-500">
+          {recipe.total_time && (
+            <span className="flex items-center gap-1">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              {recipe.total_time}
+            </span>
           )}
-          {recipe.difficulty && (
-            <span
-              className={`text-xs font-medium px-2 py-1 rounded whitespace-nowrap ${
-                difficultyColors[recipe.difficulty] ||
-                "bg-gray-100 text-gray-700"
-              }`}
-            >
-              {recipe.difficulty}
+          {recipe.servings && (
+            <span className="flex items-center gap-1">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+              {recipe.servings} servings
             </span>
           )}
         </div>
-      </div>
-
-      {recipe.description && (
-        <p className="text-sm text-gray-600 line-clamp-2 mb-3">
-          {recipe.description}
-        </p>
-      )}
-
-      <div className="flex items-center gap-4 text-sm text-gray-500">
-        {recipe.total_time && (
-          <span className="flex items-center gap-1">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            {recipe.total_time}
-          </span>
-        )}
-        {recipe.servings && (
-          <span className="flex items-center gap-1">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-              />
-            </svg>
-            {recipe.servings} servings
-          </span>
-        )}
       </div>
     </Link>
   );

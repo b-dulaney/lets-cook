@@ -27,6 +27,7 @@ function RecipeDetailContent() {
   const [isFavorite, setIsFavorite] = useState(false);
   const [togglingFavorite, setTogglingFavorite] = useState(false);
   const [creatingList, setCreatingList] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const fetchingRef = useRef(false);
 
   const recipeName = searchParams.get("name");
@@ -81,6 +82,9 @@ function RecipeDetailContent() {
         setRecipe(data.recipe);
         if (data.recipeId) {
           setRecipeId(data.recipeId);
+        }
+        if (data.imageUrl) {
+          setImageUrl(data.imageUrl);
         }
 
         // If this recipe came from a meal plan, link it
@@ -211,6 +215,17 @@ function RecipeDetailContent() {
         </svg>
         Back
       </Link>
+
+      {/* Recipe Image */}
+      {imageUrl && (
+        <div className="mb-6 max-w-sm rounded-xl overflow-hidden">
+          <img
+            src={imageUrl}
+            alt={recipe.recipeName}
+            className="w-full h-48 object-cover"
+          />
+        </div>
+      )}
 
       {/* Header */}
       <div className="mb-6">
