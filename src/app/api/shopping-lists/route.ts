@@ -62,6 +62,12 @@ function flattenShoppingList(data: ClaudeShoppingList): ShoppingListItem[] {
   const items: ShoppingListItem[] = [];
   const categories = data.shoppingList;
 
+  // Defensive check - log what we received if shoppingList is missing
+  if (!categories) {
+    console.error("Claude response missing shoppingList. Received:", JSON.stringify(data, null, 2));
+    throw new Error("Invalid shopping list response: missing shoppingList property");
+  }
+
   for (const [category, categoryItems] of Object.entries(categories)) {
     if (Array.isArray(categoryItems)) {
       for (const item of categoryItems) {

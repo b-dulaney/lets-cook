@@ -477,22 +477,33 @@ export async function generateShoppingList(
 
   const response = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
-    max_tokens: 4000,
+    max_tokens: 8000,
     temperature: 0.6,
     tools: [shoppingListTool],
     tool_choice: { type: "tool", name: "submit_shopping_list" },
     messages: [{ role: "user", content: prompt }],
   });
 
+  // Log response metadata for debugging
+  console.log("Shopping list response - stop_reason:", response.stop_reason, "usage:", response.usage);
+
   const toolUse = response.content.find(
     (block): block is Anthropic.ToolUseBlock => block.type === "tool_use"
   );
 
   if (!toolUse) {
+    console.error("No tool_use block in Claude response:", JSON.stringify(response.content, null, 2));
     throw new Error("Failed to get structured response from Claude");
   }
 
   const result = toolUse.input as ShoppingList;
+
+  // Validate the response structure
+  if (!result.shoppingList) {
+    console.error("Claude tool response missing shoppingList:", JSON.stringify(result, null, 2));
+    console.error("Full tool_use block:", JSON.stringify(toolUse, null, 2));
+    throw new Error("Claude response missing required shoppingList property");
+  }
 
   return {
     message: "Generated your shopping list",
@@ -726,6 +737,7 @@ const shoppingListTool: Anthropic.Tool = {
     properties: {
       shoppingList: {
         type: "object",
+        description: "Categorized shopping list by store section. Include all categories, use empty arrays for categories with no items.",
         properties: {
           Produce: { type: "array", items: shoppingListItemSchema },
           Meat: { type: "array", items: shoppingListItemSchema },
@@ -735,7 +747,7 @@ const shoppingListTool: Anthropic.Tool = {
           Bakery: { type: "array", items: shoppingListItemSchema },
           "Condiments/Sauces": { type: "array", items: shoppingListItemSchema },
         },
-        required: ["Produce", "Meat", "Dairy", "Pantry/Dry Goods", "Frozen", "Bakery", "Condiments/Sauces"],
+        // All categories optional - use empty arrays if no items in category
       },
       estimatedTotal: { type: "string" },
       optionalItems: {

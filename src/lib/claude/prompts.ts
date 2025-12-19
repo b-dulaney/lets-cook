@@ -443,59 +443,39 @@ export function generateShoppingListPrompt(
   mealPlan: WeeklyMealPlan | MealPlanDay[],
   pantryItems: string[] = []
 ): string {
-  return `Generate a comprehensive shopping list for this meal plan:
+  // Extract just the meals data to keep prompt focused
+  const meals = Array.isArray(mealPlan) ? mealPlan : mealPlan.weekPlan;
 
-${JSON.stringify(mealPlan, null, 2)}
+  // Format meals concisely
+  const mealsFormatted = meals.map(meal => ({
+    day: meal.day,
+    meal: meal.meal,
+    ingredients: meal.mainIngredients,
+  }));
 
-Items already in pantry: ${
-    pantryItems.length > 0 ? pantryItems.join(", ") : "none specified"
-  }
+  return `Generate a shopping list for these meals:
 
-Create a shopping list that:
-1. Consolidates duplicate ingredients across meals
-2. Provides specific quantities needed
-3. Organizes by store section for efficient shopping
-4. Indicates which meals use each ingredient
-5. Excludes pantry items already owned
-6. Notes optional/substitutable items
+${JSON.stringify(mealsFormatted, null, 2)}
 
-Store sections: Produce, Meat/Seafood, Dairy, Pantry/Dry Goods, Frozen, Bakery, Condiments/Sauces
+Pantry items to exclude: ${pantryItems.length > 0 ? pantryItems.join(", ") : "none"}
 
-Format as JSON:
-{
-  "shoppingList": {
-    "Produce": [
-      {
-        "item": "broccoli",
-        "quantity": "2 heads",
-        "usedIn": ["Monday: Stir Fry", "Wednesday: Pasta"],
-        "priority": "essential"
-      }
-    ],
-    "Meat": [
-      {
-        "item": "chicken breast",
-        "quantity": "2 lbs",
-        "usedIn": ["Monday: Stir Fry", "Thursday: Chicken Tacos"],
-        "priority": "essential",
-        "notes": "Can buy in bulk and freeze half"
-      }
-    ]
-  },
-  "estimatedTotal": "$65-75",
-  "optionalItems": [
-    {
-      "item": "fresh herbs",
-      "reason": "Enhances flavor but dried herbs work too"
-    }
-  ],
-  "moneySavingTips": [
-    "Buy whole chicken and break it down yourself to save $5-10",
-    "Use frozen vegetables for stir fry - just as nutritious and cheaper"
-  ]
-}
+Create a consolidated shopping list organized by store section. For each item include:
+- item: ingredient name
+- quantity: specific amount needed (e.g., "2 lbs", "1 bunch")
+- usedIn: array of which meals use it (e.g., ["Monday: Sea Bass", "Thursday: Causa"])
+- priority: "essential" or "optional"
+- notes: optional tips (e.g., "can substitute with...")
 
-Only return valid JSON, no other text.`;
+Use the submit_shopping_list tool with these exact category keys:
+- Produce (vegetables, fruits, fresh herbs)
+- Meat (all proteins including seafood)
+- Dairy (milk, cheese, butter, eggs, yogurt)
+- Pantry/Dry Goods (rice, pasta, spices, oils, canned goods)
+- Frozen (frozen items)
+- Bakery (bread, tortillas)
+- Condiments/Sauces (sauces, vinegars, dressings)
+
+Include all 7 categories. Use empty arrays [] for categories with no items.`;
 }
 
 // 5. Update User Preferences from Natural Language
