@@ -53,6 +53,7 @@ export async function PUT(request: NextRequest) {
     householdSize,
     dietary,
     allergies,
+    appliances,
     dislikes,
     favoriteCuisines,
     pantryItems,
@@ -68,6 +69,7 @@ export async function PUT(request: NextRequest) {
   if (householdSize !== undefined) updates.household_size = householdSize;
   if (dietary !== undefined) updates.dietary = dietary;
   if (allergies !== undefined) updates.allergies = allergies;
+  if (appliances !== undefined) updates.appliances = appliances;
   if (dislikes !== undefined) updates.dislikes = dislikes;
   if (favoriteCuisines !== undefined) updates.favorite_cuisines = favoriteCuisines;
   if (pantryItems !== undefined) updates.pantry_items = pantryItems;

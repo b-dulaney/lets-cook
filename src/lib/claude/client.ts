@@ -375,9 +375,10 @@ export async function askClaude({
 
 export async function findRecipes(
   ingredients: string[],
-  userPreferences?: UserPreferences
+  userPreferences?: UserPreferences,
+  cookingMethod?: string
 ): Promise<RecipeSuggestionsResponse> {
-  const prompt = generateRecipePrompt(ingredients, userPreferences || {});
+  const prompt = generateRecipePrompt(ingredients, userPreferences || {}, cookingMethod);
 
   const response = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
@@ -440,9 +441,10 @@ export async function getRecipeDetails(
 export async function createMealPlan(
   userPreferences?: UserPreferences,
   numberOfDays: number = 7,
-  recentRecipes: string[] = []
+  recentRecipes: string[] = [],
+  slowCookerMeals?: number
 ): Promise<MealPlanResponse> {
-  const prompt = generateWeeklyMealPlanPrompt(userPreferences || {}, numberOfDays, recentRecipes);
+  const prompt = generateWeeklyMealPlanPrompt(userPreferences || {}, numberOfDays, recentRecipes, slowCookerMeals);
 
   const response = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",

@@ -30,6 +30,7 @@ interface Preferences {
   allergies: string[];
   dislikes: string[];
   favorite_cuisines: string[];
+  appliances: string[];
 }
 
 export default function MealPlansPage() {
@@ -245,6 +246,8 @@ function GeneratePlanModal({
   const [favoriteCuisines, setFavoriteCuisines] = useState<string[]>([]);
   const [budget, setBudget] = useState<string>("");
   const [maxCookTime, setMaxCookTime] = useState<string>("");
+  const [appliances, setAppliances] = useState<string[]>([]);
+  const [slowCookerMeals, setSlowCookerMeals] = useState(0);
 
   useEffect(() => {
     fetchPreferences();
@@ -266,6 +269,7 @@ function GeneratePlanModal({
         setFavoriteCuisines(prefs.favorite_cuisines || []);
         setBudget(prefs.budget || "");
         setMaxCookTime(prefs.max_cook_time || "");
+        setAppliances(prefs.appliances || []);
       }
     } catch (err) {
       console.error("Error fetching preferences:", err);
@@ -292,6 +296,7 @@ function GeneratePlanModal({
         favoriteCuisines,
         budget: budget || undefined,
         maxCookTime: maxCookTime || undefined,
+        appliances,
       };
 
       const res = await fetch("/api/meal-plans", {
@@ -301,6 +306,7 @@ function GeneratePlanModal({
           generate: true,
           numberOfDays,
           preferences,
+          slowCookerMeals: slowCookerMeals > 0 ? slowCookerMeals : undefined,
         }),
       });
 
@@ -404,7 +410,7 @@ function GeneratePlanModal({
                   Loading preferences...
                 </div>
               ) : (
-                <div className="space-y-4 sm:max-h-[70vh] sm:overflow-y-auto">
+                <div className="space-y-4 sm:max-h-[70vh] sm:overflow-y-auto sm:pr-4">
                   {error && (
                     <div className="p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-200">
                       {error}
@@ -487,6 +493,30 @@ function GeneratePlanModal({
                       <option value="complex">Complex (12+ ingredients)</option>
                     </select>
                   </div>
+
+                  {/* Slow Cooker Meals - only show if user has slow cooker */}
+                  {appliances.includes("slow-cooker") && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Slow Cooker Meals: {slowCookerMeals}
+                      </label>
+                      <input
+                        type="range"
+                        min="0"
+                        max={numberOfDays}
+                        value={slowCookerMeals}
+                        onChange={(e) => setSlowCookerMeals(parseInt(e.target.value))}
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-orange-600"
+                      />
+                      <div className="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>0</span>
+                        <span>{numberOfDays}</span>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Hands-off cooking for busy days
+                      </p>
+                    </div>
+                  )}
 
                   {/* Budget & Cook Time */}
                   <div className="grid grid-cols-2 gap-3">

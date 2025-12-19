@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { weekStart, meals, generate, numberOfDays, preferences } = body;
+  const { weekStart, meals, generate, numberOfDays, preferences, slowCookerMeals } = body;
 
   // If generate flag is set, use Claude to create the meal plan
   if (generate) {
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      const response = await createMealPlan(preferences, numberOfDays || 7, recentRecipes);
+      const response = await createMealPlan(preferences, numberOfDays || 7, recentRecipes, slowCookerMeals);
 
       // Calculate week start date (next Monday if not provided)
       const startDate = weekStart || getNextMonday();

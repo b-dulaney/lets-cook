@@ -16,6 +16,7 @@ interface Preferences {
   favorite_cuisines: string[];
   pantry_items: string[];
   additional_notes: string | null;
+  appliances: string[];
 }
 
 const SKILL_LEVELS = [
@@ -55,6 +56,13 @@ const COMMON_ALLERGIES = [
   "Sesame",
 ];
 
+const KITCHEN_APPLIANCES = [
+  { value: "air-fryer", label: "Air Fryer" },
+  { value: "slow-cooker", label: "Slow Cooker" },
+  { value: "instant-pot", label: "Instant Pot" },
+  { value: "grill", label: "Grill" },
+];
+
 const CUISINES = [
   "Italian",
   "Mexican",
@@ -83,6 +91,7 @@ export default function SettingsPage() {
   const [householdSize, setHouseholdSize] = useState<string>("");
   const [dietary, setDietary] = useState<string[]>([]);
   const [allergies, setAllergies] = useState<string[]>([]);
+  const [appliances, setAppliances] = useState<string[]>([]);
   const [dislikes, setDislikes] = useState<string>("");
   const [favoriteCuisines, setFavoriteCuisines] = useState<string[]>([]);
   const [additionalNotes, setAdditionalNotes] = useState<string>("");
@@ -105,6 +114,7 @@ export default function SettingsPage() {
         setHouseholdSize(prefs.household_size?.toString() || "");
         setDietary(prefs.dietary || []);
         setAllergies(prefs.allergies || []);
+        setAppliances(prefs.appliances || []);
         setDislikes(prefs.dislikes?.join(", ") || "");
         setFavoriteCuisines(prefs.favorite_cuisines || []);
         setAdditionalNotes(prefs.additional_notes || "");
@@ -133,6 +143,7 @@ export default function SettingsPage() {
           householdSize: householdSize ? parseInt(householdSize) : null,
           dietary,
           allergies,
+          appliances,
           dislikes: dislikes ? dislikes.split(",").map((s) => s.trim()).filter(Boolean) : [],
           favoriteCuisines,
           additionalNotes: additionalNotes || null,
@@ -317,6 +328,28 @@ export default function SettingsPage() {
                 }`}
               >
                 {item}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {/* Kitchen Appliances */}
+        <section className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Kitchen Appliances</h2>
+          <p className="text-sm text-gray-600 mb-3">Select appliances you have - we&apos;ll suggest recipes that use them</p>
+          <div className="flex flex-wrap gap-2">
+            {KITCHEN_APPLIANCES.map((item) => (
+              <button
+                key={item.value}
+                type="button"
+                onClick={() => toggleArrayItem(appliances, setAppliances, item.value)}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                  appliances.includes(item.value)
+                    ? "bg-orange-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                {item.label}
               </button>
             ))}
           </div>

@@ -14,7 +14,15 @@ interface Preferences {
   allergies: string[];
   dislikes: string[];
   favorite_cuisines: string[];
+  appliances: string[];
 }
+
+const APPLIANCE_LABELS: Record<string, string> = {
+  "air-fryer": "Air Fryer",
+  "slow-cooker": "Slow Cooker",
+  "instant-pot": "Instant Pot",
+  "grill": "Grill",
+};
 
 export default function RecipesPage() {
   const [ingredients, setIngredients] = useState<string[]>([]);
@@ -24,6 +32,7 @@ export default function RecipesPage() {
   const [searched, setSearched] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [preferences, setPreferences] = useState<Preferences | null>(null);
+  const [cookingMethod, setCookingMethod] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Parse voice transcript into ingredients
@@ -110,6 +119,7 @@ export default function RecipesPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ingredients,
+          cookingMethod: cookingMethod || undefined,
           preferences: preferences
             ? {
                 dietaryRestrictions: preferences.dietary || [],
@@ -269,6 +279,40 @@ export default function RecipesPage() {
                 </button>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Cooking method toggles - only show if user has appliances */}
+        {preferences?.appliances && preferences.appliances.length > 0 && (
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <p className="text-sm font-medium text-gray-700 mb-2">
+              Cooking method (optional)
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {preferences.appliances.map((appliance) => (
+                <button
+                  key={appliance}
+                  type="button"
+                  onClick={() =>
+                    setCookingMethod(
+                      cookingMethod === appliance ? null : appliance
+                    )
+                  }
+                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                    cookingMethod === appliance
+                      ? "bg-orange-600 text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  {APPLIANCE_LABELS[appliance] || appliance}
+                </button>
+              ))}
+            </div>
+            {cookingMethod && (
+              <p className="text-xs text-gray-500 mt-2">
+                Recipes will use your {APPLIANCE_LABELS[cookingMethod] || cookingMethod}
+              </p>
+            )}
           </div>
         )}
 

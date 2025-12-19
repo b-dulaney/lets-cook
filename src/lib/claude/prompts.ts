@@ -14,6 +14,7 @@ export interface UserPreferences {
   pantryItems?: string[];
   additionalNotes?: string;
   store?: string; // e.g., "trader-joes"
+  appliances?: string[]; // e.g., ["air-fryer", "slow-cooker", "instant-pot", "grill"]
 }
 
 export interface RecipeSuggestion {
@@ -149,19 +150,32 @@ export interface RecipeModification {
   impactOnRecipe: string;
 }
 
+// Cooking method labels for prompts
+const COOKING_METHOD_PROMPTS: Record<string, string> = {
+  "air-fryer": "COOKING METHOD: Air Fryer - All recipes MUST be cooked using an air fryer. Focus on recipes that benefit from air frying: crispy proteins, vegetables, appetizers. Air fryer cooking is fast and uses less oil.",
+  "slow-cooker": "COOKING METHOD: Slow Cooker/Crockpot - All recipes MUST be slow cooker recipes. Focus on dishes that benefit from slow cooking: stews, braised meats, soups, chilis, pulled meats. These are hands-off meals that cook for hours.",
+  "instant-pot": "COOKING METHOD: Instant Pot/Pressure Cooker - All recipes MUST use a pressure cooker. Focus on dishes that benefit from pressure cooking: beans, tough cuts of meat, risotto, stock-based dishes. These cook quickly under pressure.",
+  "grill": "COOKING METHOD: Grill - All recipes MUST be grilled. Focus on proteins and vegetables that are excellent when grilled. Consider marinades and smoky flavors.",
+};
+
 // 1. Generate Recipe Suggestions from Ingredients
 export function generateRecipePrompt(
   ingredients: string[],
-  userPreferences: UserPreferences
+  userPreferences: UserPreferences,
+  cookingMethod?: string
 ): string {
   const dietary = Array.isArray(userPreferences.dietary)
     ? userPreferences.dietary.join(", ")
     : userPreferences.dietary || "none";
 
+  const cookingMethodInstruction = cookingMethod && COOKING_METHOD_PROMPTS[cookingMethod]
+    ? `\n${COOKING_METHOD_PROMPTS[cookingMethod]}\n`
+    : "";
+
   return `You are a helpful cooking assistant. A user has these ingredients: ${ingredients.join(
     ", "
   )}.
-
+${cookingMethodInstruction}
 User preferences:
 - Dietary restrictions: ${dietary}
 - Skill level: ${userPreferences.skillLevel || "any"}
@@ -171,7 +185,7 @@ Generate 3 recipe suggestions that:
 1. Primarily use the provided ingredients
 2. Are practical and achievable
 3. Include variety (different cuisines/styles)
-4. Respect dietary restrictions
+4. Respect dietary restrictions${cookingMethod ? "\n5. MUST use the specified cooking method" : ""}
 
 For each recipe, provide:
 - Recipe name
@@ -309,7 +323,8 @@ Only return valid JSON, no other text.`;
 export function generateWeeklyMealPlanPrompt(
   userPreferences: UserPreferences,
   numberOfMeals: number = 7,
-  recentRecipes: string[] = []
+  recentRecipes: string[] = [],
+  slowCookerMeals?: number
 ): string {
   const dietary = Array.isArray(userPreferences.dietary)
     ? userPreferences.dietary.join(", ")
@@ -335,6 +350,38 @@ ${recipesToAvoid.map((r) => `- ${r}`).join("\n")}
   };
   const complexityInstruction = userPreferences.mealComplexity
     ? `\n- **RECIPE COMPLEXITY (MUST FOLLOW)**: ${complexityDescriptions[userPreferences.mealComplexity]}`
+    : "";
+
+  // Build appliance-based cooking instructions
+  const applianceInstructions: string[] = [];
+  const appliances = userPreferences.appliances || [];
+
+  if (appliances.includes("air-fryer")) {
+    applianceInstructions.push(
+      "- **AIR FRYER**: User has an air fryer. Suggest air fryer cooking methods where appropriate for crispy textures (proteins, vegetables, appetizers). Air fryer recipes are faster and use less oil."
+    );
+  }
+
+  if (appliances.includes("slow-cooker") && slowCookerMeals && slowCookerMeals > 0) {
+    applianceInstructions.push(
+      `- **SLOW COOKER**: Include exactly ${slowCookerMeals} slow cooker/crockpot meal(s) this week. These are ideal for busy weekdays - set in the morning, ready by dinner. Great for stews, braised meats, soups, and chilis. Mark these clearly with "Slow Cooker" in the meal name or description.`
+    );
+  }
+
+  if (appliances.includes("instant-pot")) {
+    applianceInstructions.push(
+      "- **INSTANT POT**: User has an Instant Pot. Consider pressure cooker recipes for dishes that would normally take hours (beans, tough meats, risotto, stock-based dishes). These can be ready in 30-45 minutes instead of hours."
+    );
+  }
+
+  if (appliances.includes("grill")) {
+    applianceInstructions.push(
+      "- **GRILL**: User has a grill. Include grilled recipes for proteins and vegetables when appropriate. Great for quick weeknight meals and adds smoky flavor."
+    );
+  }
+
+  const applianceSection = applianceInstructions.length > 0
+    ? `\nKITCHEN APPLIANCES (incorporate these cooking methods):\n${applianceInstructions.join("\n")}\n`
     : "";
 
   // Store-specific instructions
@@ -364,8 +411,7 @@ RECIPE STYLE FOR TRADER JOE'S:
   const storeSection = userPreferences.store ? storeInstructions[userPreferences.store] || "" : "";
 
   return `Create a ${numberOfMeals}-day meal plan for dinner.
-${storeSection}
-
+${storeSection}${applianceSection}
 User preferences:
 - Dietary restrictions: ${dietary}
 - Allergies: ${userPreferences.allergies?.join(", ") || "none"}

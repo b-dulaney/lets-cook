@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { ingredients, preferences } = body;
+  const { ingredients, preferences, cookingMethod } = body;
 
   if (!ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
     return NextResponse.json(
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const result = await findRecipes(ingredients, userPreferences);
+    const result = await findRecipes(ingredients, userPreferences, cookingMethod);
 
     return NextResponse.json({
       recipes: result.data.recipes,
